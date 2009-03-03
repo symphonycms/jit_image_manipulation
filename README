@@ -1,0 +1,25 @@
+JIT Image Manipulation
+------------------------------------
+
+Version: 1.0
+Author: Alistair Kearney (alistair@symphony21.com)
+Build Date: 3rd March 2009
+Requirements: Symphony 2.0.2 or later
+
+This is a replacement for the /image/X style "just in time" image manipulation found in all versions of Symphony prior to v2.0.2
+
+
+[INSTALLATION]
+
+** Note: The latest version can alway be grabbed with "git clone git://github.com/pointybeard/jit_image_manipulation.git"
+
+1. Upload the 'jit_image_manipulation' folder in this archive to your Symphony 'extensions' folder.
+
+2. Enable it by selecting the "JIT Image Manipulation", choose Enable from the with-selected menu, then click Apply.
+
+
+[USAGE]
+
+** Note: This extension is backwards compatible with the old url style. However, this may change in future releases.
+
+Image manipulation is controlled via the URL. There are 4 'modes', each with slightly different URL structures
