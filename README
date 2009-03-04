@@ -1,7 +1,7 @@
 JIT Image Manipulation
 ------------------------------------
 
-Version: 0.9
+Version: 1.0
 Author: Alistair Kearney (alistair@symphony21.com)
 Build Date: 3rd March 2009
 Requirements: Symphony 2.0.2 or later
@@ -13,8 +13,8 @@ This is a replacement for the /image/X style "just in time" image manipulation f
 
 ** Note: The latest version can alway be grabbed with "git clone git://github.com/pointybeard/jit_image_manipulation.git"
 
-Before you install, it is worth noting that the root .htaccess will be modified. Should you have any modifications, it would
-be worth backing up the original first.
+Before you install, it is worth noting that the root .htaccess will be modified. Should you have any modifications, 
+it would be worth backing up the original first.
 
 1. Upload the 'jit_image_manipulation' folder in this archive to your Symphony 'extensions' folder.
 
@@ -23,13 +23,18 @@ be worth backing up the original first.
 
 [USAGE]
 
-** Note: This extension is backwards compatible with the old (pre 2.0.2) url style. However, this may change in future releases.
 
-Image manipulation is controlled via the URL. There are 4 'modes', each with slightly different URL structures
+Basics:
+
+	Image manipulation is controlled via the URL. There are 4 'modes', each with slightly different URL structures
+	## TODO: Outline the 4 modes here
 
 
-## TODO: Outline the 4 modes here
+Trusted Sites:
 
+	In order pull images from external sources, you must set up a white-list of trusted sites. To do this, 
+	goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything
+	use a single asterisk (*).
 
 
 [CREATION OF NEW FILTERS]

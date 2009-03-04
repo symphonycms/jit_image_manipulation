@@ -72,6 +72,42 @@
 
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 	
+	if($param->external === true){
+		
+		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		$allowed = false;
+		
+		$rules = array_map('trim', $rules);
+		
+		if(count($rules) > 0){
+			foreach($rules as $r){
+			
+				$r = str_replace('http://', NULL, $r);
+				
+				if($r == '*'){
+					$allowed = true;
+					break;
+				}
+				
+				elseif(substr($r, -1) == '*' && strncasecmp($param->file, $r, strlen($r) - 1) == 0){
+					$allowed = true;
+					break;
+				}
+			
+				elseif(strcasecmp($r, $param->file) == 0){
+					$allowed = true;
+					break;				
+				}
+			}
+		}
+		
+		if($allowed == false){
+			header('HTTP/1.0 404 Not Found');
+			exit(__('Error: Connecting to that external site is not permitted.'));
+		}
+		
+	}
+
 	## Do cache checking stuff here
 	if($param->external !== true && CACHING === true){
 		

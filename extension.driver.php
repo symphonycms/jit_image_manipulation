@@ -4,14 +4,58 @@
 
 		public function about(){
 			return array('name' => 'JIT Image Manipulation',
-						 'version' => '0.9',
+						 'version' => '1.0',
 						 'release-date' => '2009-03-03',
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://pointybeard.com',
 										   'email' => 'alistair@pointybeard.com')
 				 		);
 		}
+		public function getSubscribedDelegates(){
+			return array(
+						array(
+							'page' => '/system/preferences/',
+							'delegate' => 'AddCustomPreferenceFieldsets',
+							'callback' => 'appendPreferences'
+						),
+						
+						array(
+							'page' => '/system/preferences/',
+							'delegate' => 'Save',
+							'callback' => '__SavePreferences'
+						),
+			);
+		}
+		
+		public function trusted(){
+			return @file_get_contents(MANIFEST . '/jit-trusted-sites');
+		}
+		
+		public function saveTrusted($string){
+			return @file_put_contents(MANIFEST . '/jit-trusted-sites', $string);
+		}		
+		
+		public function __SavePreferences($context){
+			$this->saveTrusted(stripslashes($_POST['jit_image_manipulation']['trusted_external_sites']));
+		}
+		
+		public function appendPreferences($context){
 
+			$group = new XMLElement('fieldset');
+			$group->setAttribute('class', 'settings');
+			$group->appendChild(new XMLElement('legend', 'JIT Image Manipulation'));			
+			
+			$label = Widget::Label('Trusted Sites');
+			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 10, 50, $this->trusted()));
+			
+			$group->appendChild($label);
+						
+			$group->appendChild(new XMLElement('p', 'Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.', array('class' => 'help')));
+									
+			$context['wrapper']->appendChild($group);
+						
+		}
+		
 		public function install(){
 			
 			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
@@ -49,6 +93,9 @@
 		}
 		
 		public function uninstall(){
+			
+			if(file_exists(MANIFEST . '/jit-trusted-sites')) unlink(MANIFEST . '/jit-trusted-sites');
+			
 			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
 			
 			if($htaccess === false) return false;
