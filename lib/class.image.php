@@ -2,9 +2,21 @@
 
 	Class Image{
 		
+		private $_resource;
+		private $_meta;
+		
 		const DEFAULT_QUALITY = 80;
 		const DEFAULT_INTERLACE = true;
-		const DEFAULT_OUTPUT_TYPE = IMAGETYPE_JPEG;
+		//const DEFAULT_OUTPUT_TYPE = IMAGETYPE_JPEG;
+		
+		private function __construct($resource, stdClass $meta){
+			$this->_resource = $resource;
+			$this->_meta = $meta;
+		}
+		
+		public function __destruct(){
+			@imagedestroy($this->_resource);
+		}
 		
 		public static function height($res){
 			return @imagesy($res);
@@ -13,12 +25,12 @@
 		public static function width($res){
 			return @imagesx($res);
 		}
-				
-/*		
 		
-		## Loading external images = bad mojo
+		public function Resource(){
+			return $this->_resource;
+		}
 		
-		public static function loadExternal($uri, &$meta){
+		public static function loadExternal($uri){
 			
 			if(function_exists('curl_init')){
 				$ch = curl_init();
@@ -31,77 +43,74 @@
 				curl_close($ch);			
 			}
 			
-			else $tmp = file_get_contents($uri);
+			else $tmp = @file_get_contents($uri);
 			
-			if(!$tmp) trigger_error(__('Error reading external image <code>%s</code>. Please check the URI.', array($uri)), E_USER_ERROR);
+			if($tmp === false){
+				new Exception(__('Error reading external image <code>%s</code>. Please check the URI.', array($uri)));
+			}
 			
-			$dest = tempnam(sys_get_temp_dir(), 'IMAGE');
+			$dest = @tempnam(@sys_get_temp_dir(), 'IMAGE');
 			
-			if(!@file_put_contents($dest, $tmp)) trigger_error(__('Error writing to temporary file <code>%s</code>.', array($dest)), E_USER_ERROR);
+			if(!@file_put_contents($dest, $tmp)) new Exception(__('Error writing to temporary file <code>%s</code>.', array($dest)));
 			
-			return self::load($dest, $meta);
+			return self::load($dest);
 			
 		}
-*/		
-		public static function load($image, &$meta){
+	
+		public static function load($image){
 			
 			if(!is_file($image) || !is_readable($image)){
 				throw new Exception(__('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
 			}
 			
-			$meta = self::meta($image);
+			$meta = self::getMetaInformation($image);
 			
-			switch($meta['type']){
+			switch($meta->type){
 					
 				## GIF
 				case IMAGETYPE_GIF:
-					$res = imagecreatefromgif($image);
-					return $res;
+					$resource = @imagecreatefromgif($image);
 					break;
 					
 				## JPEG
 				case IMAGETYPE_JPEG: 
 				
-					if($meta['channels'] <= 3) return imagecreatefromjpeg($image);
+					if($meta->channels <= 3){ 
+						$resource = @imagecreatefromjpeg($image);
+					}
 						
 					## Can't handle CMYK JPEG files	
-					else throw new Exception(__('Cannot load CMYK JPG Images'));
+					else{
+						throw new Exception(__('Cannot load CMYK JPG Images'));
+					}
 						
 					break;
 				
 				## PNG
 				case IMAGETYPE_PNG: 
-					return imagecreatefrompng($image);
+					$resource = @imagecreatefrompng($image);
 					break;
 					
 				default: 
 					throw new Exception(__('Unsupported image type. Supported types: GIF, JPEG and PNG'));
 					break;
 			}			
-			
-			return true;
-		}
 	
-		public static function display($res, $quality=NULL, $interlacing=NULL, $output=NULL, $flag=NULL){
-						
-			if(!$quality) $quality = self::DEFAULT_QUALITY;
-			if(!$interlacing) $interlacing = self::DEFAULT_INTERLACE;
-			if(!$output) $output = DEFAULT_OUTPUT_TYPE;
-					
-			self::renderOutputHeaders($output);
-			return self::__render($res, NULL, $quality, $interlacing, $output);
+			if(!is_resource($resource)){
+				throw new Exception(__('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
+			}
+		
+			$obj = new self($resource, $meta);
+		
+			return $obj;
+		}
+
+		
+		public function Meta(){
+			return $this->_meta;
 		}
 		
-		public static function save($res, $dest, $quality=NULL, $interlacing=NULL, $output=NULL, $flag=NULL){
-			
-			if(!$quality) $quality = self::DEFAULT_QUALITY;
-			if(!$interlacing) $interlacing = self::DEFAULT_INTERLACE;
-			if(!$output) $output = DEFAULT_OUTPUT_TYPE;
-			
-			return self::__render($res, $dest, $quality, $interlacing, $output);
-		}
-		
-		public static function meta($file){
+		public static function getMetaInformation($file){
 			if(!$array = @getimagesize($file)) return false;
 
 			$meta = array();
@@ -111,37 +120,67 @@
 			$meta['type']     = $array[2];
 			$meta['channels'] = $array['channels'];
 			
-			return $meta;
+			return (object)$meta;
 		}
 
-		private static function __render($res, $dest, $quality, $interlacing, $output){
+		private function __render($dest, $quality, $output, $interlacing=false){
 			
-			if(!is_resource($res)) throw new Exception(__('Invalid image resource supplied'));
+			if(!is_resource($this->_resource)) throw new Exception(__('Invalid image resource supplied'));
 			
 			## Turn interlacing on for JPEG or PNG only
 			if($interlacing && ($output == IMAGETYPE_JPEG || $output == IMAGETYPE_PNG)){		
-				imageinterlace($res);	
+				imageinterlace($this->_resource);	
 			}
 			
 			switch($output){
 				
 				case IMAGETYPE_GIF:
-					return imagegif($res, $dest);
+					return imagegif($this->_resource, $dest);
 					break;
 									
 				case IMAGETYPE_PNG:
-					return imagepng($res, $dest, round(9 * ($quality * 0.01)));
+					return imagepng($this->_resource, $dest, round(9 * ($quality * 0.01)));
 					break;	
 					
 				case IMAGETYPE_JPEG:
 				default:
-					return imagejpeg($res, $dest, $quality);
-					break;					
+					return imagejpeg($this->_resource, $dest, $quality);
+					break;				
 			}
 			
 			return false;					
 		}
-
+		
+		public function applyFilter($filter, array $args = array()){
+			
+			include_once("filters/filter.{$filter}.php");
+			
+			array_unshift($args, &$this->_resource);
+			
+			$this->_resource = call_user_func_array(array(sprintf('Filter%s', ucfirst($filter)), 'run'), $args);
+			
+			return true;
+		}
+		
+		public function display($quality=NULL, $interlacing=NULL, $output=NULL){
+					
+			if(!$quality) $quality = self::DEFAULT_QUALITY;
+			if(!$interlacing) $interlacing = self::DEFAULT_INTERLACE;
+			if(!$output) $output = $this->Meta()->type; //DEFAULT_OUTPUT_TYPE;
+				
+			self::renderOutputHeaders($output);
+			return self::__render(NULL, $quality, $output, $interlacing);
+		}
+	
+		public function save($dest, $quality=NULL, $interlacing=NULL, $output=NULL){
+		
+			if(!$quality) $quality = self::DEFAULT_QUALITY;
+			if(!$interlacing) $interlacing = self::DEFAULT_INTERLACE;
+			if(!$output) $output = $this->Meta()->type; //DEFAULT_OUTPUT_TYPE;
+		
+			return self::__render($dest, $quality, $output, $interlacing);
+		}
+	
 		public static function renderOutputHeaders($output, $dest=NULL){
 
 			header('Content-Type: ' . image_type_to_mime_type($output));
