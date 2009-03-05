@@ -4,8 +4,8 @@
 
 		public function about(){
 			return array('name' => 'JIT Image Manipulation',
-						 'version' => '1.0',
-						 'release-date' => '2009-03-03',
+						 'version' => '1.01',
+						 'release-date' => '2009-03-05',
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://pointybeard.com',
 										   'email' => 'alistair@pointybeard.com')

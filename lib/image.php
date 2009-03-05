@@ -53,8 +53,11 @@
 	
 	$param = processParams($_GET['param']);
 	
+	define('DOCROOT', rtrim(str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname(__FILE__)), '/'));
+	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
+	
 	##Include some parts of the engine
-	require_once(realpath(dirname(__FILE__) . '/../../../manifest/config.php'));
+	require(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.lang.php');
 
 	Lang::init(LANG . '/lang.%s.php', ($settings['symphony']['lang'] ? $settings['symphony']['lang'] : 'en'));

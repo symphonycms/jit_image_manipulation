@@ -1,9 +1,9 @@
 JIT Image Manipulation
 ------------------------------------
 
-Version: 1.0
+Version: 1.01
 Author: Alistair Kearney (alistair@symphony21.com)
-Build Date: 3rd March 2009
+Build Date: 5th March 2009
 Requirements: Symphony 2.0.2 or later
 
 This is a replacement for the /image/X style "just in time" image manipulation found in all versions of Symphony prior to v2.0.2
@@ -20,6 +20,11 @@ it would be worth backing up the original first.
 
 2. Enable it by selecting the "JIT Image Manipulation", choose Enable from the with-selected menu, then click Apply.
 
+
+[CHANGES]
+
+	1.01 - Updated to work with 2.0.2 config changes
+	
 
 [USAGE]
 
