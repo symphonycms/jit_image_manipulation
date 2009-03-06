@@ -1,5 +1,7 @@
 <?php
 	
+	@ini_set('display_errors', 'off');
+	
 	function processParams($string){
 		
 		$param = (object)array(

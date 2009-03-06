@@ -155,7 +155,7 @@
 			
 			include_once("filters/filter.{$filter}.php");
 			
-			array_unshift($args, &$this->_resource);
+			array_unshift($args, $this->_resource);
 			
 			$this->_resource = call_user_func_array(array(sprintf('Filter%s', ucfirst($filter)), 'run'), $args);
 			
