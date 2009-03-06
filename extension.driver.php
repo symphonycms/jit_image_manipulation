@@ -4,8 +4,8 @@
 
 		public function about(){
 			return array('name' => 'JIT Image Manipulation',
-						 'version' => '1.01',
-						 'release-date' => '2009-03-05',
+						 'version' => '1.02',
+						 'release-date' => '2009-03-06',
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://pointybeard.com',
 										   'email' => 'alistair@pointybeard.com')
@@ -56,6 +56,21 @@
 						
 		}
 		
+		public function enable(){
+			return $this->install();			
+		}
+		
+		public function disable(){
+			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+			
+			if($htaccess === false) return false;
+			
+			$htaccess = self::__removeImageRules($htaccess);
+			$htaccess = preg_replace('/### IMAGE RULES/', NULL, $htaccess);
+			
+			return @file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+		}
+		
 		public function install(){
 			
 			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
@@ -75,7 +90,7 @@
 	### IMAGE RULES	
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ /{$rewrite_base}extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]\n\n";
 			
-			## Add/Replace the rule
+			## Remove existing the rules
 			$htaccess = self::__removeImageRules($htaccess);
 			
 			if(preg_match('/### IMAGE RULES/', $htaccess)){

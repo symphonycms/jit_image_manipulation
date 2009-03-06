@@ -1,9 +1,9 @@
 JIT Image Manipulation
 ------------------------------------
 
-Version: 1.01
+Version: 1.02
 Author: Alistair Kearney (alistair@symphony21.com)
-Build Date: 5th March 2009
+Build Date: 6th March 2009
 Requirements: Symphony 2.0.2 or later
 
 This is a replacement for the /image/X style "just in time" image manipulation found in all versions of Symphony prior to v2.0.2
@@ -23,6 +23,7 @@ it would be worth backing up the original first.
 
 [CHANGES]
 
+	1.02 - Disabling extension will remove rule from .htaccess
 	1.01 - Updated to work with 2.0.2 config changes
 	
 
@@ -32,6 +33,7 @@ it would be worth backing up the original first.
 Basics:
 
 	Image manipulation is controlled via the URL. There are 4 'modes', each with slightly different URL structures
+	
 	## TODO: Outline the 4 modes here
 
 
@@ -44,4 +46,4 @@ Trusted Sites:
 
 [CREATION OF NEW FILTERS]
 
-## TODO
+	## TODO
