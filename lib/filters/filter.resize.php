@@ -18,7 +18,6 @@
 				$ratio = ($dst_h / $dst_w);
 				$dst_w = $width;
 				$dst_h = round($dst_w * $ratio);
-
 			} 
 
 			elseif(empty($width)) {
