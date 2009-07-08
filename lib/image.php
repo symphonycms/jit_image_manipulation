@@ -55,7 +55,7 @@
 	
 	$param = processParams($_GET['param']);
 	
-	define('DOCROOT', rtrim(str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname(__FILE__)), '/'));
+	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
 	
 	##Include some parts of the engine
