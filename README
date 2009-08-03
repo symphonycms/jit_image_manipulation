@@ -3,7 +3,7 @@ JIT Image Manipulation
 
 Version: 1.05
 Author: Alistair Kearney (alistair@symphony21.com)
-Build Date: 23th July 2009
+Build Date: 3rd Aug 2009
 Requirements: Symphony 2.0.2 or later
 
 This is a replacement for the /image/X style "just in time" image manipulation found in all versions of Symphony prior to v2.0.2
@@ -23,7 +23,9 @@ it would be worth backing up the original first.
 
 [CHANGES]
 	
-	1.05 - Fixed bug introduced by usage of the function imageAntiAlias
+	1.05 - Fixed bug introduced by usage of the imageAntiAlias() function
+		 - Errors and warnings are logged in the main Symphony log
+		 - A dump of internal params are logged in addition to any errors
 	1.04 - Adding support for alpha masked images.
 	1.03 - Minor changes to how DOCROOT is determined
 	1.02 - Disabling extension will remove rule from .htaccess

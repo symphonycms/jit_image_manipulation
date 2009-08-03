@@ -36,6 +36,10 @@
 			imagealphablending($dst, false);
 			imagesavealpha($dst, true);
 			
+			if(function_exists('imageAntiAlias')){
+				imageAntiAlias($dst, true);
+			}
+			
 			self::__fill($dst);
 
 			imagecopyresampled($dst, $res, 0, 0, 0, 0, $dst_w, $dst_h, Image::width($res), Image::height($res));
