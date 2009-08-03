@@ -31,11 +31,10 @@
 			$dst = imagecreatetruecolor($dst_w, $dst_h);
 			
 			/* making the new image transparent */
-            $background = imagecolorallocate( $dst, 0, 0, 0 );
-            ImageColorTransparent( $dst, $background ); // make the new temp image all transparent			
-			imagealphablending( $dst, false );
-			imagesavealpha( $dst, true );
-			imageAntiAlias( $dst, true );
+            $background = imagecolorallocate($dst, 0, 0, 0);
+            ImageColorTransparent($dst, $background); // make the new temp image all transparent			
+			imagealphablending($dst, false);
+			imagesavealpha($dst, true);
 			
 			self::__fill($dst);
 
