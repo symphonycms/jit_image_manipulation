@@ -4,8 +4,8 @@
 
 		public function about(){
 			return array('name' => 'JIT Image Manipulation',
-						 'version' => '1.05',
-						 'release-date' => '2009-03-06',
+						 'version' => '1.06',
+						 'release-date' => '2009-08-10',
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://pointybeard.com',
 										   'email' => 'alistair@pointybeard.com')
@@ -77,18 +77,12 @@
 			
 			if($htaccess === false) return false;
 			
-			## Find out if the rewrite base is another other than /
-			$rewrite_base = NULL;
-			if(preg_match('/RewriteBase\s+([^\s]+)/i', $htaccess, $match)){
-				$rewrite_base = trim($match[1], '/') . '/';
-			}
-			
 			## Cannot use $1 in a preg_replace replacement string, so using a token instead
 			$token = md5(time());
 			
 			$rule = "
 	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ /{$rewrite_base}extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]\n\n";
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]\n\n";
 			
 			## Remove existing the rules
 			$htaccess = self::__removeImageRules($htaccess);

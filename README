@@ -1,12 +1,22 @@
 JIT Image Manipulation
 ------------------------------------
 
-Version: 1.05
+Version: 1.06
 Author: Alistair Kearney (alistair@symphony21.com)
-Build Date: 3rd Aug 2009
+Build Date: 10th Aug 2009
 Requirements: Symphony 2.0.2 or later
 
 This is a replacement for the /image/X style "just in time" image manipulation found in all versions of Symphony prior to v2.0.2
+
+[UPDATE]
+
+Due to some .htaccess changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
+before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
+
+	### IMAGE RULES	
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
+
+It is not absolutely necessary to do this, but may prevent problems with future releases.
 
 
 [INSTALLATION]
@@ -23,6 +33,7 @@ it would be worth backing up the original first.
 
 [CHANGES]
 	
+	1.06 - Code responsible for .htaccess update will no longer try to append the rewrite base to for path to extensions folder 
 	1.05 - Fixed bug introduced by usage of the imageAntiAlias() function
 		 - Errors and warnings are logged in the main Symphony log
 		 - A dump of internal params are logged in addition to any errors
