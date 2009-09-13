@@ -43,14 +43,14 @@
 
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
-			$group->appendChild(new XMLElement('legend', 'JIT Image Manipulation'));			
+			$group->appendChild(new XMLElement('legend', __('JIT Image Manipulation')));			
 			
-			$label = Widget::Label('Trusted Sites');
+			$label = Widget::Label(__('Trusted Sites'));
 			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 10, 50, $this->trusted()));
 			
 			$group->appendChild($label);
 						
-			$group->appendChild(new XMLElement('p', 'Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.', array('class' => 'help')));
+			$group->appendChild(new XMLElement('p', __('Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.'), array('class' => 'help')));
 									
 			$context['wrapper']->appendChild($group);
 						
