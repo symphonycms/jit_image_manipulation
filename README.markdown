@@ -50,7 +50,7 @@ There are four possible modes:
 - `2` resize and crop (used in the example)
 - `3` crop
 
-If your using mode `2` or `3` for image cropping you need to specify the reference position:
+If you're using mode `2` or `3` for image cropping you need to specify the reference position:
 
 	+---+---+---+
 	| 1 | 2 | 3 |
