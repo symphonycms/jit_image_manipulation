@@ -4,8 +4,8 @@
 
 		public function about(){
 			return array('name' => 'JIT Image Manipulation',
-						 'version' => '1.06',
-						 'release-date' => '2009-08-10',
+						 'version' => '1.07',
+						 'release-date' => '2010-01-20',
 						 'author' => array('name' => 'Alistair Kearney',
 										   'website' => 'http://pointybeard.com',
 										   'email' => 'alistair@pointybeard.com')
@@ -28,7 +28,7 @@
 		}
 		
 		public function trusted(){
-			return @file_get_contents(MANIFEST . '/jit-trusted-sites');
+		    return (file_exists(MANIFEST . '/jit-trusted-sites') ? @file_get_contents(MANIFEST . '/jit-trusted-sites') : NULL);
 		}
 		
 		public function saveTrusted($string){
