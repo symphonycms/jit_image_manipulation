@@ -3,9 +3,9 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.07dev
-- Date: **unreleased**
-- Requirements: Symphony 2.0.2 or later
+- Version: 1.07
+- Date: 20th Jan 2010
+- Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Constributors: [A list of contributors can be found in the commit history](http://github.com/pointybeard/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/pointybeard/jit_image_manipulation>
@@ -69,6 +69,7 @@ In order pull images from external sources, you must set up a white-list of trus
 **Version 1.07**
 
 - Added localisation files for Dutch, German, Portuguese (Brazil) and Russian
+- `trusted()` will look for the `jit-trusted-sites` before attempting to return its contents. This prevents warnings from showing up in the logs.
 
 **Version 1.06**
 
