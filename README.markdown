@@ -3,8 +3,8 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.07
-- Date: 20th Jan 2010
+- Version: 1.08
+- Date: 23rd Feb 2010
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Constributors: [A list of contributors can be found in the commit history](http://github.com/pointybeard/jit_image_manipulation/commits/master)
@@ -65,6 +65,12 @@ If you're using mode `2` or `3` for image cropping you need to specify the refer
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.08**
+
+- Added French localisation
+- Adjusted German localisation
+- Fixed a Symphony 2.0.7RC2 compatibility issue.
 
 **Version 1.07**
 
