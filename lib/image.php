@@ -122,7 +122,17 @@
 
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 	
-	if($param->external === true){
+	if($param->external !== true){
+		
+		$last_modified = filemtime($image_path);
+		header('Last-Modified: ' .  gmdate("D, d M Y H:i:s", $last_modified) . ' GMT');
+		
+		if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified) {
+			header('HTTP/1.1 304 Not Modified');
+			exit();
+		}
+		
+	} else {
 		
 		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$allowed = false;

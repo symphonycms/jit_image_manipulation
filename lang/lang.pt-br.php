@@ -4,8 +4,8 @@
 		'name' => 'Portuguese (Brazil)',
 		'author' => array(
 			'name' => 'Rainer Borene',
-			'email' => 'rainerborene@gmail.com',
-			'website' => false
+			'email' => 'me@rainerborene.com',
+			'website' => 'http://rainerborene.com/'
 		),
 		'release-date' => '2009-10-08'
 	);
@@ -19,40 +19,40 @@
 	$dictionary = array(
 
 		'Error reading external image <code>%s</code>. Please check the URI.' => 
-		false,
+		'Erro ao ler a imagem externa <code>%s</code>. Por favor, verifique o URI.',
 
 		'Error writing to temporary file <code>%s</code>.' => 
-		false,
+		'Erro ao gravar arquivo temporário <code>%s</code>.',
 
 		'Error loading image <code>%s</code>. Check it exists and is readable.' => 
-		false,
+		'Erro ao carregar imagem <code>%s</code>. Verifique se exista e possui permissão para leitura.',
 
 		'Cannot load CMYK JPG Images' => 
-		false,
+		'Não é possível carregar imagens do tipo CMYK JPG',
 
 		'Unsupported image type. Supported types: GIF, JPEG and PNG' => 
-		false,
+		'Tipo de imagem não suportado. Tipos suportados: GIF, JPEG e PNG',
 
 		'Invalid image resource supplied' => 
-		false,
+		'A imagem fornecida é inválida',
 
 		'Error: Connecting to that external site is not permitted.' => 
-		false,
+		'Erro: Não é permitido a conexão para este site externo.',
 
 		'Image <code>%s</code> could not be found.' => 
-		false,
+		'Imagem <code>%s</code> não pôde ser encontrada.',
 
 		'Error generating image' => 
-		false,
+		'Erro de geração de imagem',
 
 		'JIT Image Manipulation' => 
-		false,
+		'JIT Image Manipulation',
 
 		'Trusted Sites' => 
-		false,
+		'Sites confiáveis',
 
 		'Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.' => 
-		false
+		'Deixe em branco para desabilitar links externos. Apenas uma regra por linha. Adicione o * no final para equivaler a um valor qualquer.'
 
 	);
 	
