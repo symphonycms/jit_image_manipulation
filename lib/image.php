@@ -125,14 +125,24 @@
 	if($param->external !== true){
 		
 		$last_modified = filemtime($image_path);
-		header('Last-Modified: ' .  gmdate("D, d M Y H:i:s", $last_modified) . ' GMT');
+		$last_modified_gmt = gmdate('r', $last_modified);
+		$etag = md5($last_modified . $image_path);
 		
-		if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified) {
-			header('HTTP/1.1 304 Not Modified');
-			exit();
-		}
-		
-	} else {
+	    header(sprintf('ETag: "%s"', $etag));
+
+	    if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+	        if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
+	            header('HTTP/1.1 304 Not Modified');
+	            exit();
+	        }
+	    }
+
+	    header('Last-Modified: ' . $last_modified_gmt);
+	    header('Cache-Control: public');
+
+	} 
+	
+	else {
 		
 		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$allowed = false;
