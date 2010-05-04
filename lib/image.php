@@ -86,7 +86,7 @@
 		if(error_reporting() != 0 && in_array($errno, array(E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR))){
 			$Log = new Log(ACTIVITY_LOG);
 			
-			$Log->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), ($errno == E_WARNING || $errno == E_USER_WARNING ? Log::kWARNING : Log::kERROR), true);
+			$Log->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), ($errno == E_WARNING || $errno == E_USER_WARNING ? Log::WARNING : Log::ERROR), true);
 
 /*
 		stdClass Object
@@ -112,7 +112,7 @@
 					$param->file,
 					(bool)$param->external,
 					$_GET['param']
-				), Log::kNOTICE, true
+				), Log::NOTICE, true
 			);
 		}
 		
