@@ -3,8 +3,8 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.08
-- Date: 23rd Feb 2010
+- Version: 1.09
+- Date: 4th May 2010
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Constributors: [A list of contributors can be found in the commit history](http://github.com/pointybeard/jit_image_manipulation/commits/master)
@@ -65,6 +65,12 @@ If you're using mode `2` or `3` for image cropping you need to specify the refer
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.09**
+
+- Sending `ETag` header with response
+- Added support for `HTTP_IF_MODIFIED_SINCE` and `HTTP_IF_NONE_MATCH` request headers, which will mean a `304 Not Modified` header can be set (Thanks to Nick Dunn for helping on this one)
+- Added Portuguese and Italian translations (Thanks to Rainer Borene & Simone Economo for those)
 
 **Version 1.08**
 
