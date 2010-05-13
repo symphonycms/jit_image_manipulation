@@ -1,12 +1,12 @@
 <?php
 
-	Class extension_JIT_Image_Manipulation extends Extension{
+	Class extension_JIT_Image_Manipulation implements iExtension{
 
 		public function about(){
-			return array('name' => 'JIT Image Manipulation',
-						 'version' => '1.09',
-						 'release-date' => '2010-05-04',
-						 'author' => array('name' => 'Alistair Kearney',
+			return (object)array('name' => 'JIT Image Manipulation',
+						 'version' => '1.08',
+						 'release-date' => '2010-02-23',
+						 'author' => (object)array('name' => 'Alistair Kearney',
 										   'website' => 'http://pointybeard.com',
 										   'email' => 'alistair@pointybeard.com')
 				 		);
@@ -14,13 +14,13 @@
 		public function getSubscribedDelegates(){
 			return array(
 						array(
-							'page' => '/system/preferences/',
-							'delegate' => 'AddCustomPreferenceFieldsets',
+							'page' => '/system/settings/',
+							'delegate' => 'AddCustomToolFieldsets',
 							'callback' => 'appendPreferences'
 						),
 						
 						array(
-							'page' => '/system/preferences/',
+							'page' => '/system/settings/',
 							'delegate' => 'Save',
 							'callback' => '__SavePreferences'
 						),
@@ -120,3 +120,5 @@
 		}
 
 	}
+	
+	return 'extension_JIT_Image_Manipulation';

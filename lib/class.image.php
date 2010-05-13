@@ -49,9 +49,14 @@
 				new Exception(__('Error reading external image <code>%s</code>. Please check the URI.', array($uri)));
 			}
 			
-			$dest = @tempnam(@sys_get_temp_dir(), 'IMAGE');
+			$dest = @tempnam(TMP, 'IMAGE');
+			if($dest === false){
+				new Exception(__('Error creating temporary file in folder <code>%s</code>.', array(TMP)));
+			}
 			
-			if(!@file_put_contents($dest, $tmp)) new Exception(__('Error writing to temporary file <code>%s</code>.', array($dest)));
+			if(!is_writable($dest) || !@file_put_contents($dest, $tmp)){
+				new Exception(__('Error writing to temporary file <code>%s</code>.', array($dest)));
+			}
 			
 			return self::load($dest);
 			
