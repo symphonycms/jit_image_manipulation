@@ -3,10 +3,10 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.09
-- Date: 4th May 2010
-- Requirements: Symphony 2.0.5 or later
-- Author: Alistair Kearney, alistair@symphony-cms.com
+- Version: 2.0.0
+- Date: 25th May 2010
+- Requirements: Symphony 2.1 or later
+- Author: Alistair Kearney, hi@alistairkearney.com
 - Constributors: [A list of contributors can be found in the commit history](http://github.com/pointybeard/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/pointybeard/jit_image_manipulation>
 
@@ -18,15 +18,6 @@ A simple way to manipulate images on the fly via the URL. Supports caching, imag
 
 Information about [installing and updating extensions](http://symphony-cms.com/learn/tasks/view/install-an-extension/) can be found in the Symphony documentation at <http://symphony-cms.com/learn/>.
 
-## Updating
-
-Due to some .htaccess changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
-before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
-
-	### IMAGE RULES	
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
-
-It is not absolutely necessary to do this, but may prevent problems with future releases.
 
 ## Usage
 
@@ -65,6 +56,10 @@ If you're using mode `2` or `3` for image cropping you need to specify the refer
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 2.0**
+
+- Updated for Symphony 2.1+
 
 **Version 1.09**
 
