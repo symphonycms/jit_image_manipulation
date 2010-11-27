@@ -15,6 +15,7 @@
 	define_safe('MODE_RESIZE', 1);
 	define_safe('MODE_RESIZE_CROP', 2);
 	define_safe('MODE_CROP', 3);
+	define_safe('MODE_FIT', 9);
 		
 	set_error_handler('__errorHandler');
 	
@@ -65,6 +66,14 @@
 			$param->height = $matches[0][2];
 			$param->external = (bool)$matches[0][3];			
 			$param->file = $matches[0][4];
+		}
+		## Mode 9: Image fit resize
+		elseif(preg_match_all('/^9\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		$param->mode = 9;
+		$param->width = $matches[0][1];
+		$param->height = $matches[0][2];
+		$param->external = (bool)$matches[0][3];            
+		$param->file = $matches[0][4];
 		}
 		
 		## Mode 0: Direct displaying of image
@@ -225,7 +234,23 @@
 		case MODE_RESIZE:
 			$image->applyFilter('resize', array($param->width, $param->height));
 			break;
-			
+		case MODE_FIT:
+			$src_w = $image->Meta()->width;
+			$src_h = $image->Meta()->height;
+			$dst_w = $param->width;
+			$dst_h = $param->height;
+				if ($src_h <= $dst_h && $src_w <= $dst_w){
+						$image->applyFilter('resize', array($src_w,$src_h));	
+						break;	
+				}
+				if($src_h >= $dst_h) {
+					$image->applyFilter('resize', array(NULL, $dst_h));
+				} 
+				if($src_w >= $dst_w) {
+					$image->applyFilter('resize', array($dst_w, NULL));
+				}
+
+		break;	
 		case MODE_RESIZE_CROP:
 		
 			$src_w = $image->Meta()->width;
