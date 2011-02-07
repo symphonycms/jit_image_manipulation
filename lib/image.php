@@ -125,7 +125,7 @@
 	if($param->external !== true){
 		
 		$last_modified = filemtime($image_path);
-		$last_modified_gmt = gmdate('r', $last_modified);
+		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
 		$etag = md5($last_modified . $image_path);
 		
 	    header(sprintf('ETag: "%s"', $etag));
