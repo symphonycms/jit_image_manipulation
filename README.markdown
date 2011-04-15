@@ -3,12 +3,12 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.09
-- Date: 4th May 2010
+- Version: 1.10
+- Date: 15th April 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
-- Constributors: [A list of contributors can be found in the commit history](http://github.com/pointybeard/jit_image_manipulation/commits/master)
-- GitHub Repository: <http://github.com/pointybeard/jit_image_manipulation>
+- Constributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
+- GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
 
 ## Synopsis
 
@@ -20,7 +20,7 @@ Information about [installing and updating extensions](http://symphony-cms.com/l
 
 ## Updating
 
-Due to some .htaccess changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
+Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
 before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
 	### IMAGE RULES	
@@ -36,7 +36,7 @@ The image manipulation is controlled via the URL, e. g.:
 
 	<img src="{$root}/image/2/80/80/5{image/@path}/{image/filename}" />
 
-The extension accepts four nummeric settings for the manipulation:
+The extension accepts four numeric settings for the manipulation:
 
 1. mode
 2. width
@@ -66,6 +66,9 @@ In order pull images from external sources, you must set up a white-list of trus
 
 ## Change Log
 
+**Version 1.10**
+- Compatibility with Symphony 2.2
+
 **Version 1.09**
 
 - Sending `ETag` header with response
@@ -85,7 +88,7 @@ In order pull images from external sources, you must set up a white-list of trus
 
 **Version 1.06**
 
-- Code responsible for .htaccess update will no longer try to append the rewrite base to for path to extensions folder 
+- Code responsible for `.htaccess` update will no longer try to append the rewrite base to for path to extensions folder 
 
 **Version 1.05**
 
@@ -99,14 +102,12 @@ In order pull images from external sources, you must set up a white-list of trus
 
 **Version 1.03**
 
-- Minor changes to how DOCROOT is determined
+- Minor changes to how `DOCROOT`` is determined
 
 **Version 1.02**
 
-- Disabling extension will remove rule from .htaccess
+- Disabling extension will remove rule from `.htaccess`
 
 **Version 1.01**
 
 - Updated to work with 2.0.2 config changes
-	
-

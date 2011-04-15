@@ -6,8 +6,9 @@
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
 
 	##Include some parts of the engine
-	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
+	require_once(SYMPHONY . '/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.lang.php');
+	require_once(CORE . '/class.errorhandler.php')
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
 
@@ -198,6 +199,10 @@
 	try{
 		$method = 'load' . ($param->external === true ? 'External' : NULL);
 		$image = call_user_func_array(array('Image', $method), array($image_path));
+
+		if(!$image instanceof Image) {
+			throw new Exception(__('Error generating image'));
+		}
 	}
 	catch(Exception $e){
 		header('HTTP/1.0 404 Not Found');
@@ -255,4 +260,4 @@
 		$image->save($cache_file, intval($settings['image']['quality']));
 	}
 
-	exit();
+	exit;

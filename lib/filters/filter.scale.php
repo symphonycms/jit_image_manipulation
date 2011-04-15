@@ -1,7 +1,7 @@
 <?php
 
 	require_once(dirname(__FILE__) . '/filter.resize.php');
-	
+
 
 	Class FilterScale extends ImageFilter{
 		public static function run($res, $percentage){
