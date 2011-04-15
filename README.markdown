@@ -67,6 +67,7 @@ In order pull images from external sources, you must set up a white-list of trus
 ## Change Log
 
 **Version 1.10**
+
 - Compatibility with Symphony 2.2
 
 **Version 1.09**

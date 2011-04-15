@@ -8,7 +8,7 @@
 	##Include some parts of the engine
 	require_once(SYMPHONY . '/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.lang.php');
-	require_once(CORE . '/class.errorhandler.php')
+	require_once(CORE . '/class.errorhandler.php');
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
 
