@@ -78,7 +78,7 @@
 	}
 
 	$param = processParams($_GET['param']);
-	define_safe('CACHING', ($param->external == false && $settings['image']['cache'] == 1 ? true : false));
+	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
 
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 
@@ -108,27 +108,9 @@
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
 	if($param->external !== true){
-
-		$last_modified = filemtime($image_path);
-		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
-		$etag = md5($last_modified . $image_path);
-
-		header(sprintf('ETag: "%s"', $etag));
-
-		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
-			if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
-				header('HTTP/1.1 304 Not Modified');
-				exit();
-			}
-		}
-
-		header('Last-Modified: ' . $last_modified_gmt);
-		header('Cache-Control: public');
-
+		$last_modified = @filemtime($image_path);
 	}
-
 	else {
-
 		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$allowed = false;
 
@@ -161,14 +143,33 @@
 			exit(__('Error: Connecting to that external site is not permitted.'));
 		}
 
+		$last_modified = strtotime(Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
+	}
+
+	// if there is no last_modified value, params should be NULL and headers
+	// should not be set
+	if($last_modified){
+		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
+		$etag = md5($last_modified . $image_path);
+		header('Last-Modified: ' . $last_modified_gmt);
+		header(sprintf('ETag: "%s"', $etag));
+		header('Cache-Control: public');
+	}
+
+	// now we can safely compare
+	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
+			header('HTTP/1.1 304 Not Modified');
+			exit();
+		}
 	}
 
 	## Do cache checking stuff here
-	if($param->external !== true && CACHING === true){
+	if(CACHING === true){
 
 		$cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . $quality), basename($image_path));
 
-		if(@is_file($cache_file) && (@filemtime($cache_file) < @filemtime($image_path))){
+		if(@is_file($cache_file) && (@filemtime($cache_file) < $last_modified)){
 			unlink($cache_file);
 		}
 
@@ -181,9 +182,11 @@
 	####
 
 
-	if($param->external !== true && $param->mode == MODE_NONE){
+	if($param->mode == MODE_NONE){
 
-		if(!file_exists($image_path) || !is_readable($image_path)){
+		if(   ($param->external && Image::getHttpResponseCode($image_path) !== 200)
+		   || ($param->external === FALSE && (!file_exists($image_path) || !is_readable($image_path)))){
+
 			header('HTTP/1.0 404 Not Found');
 			trigger_error(__('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
 		}
