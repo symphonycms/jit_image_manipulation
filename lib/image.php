@@ -148,6 +148,9 @@
 
 	// if there is no last_modified value, params should be NULL and headers
 	// should not be set
+	$last_modified_gmt = NULL;
+	$etag = NULL;
+
 	if($last_modified){
 		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
 		$etag = md5($last_modified . $image_path);
