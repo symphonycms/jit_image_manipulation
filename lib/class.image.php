@@ -122,6 +122,86 @@
 			header('Pragma: no-cache');
 		}
 
+		/**
+		 * Get the HTTP response code of a resource
+		 *
+		 * @param string $url
+		 * @return integer - HTTP response code
+		 */
+		public static function getHttpResponseCode($url){
+			$ch = curl_init();
+			$options = array(
+				CURLOPT_URL => $url,
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_HEADER => true,
+				CURLOPT_NOBODY => true,
+			);
+			curl_setopt_array($ch, $options);
+			curl_exec($ch);
+		    $info = curl_getinfo($ch);
+			curl_close($ch);
+
+			$status = $info['http_code'];
+			return $status;
+		}
+
+		/**
+		 * Get the value of a named HTTP response header field
+		 *
+		 * @param string $url
+		 * @param string $field - name of the header field
+		 * @return string - value of the header field
+		 */
+		public static function getHttpHeaderFieldValue($url, $field){
+			$headers = self::getHttpHeaders($url);
+			$value = $headers[$field];
+			return $value;
+		}
+
+		/**
+		 * Get all HTTP response headers as an array
+		 *
+		 * @param string $url
+		 * @return array - response headers
+		 */
+		public static function getHttpHeaders($url){
+			$ch = curl_init();
+			$options = array(
+				CURLOPT_URL => $url,
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_HEADER => true,
+				CURLOPT_NOBODY => true,
+			);
+			curl_setopt_array($ch, $options);
+			$head = curl_exec($ch);
+			curl_close($ch);
+			$headers = self::parseHttpHeaderFields($head);
+			return $headers;
+		}
+
+		/**
+		 * Parse HTTP response headers
+		 *
+		 * @param string $header - response header
+		 * @return array - header fields; name => value
+		 */
+		public static function parseHttpHeaderFields($header){
+			$retVal = array();
+			$fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
+			foreach( $fields as $field ){
+				if( preg_match('/([^:]+): (.+)/m', $field, $match) ){
+					$match[1] = preg_replace('/(?<=^|[\x09\x20\x2D])./e', 'strtoupper("\0")', strtolower(trim($match[1])));
+					if( isset($retVal[$match[1]]) ){
+						$retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+					}
+					else{
+						$retVal[$match[1]] = trim($match[2]);
+					}
+				}
+			}
+			return $retVal;
+		}
+
 		public static function height(Resource $res){
 			return imagesy($res);
 		}

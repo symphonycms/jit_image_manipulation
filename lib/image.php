@@ -78,7 +78,7 @@
 	}
 
 	$param = processParams($_GET['param']);
-	define_safe('CACHING', ($param->external == false && $settings['image']['cache'] == 1 ? true : false));
+	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
 
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 
@@ -106,26 +106,10 @@
 	$meta = $cache_file = NULL;
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
-	// If the image is not external check to see if the Browser already has it
-	// to return a 304
+	// If the image is not external check to see when the image was last modified
 	if($param->external !== true){
-		$last_modified = filemtime($image_path);
-		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
-		$etag = md5($last_modified . $image_path);
-
-		header(sprintf('ETag: "%s"', $etag));
-
-		if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
-			if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
-				header('HTTP/1.1 304 Not Modified');
-				exit();
-			}
-		}
-
-		header('Last-Modified: ' . $last_modified_gmt);
-		header('Cache-Control: public');
+		$last_modified = @filemtime($image_path);
 	}
-
 	// Image is external, check to see that it is a trusted source
 	else {
 		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -158,35 +142,65 @@
 			header('HTTP/1.0 403 Forbidden');
 			exit(__('Error: Connecting to %s is not permitted.', array($param->file)));
 		}
+
+		$last_modified = strtotime(Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
 	}
 
-	// If the file is locally stored, and CACHING is enabled, check to see that the
-	// cached file is still valid.
-	if($param->external !== true && CACHING === true) {
+	// if there is no `$last_modified` value, params should be NULL and headers
+	// should not be set. Otherwise, set caching headers for the browser.
+	if($last_modified) {
+		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
+		$etag = md5($last_modified . $image_path);
+		header('Last-Modified: ' . $last_modified_gmt);
+		header(sprintf('ETag: "%s"', $etag));
+		header('Cache-Control: public');
+	}
+	else {
+		$last_modified_gmt = NULL;
+		$etag = NULL;
+	}
+
+	// Check to see if the requested image needs to be generated or if a 304
+	// can just be returned to the browser to use it's cached version.
+	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
+			header('HTTP/1.1 304 Not Modified');
+			exit;
+		}
+	}
+
+	// If CACHING is enabled, check to see that the cached file is still valid.
+	if(CACHING === true){
 		$cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . $quality), basename($image_path));
 
 		// Cache has expired or doesn't exist
-		if(@is_file($cache_file) && (@filemtime($cache_file) < @filemtime($image_path))) {
+		if(@is_file($cache_file) && (@filemtime($cache_file) < $last_modified)){
 			unlink($cache_file);
 		}
 		else if(is_file($cache_file)) {
-			$image_path = $cache_file;
 			@touch($cache_file);
 			$param->mode = MODE_NONE;
 		}
 	}
 
-	// If the image isn't external, and there is no mode, just read the image
-	// from the file system
-	if($param->external !== true && $param->mode == MODE_NONE){
-		if(!file_exists($image_path) || !is_readable($image_path)){
+	// If there is no mode for the requested image, just read the image
+	// from it's location (which may be external)
+	if($param->mode == MODE_NONE){
+		if(
+			// If the external file still exists
+			($param->external && Image::getHttpResponseCode($image_path) !== 200)
+			// If the file is local, does it exist and can we read it?
+			|| ($param->external === FALSE && (!file_exists($image_path) || !is_readable($image_path)))
+		) {
+			// Guess not, return 404.
 			header('HTTP/1.0 404 Not Found');
 			trigger_error(__('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
 		}
-
-		$meta = Image::getMetaInformation($image_path);
-		Image::renderOutputHeaders($meta->type);
-		readfile($image_path);
+		else{
+			$meta = Image::getMetaInformation($cache_file);
+			Image::renderOutputHeaders($meta->type);
+			readfile($cache_file);
+		}
 		exit;
 	}
 
