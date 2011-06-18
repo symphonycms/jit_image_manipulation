@@ -5,7 +5,7 @@
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
 
-	##Include some parts of the engine
+	// Include some parts of the engine
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 	require_once(TOOLKIT . '/class.lang.php');
 	require_once(CORE . '/class.errorhandler.php');
@@ -104,11 +104,11 @@
 	}
 
 	$meta = $cache_file = NULL;
-
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
+	// If the image is not external check to see if the Browser already has it
+	// to return a 304
 	if($param->external !== true){
-
 		$last_modified = filemtime($image_path);
 		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
 		$etag = md5($last_modified . $image_path);
@@ -124,32 +124,30 @@
 
 		header('Last-Modified: ' . $last_modified_gmt);
 		header('Cache-Control: public');
-
 	}
 
+	// Image is external, check to see that it is a trusted source
 	else {
-
 		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$allowed = false;
 
 		$rules = array_map('trim', $rules);
 
 		if(count($rules) > 0){
-			foreach($rules as $r){
+			foreach($rules as $rule) {
+				$rule = str_replace('http://', NULL, $rule);
 
-				$r = str_replace('http://', NULL, $r);
-
-				if($r == '*'){
+				if($rule == '*'){
 					$allowed = true;
 					break;
 				}
 
-				elseif(substr($r, -1) == '*' && strncasecmp($param->file, $r, strlen($r) - 1) == 0){
+				else if(substr($rule, -1) == '*' && strncasecmp($param->file, $rule, strlen($rule) - 1) == 0){
 					$allowed = true;
 					break;
 				}
 
-				elseif(strcasecmp($r, $param->file) == 0){
+				else if(strcasecmp($rule, $param->file) == 0){
 					$allowed = true;
 					break;
 				}
@@ -157,33 +155,30 @@
 		}
 
 		if($allowed == false){
-			header('HTTP/1.0 404 Not Found');
-			exit(__('Error: Connecting to that external site is not permitted.'));
+			header('HTTP/1.0 403 Forbidden');
+			exit(__('Error: Connecting to %s is not permitted.', array($param->file)));
 		}
-
 	}
 
-	## Do cache checking stuff here
-	if($param->external !== true && CACHING === true){
-
+	// If the file is locally stored, and CACHING is enabled, check to see that the
+	// cached file is still valid.
+	if($param->external !== true && CACHING === true) {
 		$cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . $quality), basename($image_path));
 
-		if(@is_file($cache_file) && (@filemtime($cache_file) < @filemtime($image_path))){
+		// Cache has expired or doesn't exist
+		if(@is_file($cache_file) && (@filemtime($cache_file) < @filemtime($image_path))) {
 			unlink($cache_file);
 		}
-
-		elseif(is_file($cache_file)){
+		else if(is_file($cache_file)) {
 			$image_path = $cache_file;
 			@touch($cache_file);
 			$param->mode = MODE_NONE;
 		}
 	}
 
-	####
-
-
+	// If the image isn't external, and there is no mode, just read the image
+	// from the file system
 	if($param->external !== true && $param->mode == MODE_NONE){
-
 		if(!file_exists($image_path) || !is_readable($image_path)){
 			header('HTTP/1.0 404 Not Found');
 			trigger_error(__('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
@@ -192,10 +187,11 @@
 		$meta = Image::getMetaInformation($image_path);
 		Image::renderOutputHeaders($meta->type);
 		readfile($image_path);
-		exit();
+		exit;
 	}
 
-
+	// There is mode, or the image to JIT is external, so call `Image::load` or
+	// `Image::loadExternal` to load the image into the Image class
 	try{
 		$method = 'load' . ($param->external === true ? 'External' : NULL);
 		$image = call_user_func_array(array('Image', $method), array($image_path));
@@ -209,14 +205,13 @@
 		trigger_error($e->getMessage(), E_USER_ERROR);
 	}
 
-	switch($param->mode){
-
+	// Apply the filter to the Image class (`$image`)
+	switch($param->mode) {
 		case MODE_RESIZE:
 			$image->applyFilter('resize', array($param->width, $param->height));
 			break;
 
 		case MODE_RESIZE_CROP:
-
 			$src_w = $image->Meta()->width;
 			$src_h = $image->Meta()->height;
 
@@ -229,35 +224,40 @@
 				$dst_h = round($dst_w * $ratio);
 			}
 
-			elseif($param->width == 0) {
-
+			else if($param->width == 0) {
 				$ratio = ($src_w / $src_h);
 				$dst_h = $param->height;
 				$dst_w = round($dst_h * $ratio);
-
 			}
 
 			$src_r = ($src_w / $src_h);
 			$dst_r = ($dst_w / $dst_h);
 
-			if($src_r < $dst_r) $image->applyFilter('resize', array($dst_w, NULL));
-			else $image->applyFilter('resize', array(NULL, $dst_h));
-
-			/*
-				if($src_h < $param->height || $src_h > $param->height) ImageFilters::resize($image, NULL, $param->height);
-				if($src_w < $param->width) ImageFilters::resize($image, $param->width, NULL);
-
-			*/
+			if($src_r < $dst_r) {
+				$image->applyFilter('resize', array($dst_w, NULL));
+			}
+			else {
+				$image->applyFilter('resize', array(NULL, $dst_h));
+			}
 
 		case MODE_CROP:
 			$image->applyFilter('crop', array($param->width, $param->height, $param->position, $param->background));
 			break;
 	}
 
-	if(!$image->display(intval($settings['image']['quality']))) trigger_error(__('Error generating image'), E_USER_ERROR);
-
+	// If CACHING is enabled, and a cache file doesn't already exist,
+	// save the JIT image to CACHE using the Quality setting from Symphony's
+	// Configuration.
 	if(CACHING && !is_file($cache_file)){
-		$image->save($cache_file, intval($settings['image']['quality']));
+		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
+			trigger_error(__('Error generating image'), E_USER_ERROR);
+		}
+	}
+
+	// Display the image in the browser using the Quality setting from Symphony's
+	// Configuration. If this fails, trigger an error.
+	if(!$image->display(intval($settings['image']['quality']))) {
+		trigger_error(__('Error generating image'), E_USER_ERROR);
 	}
 
 	exit;

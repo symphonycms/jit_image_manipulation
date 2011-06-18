@@ -11,6 +11,5 @@
 			$width = round(Image::height($res) * $percentage);
 
 			return self::resize($res, $width, NULL);
-
 		}
 	}
