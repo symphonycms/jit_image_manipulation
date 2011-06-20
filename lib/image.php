@@ -39,12 +39,12 @@
 		);
 
 		## Mode 3: Resize Canvas
-		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6})\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 3;
 			$param->width = $matches[0][1];
 			$param->height = $matches[0][2];
 			$param->position = $matches[0][3];
-			$param->background = $matches[0][4];
+			$param->background = trim($matches[0][4],'/');
 			$param->external = (bool)$matches[0][5];
 			$param->file = $matches[0][6];
 		}
