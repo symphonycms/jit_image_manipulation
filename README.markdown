@@ -3,7 +3,7 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.10
+- Version: 1.2
 - Date: 15th April 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
@@ -60,11 +60,25 @@ If you're using mode `2` or `3` for image cropping you need to specify the refer
 	| 7 | 8 | 9 |
 	+---+---+---+
 
+If you're using mode `3` for image cropping, there is an optional fifth background color setting. This can accept shorthand or full hex colors.
+
+- *For Jpeg images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
+- *For transparent Png or Gif images, supplying the background color will fill the image. This is why the setting is optional*
+
+The extra fifth setting makes the url look like this:
+
+	<img src="{$root}/image/2/80/80/5/fff{image/@path}/{image/filename}" />
+
 ### Trusted Sites
 
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.2**
+
+- Fixes PNG and GIF transparency issues (thanks to @designermonkey)
+- Background color on crop becomes optional
 
 **Version 1.10**
 

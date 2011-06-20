@@ -14,8 +14,8 @@
 		const BOTTOM_MIDDLE = 8;
 		const BOTTOM_RIGHT = 9;
 
-		public static function run($res, $width, $height, $anchor=self::TOP_LEFT, $background_fill='fff'){
-
+		public static function run($res, $width, $height, $anchor=self::TOP_LEFT, $background_fill){
+			
 			$dst_w = Image::width($res);
 			$dst_h = Image::height($res);
 
@@ -38,7 +38,8 @@
 			}
 
 			$tmp = imagecreatetruecolor($dst_w, $dst_h);
-			self::__fill($tmp, $background_fill);
+			
+			self::__fill($res, $tmp, $background_fill);
 
 			list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, Image::width($res), Image::height($res), Image::width($res), Image::height($res), $anchor);
 
