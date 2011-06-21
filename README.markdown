@@ -3,8 +3,8 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.2
-- Date: 15th April 2011
+- Version: 1.11pre
+- Date: unreleased
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Constributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
@@ -75,7 +75,7 @@ In order pull images from external sources, you must set up a white-list of trus
 
 ## Change Log
 
-**Version 1.2**
+**Version 1.11**
 
 - Fixes PNG and GIF transparency issues (thanks to @designermonkey)
 - Background color on crop becomes optional
