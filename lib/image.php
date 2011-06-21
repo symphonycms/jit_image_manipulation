@@ -108,7 +108,7 @@
 
 	// If the image is not external check to see when the image was last modified
 	if($param->external !== true){
-		$last_modified = @filemtime($image_path);
+		$last_modified = is_file($image_path) ? filemtime($image_path) : null;
 	}
 	// Image is external, check to see that it is a trusted source
 	else {
@@ -171,14 +171,14 @@
 
 	// If CACHING is enabled, check to see that the cached file is still valid.
 	if(CACHING === true){
-		$cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . $quality), basename($image_path));
+		$cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . intval($settings['image']['quality'])), basename($image_path));
 
 		// Cache has expired or doesn't exist
-		if(@is_file($cache_file) && (@filemtime($cache_file) < $last_modified)){
+		if(is_file($cache_file) && (filemtime($cache_file) < $last_modified)){
 			unlink($cache_file);
 		}
 		else if(is_file($cache_file)) {
-			@touch($cache_file);
+			touch($cache_file);
 			$param->mode = MODE_NONE;
 		}
 	}

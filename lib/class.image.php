@@ -98,10 +98,10 @@
 
 			$meta = array();
 
-			$meta['width']	  = $array[0];
-			$meta['height']	  = $array[1];
-			$meta['type']	  = $array[2];
-			$meta['channels'] = $array['channels'];
+			$meta['width'] = $array[0];
+			$meta['height'] = $array[1];
+			$meta['type'] = $array[2];
+			$meta['channels'] = isset($array['channels']) ? $array['channels'] : false;
 
 			return (object)$meta;
 		}
@@ -202,11 +202,11 @@
 			return $retVal;
 		}
 
-		public static function height(Resource $res){
+		public static function height($res){
 			return imagesy($res);
 		}
 
-		public static function width(Resource $res){
+		public static function width($res){
 			return imagesx($res);
 		}
 
@@ -228,7 +228,7 @@
 			return $this->_image;
 		}
 
-		private function __render($dest, $quality, $output, $interlacing=false){
+		private function __render($dest, $quality = Image::DEFAULT_QUALITY, $output, $interlacing=false){
 			if(!is_resource($this->_resource)) {
 				throw new Exception(__('Invalid image resource supplied'));
 			}
