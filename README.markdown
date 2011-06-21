@@ -34,7 +34,7 @@ It is not absolutely necessary to do this, but may prevent problems with future 
 
 The image manipulation is controlled via the URL, e. g.:
 
-	<img src="{$root}/image/2/80/80/5/{image/@path}/{image/filename}" />
+	<img src="{$root}/image/2/80/80/5{image/@path}/{image/filename}" />
 
 The extension accepts four numeric settings for the manipulation:
 
