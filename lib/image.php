@@ -39,28 +39,29 @@
 		);
 
 		## Mode 3: Resize Canvas
-		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6})\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 3;
 			$param->width = $matches[0][1];
 			$param->height = $matches[0][2];
 			$param->position = $matches[0][3];
-			$param->background = $matches[0][4];
+			$param->background = trim($matches[0][4],'/');
 			$param->external = (bool)$matches[0][5];
 			$param->file = $matches[0][6];
 		}
 
 		## Mode 2: Crop to fill
-		elseif(preg_match_all('/^2\/([0-9]+)\/([0-9]+)\/([1-9])\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		else if(preg_match_all('/^2\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 2;
 			$param->width = $matches[0][1];
 			$param->height = $matches[0][2];
 			$param->position = $matches[0][3];
-			$param->external = (bool)$matches[0][4];
-			$param->file = $matches[0][5];
+			$param->background = trim($matches[0][4],'/');
+			$param->external = (bool)$matches[0][5];
+			$param->file = $matches[0][6];
 		}
 
 		## Mode 1: Image resize
-		elseif(preg_match_all('/^1\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		else if(preg_match_all('/^1\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 1;
 			$param->width = $matches[0][1];
 			$param->height = $matches[0][2];
@@ -81,7 +82,6 @@
 	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
 
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
-
 		global $param;
 
 		if(error_reporting() != 0 && in_array($errno, array(E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR))){

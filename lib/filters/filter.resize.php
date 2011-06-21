@@ -5,7 +5,7 @@
 	Class FilterResize extends ImageFilter{
 
 		public static function run($res, $width=NULL, $height=NULL){
-
+			
 			$dst_w = Image::width($res);
 			$dst_h = Image::height($res);
 
@@ -29,22 +29,14 @@
 			}
 
 			$dst = imagecreatetruecolor($dst_w, $dst_h);
-
-			/* making the new image transparent */
-            $background = imagecolorallocate($dst, 0, 0, 0);
-            ImageColorTransparent($dst, $background); // make the new temp image all transparent
-			imagealphablending($dst, false);
-			imagesavealpha($dst, true);
-
-			if(function_exists('imageAntiAlias')){
-				imageAntiAlias($dst, true);
-			}
-
-			self::__fill($dst);
+			
+			self::__fill($res, $dst);
 
 			imagecopyresampled($dst, $res, 0, 0, 0, 0, $dst_w, $dst_h, Image::width($res), Image::height($res));
 
-			@imagedestroy($res);
+			if(is_resource($res)) {
+				imagedestroy($res);
+			}
 
 			return $dst;
 

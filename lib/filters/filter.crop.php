@@ -14,7 +14,7 @@
 		const BOTTOM_MIDDLE = 8;
 		const BOTTOM_RIGHT = 9;
 
-		public static function run($res, $width, $height, $anchor=self::TOP_LEFT, $background_fill='fff'){
+		public static function run($res, $width, $height, $anchor=self::TOP_LEFT, $background_fill = null){
 
 			$dst_w = Image::width($res);
 			$dst_h = Image::height($res);
@@ -23,32 +23,30 @@
 				$dst_w = $width;
 				$dst_h = $height;
 			}
-
-			elseif(empty($height)) {
+			else if(empty($height)) {
 				$ratio = ($dst_h / $dst_w);
 				$dst_w = $width;
 				$dst_h = round($dst_w * $ratio);
-
 			}
-
-			elseif(empty($width)) {
+			else if(empty($width)) {
 				$ratio = ($dst_w / $dst_h);
 				$dst_h = $height;
 				$dst_w = round($dst_h * $ratio);
 			}
 
 			$tmp = imagecreatetruecolor($dst_w, $dst_h);
-			self::__fill($tmp, $background_fill);
+
+			self::__fill($res, $tmp, $background_fill);
 
 			list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, Image::width($res), Image::height($res), Image::width($res), Image::height($res), $anchor);
 
 			imagecopyresampled($tmp, $res, $src_x, $src_y, $dst_x, $dst_y, Image::width($res), Image::height($res), Image::width($res), Image::height($res));
 
-			@imagedestroy($res);
+			if(is_resource($res)) {
+				imagedestroy($res);
+			}
 
 			return $tmp;
-
-//			self::__copy($tmp, $res, true);
 		}
 
 		protected static function __calculateDestSrcXY($width, $height, $src_w, $src_h, $dst_w, $dst_h, $position=self::TOP_LEFT){

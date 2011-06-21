@@ -14,18 +14,38 @@
 			return (strlen($colour) == 3 ? $colour{0}.$colour{0}.$colour{1}.$colour{1}.$colour{2}.$colour{2} : $colour);
 		}
 
-		protected static function __fill(&$res, $colour='000'){
-			if(strlen(trim($colour)) == 0) return;
+		protected static function __fill(&$res, &$dst, $colour = null){
 
-			$colour = self::expandColourString($colour);
+			if(!$colour || strlen(trim($colour)) == 0){
+				$tr_idx = imagecolortransparent($res);
+				if($tr_idx >= 0){
+					$tr_colour = imagecolorsforindex($res, $tr_idx);
+					$tr_idx = imagecolorallocate($dst, $tr_colour['red'], $tr_colour['green'], $tr_colour['blue']);
+					imagefill($dst, 0, 0, $tr_idx);
+					imagecolortransparent($dst, $tr_idx);
+				}
+				else {
+					imagealphablending($dst, false);
+					$colour = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+					imagefill($dst, 0, 0, $colour);
+					imagesavealpha($dst, true);
+				}
 
-			$col_a = array(
-				'r' => self::colourChannelHex2Dec($colour, self::CHANNEL_RED),
-				'g' => self::colourChannelHex2Dec($colour, self::CHANNEL_GREEN),
-				'b' => self::colourChannelHex2Dec($colour, self::CHANNEL_BLUE),
-			);
+				if(function_exists('imageantialias')){
+					imageantialias($dst, true);
+				}
+			}
+			else {
+				$colour = self::expandColourString($colour);
 
-			imagefill($res, 0, 0, imagecolorallocate($res, $col_a['r'], $col_a['g'], $col_a['b']));
+				$col_a = array(
+					'r' => self::colourChannelHex2Dec($colour, self::CHANNEL_RED),
+					'g' => self::colourChannelHex2Dec($colour, self::CHANNEL_GREEN),
+					'b' => self::colourChannelHex2Dec($colour, self::CHANNEL_BLUE),
+				);
+
+				imagefill($dst, 0, 0, imagecolorallocate($dst, $col_a['r'], $col_a['g'], $col_a['b']));
+			}
 		}
 
 		protected static function __copy($src, &$dst, $resize=true){
