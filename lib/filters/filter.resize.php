@@ -34,7 +34,9 @@
 
 			imagecopyresampled($dst, $res, 0, 0, 0, 0, $dst_w, $dst_h, Image::width($res), Image::height($res));
 
-			@imagedestroy($res);
+			if(is_resource($res)) {
+				imagedestroy($res);
+			}
 
 			return $dst;
 
