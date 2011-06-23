@@ -7,7 +7,6 @@
 
 	// Include some parts of the engine
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
-	require_once(TOOLKIT . '/class.lang.php');
 	require_once(CORE . '/class.errorhandler.php');
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
@@ -18,13 +17,6 @@
 	define_safe('MODE_CROP', 3);
 
 	set_error_handler('__errorHandler');
-
-	if (method_exists('Lang','load')) {
-		Lang::load(LANG . '/lang.%s.php', ($settings['symphony']['lang'] ? $settings['symphony']['lang'] : 'en'));
-	}
-	else {
-		Lang::init(LANG . '/lang.%s.php', ($settings['symphony']['lang'] ? $settings['symphony']['lang'] : 'en'));
-	}
 
 	function processParams($string){
 
@@ -140,7 +132,7 @@
 
 		if($allowed == false){
 			header('HTTP/1.0 403 Forbidden');
-			exit(__('Error: Connecting to %s is not permitted.', array($param->file)));
+			exit(sprintf('Error: Connecting to %s is not permitted.', array($param->file)));
 		}
 
 		$last_modified = strtotime(Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
@@ -194,7 +186,7 @@
 		) {
 			// Guess not, return 404.
 			header('HTTP/1.0 404 Not Found');
-			trigger_error(__('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
+			trigger_error(sprintf('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
 		}
 		else{
 			$meta = Image::getMetaInformation($cache_file);
@@ -211,7 +203,7 @@
 		$image = call_user_func_array(array('Image', $method), array($image_path));
 
 		if(!$image instanceof Image) {
-			throw new Exception(__('Error generating image'));
+			throw new Exception('Error generating image');
 		}
 	}
 	catch(Exception $e){
@@ -264,14 +256,14 @@
 	// Configuration.
 	if(CACHING && !is_file($cache_file)){
 		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
-			trigger_error(__('Error generating image'), E_USER_ERROR);
+			trigger_error('Error generating image', E_USER_ERROR);
 		}
 	}
 
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
 	if(!$image->display(intval($settings['image']['quality']))) {
-		trigger_error(__('Error generating image'), E_USER_ERROR);
+		trigger_error('Error generating image', E_USER_ERROR);
 	}
 
 	exit;

@@ -54,12 +54,12 @@
 			else $tmp = @file_get_contents($uri);
 
 			if($tmp === false){
-				new Exception(__('Error reading external image <code>%s</code>. Please check the URI.', array($uri)));
+				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', array($uri)));
 			}
 
 			$dest = @tempnam(@sys_get_temp_dir(), 'IMAGE');
 
-			if(!@file_put_contents($dest, $tmp)) new Exception(__('Error writing to temporary file <code>%s</code>.', array($dest)));
+			if(!@file_put_contents($dest, $tmp)) new Exception(sprintf('Error writing to temporary file <code>%s</code>.', array($dest)));
 
 			return self::load($dest);
 		}
@@ -76,7 +76,7 @@
 		 */
 		public static function load($image){
 			if(!is_file($image) || !is_readable($image)){
-				throw new Exception(__('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
+				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
 			}
 
 			$meta = self::getMetaInformation($image);
@@ -94,7 +94,7 @@
 					}
 					// Can't handle CMYK JPEG files
 					else{
-						throw new Exception(__('Cannot load CMYK JPG Images'));
+						throw new Exception('Cannot load CMYK JPG Images');
 					}
 					break;
 
@@ -104,12 +104,12 @@
 					break;
 
 				default:
-					throw new Exception(__('Unsupported image type. Supported types: GIF, JPEG and PNG'));
+					throw new Exception('Unsupported image type. Supported types: GIF, JPEG and PNG');
 					break;
 			}
 
 			if(!is_resource($resource)){
-				throw new Exception(__('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
+				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
 			}
 
 			$obj = new self($resource, $meta);
@@ -360,7 +360,7 @@
 		 */
 		private function __render($dest, $quality = Image::DEFAULT_QUALITY, $interlacing = Image::DEFAULT_INTERLACE, $output = null){
 			if(!is_resource($this->_resource)) {
-				throw new Exception(__('Invalid image resource supplied'));
+				throw new Exception('Invalid image resource supplied');
 			}
 
 			// Turn interlacing on for JPEG or PNG only
