@@ -19,7 +19,6 @@
 	set_error_handler('__errorHandler');
 
 	function processParams($string){
-
 		$param = (object)array(
 			'mode' => 0,
 			'width' => 0,
@@ -30,7 +29,7 @@
 			'external' => false
 		);
 
-		## Mode 3: Resize Canvas
+		// Mode 3: Resize Canvas
 		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 3;
 			$param->width = $matches[0][1];
@@ -41,7 +40,7 @@
 			$param->file = $matches[0][6];
 		}
 
-		## Mode 2: Crop to fill
+		// Mode 2: Crop to fill
 		else if(preg_match_all('/^2\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 2;
 			$param->width = $matches[0][1];
@@ -52,7 +51,7 @@
 			$param->file = $matches[0][6];
 		}
 
-		## Mode 1: Image resize
+		// Mode 1: Image resize
 		else if(preg_match_all('/^1\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 1;
 			$param->width = $matches[0][1];
@@ -61,10 +60,28 @@
 			$param->file = $matches[0][4];
 		}
 
-		## Mode 0: Direct displaying of image
+		// Mode 0: Direct displaying of image
 		elseif(preg_match_all('/^(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->external = (bool)$matches[0][1];
 			$param->file = $matches[0][2];
+		}
+
+		// If the background has been set, ensure that it's not mistakenly
+		// a folder. This is rare edge case in that if a folder is named like
+		// a hexcode, JIT will interpret it as the background colour instead of
+		// the filepath.
+		// @link https://github.com/symphonycms/jit_image_manipulation/issues/8
+		if(($param->background !== 0 || empty($param->background)) && $param->external === false) {
+			// Also check the case of `bbbbbb/bbbbbb/file.png`, which should resolve
+			// as background = bbbbbb, file = bbbbbb/file.png (if that's the correct path of
+			// course)
+			if(
+				is_dir(WORKSPACE . '/'. $param->background)
+				&& (!is_file(WORKSPACE . '/' . $param->file) && is_file(WORKSPACE . '/' . $param->background . '/' . $param->file))
+			) {
+				$param->file = $param->background . '/' . $param->file;
+				$param->background = 0;
+			}
 		}
 
 		return $param;
