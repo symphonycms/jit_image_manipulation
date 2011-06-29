@@ -31,7 +31,7 @@
 		);
 
 		## Mode 3: Resize Canvas
-		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 3;
 			$param->width = $matches[0][1];
 			$param->height = $matches[0][2];
@@ -42,7 +42,7 @@
 		}
 
 		## Mode 2: Crop to fill
-		else if(preg_match_all('/^2\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-f0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+		else if(preg_match_all('/^2\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->mode = 2;
 			$param->width = $matches[0][1];
 			$param->height = $matches[0][2];
