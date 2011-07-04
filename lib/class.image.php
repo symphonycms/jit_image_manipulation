@@ -54,12 +54,12 @@
 			else $tmp = @file_get_contents($uri);
 
 			if($tmp === false){
-				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', array($uri)));
+				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
 			}
 
 			$dest = @tempnam(@sys_get_temp_dir(), 'IMAGE');
 
-			if(!@file_put_contents($dest, $tmp)) new Exception(sprintf('Error writing to temporary file <code>%s</code>.', array($dest)));
+			if(!@file_put_contents($dest, $tmp)) new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
 
 			return self::load($dest);
 		}
@@ -76,7 +76,7 @@
 		 */
 		public static function load($image){
 			if(!is_file($image) || !is_readable($image)){
-				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
+				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', $image));
 			}
 
 			$meta = self::getMetaInformation($image);
@@ -109,7 +109,7 @@
 			}
 
 			if(!is_resource($resource)){
-				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', array($image)));
+				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', $image));
 			}
 
 			$obj = new self($resource, $meta);
