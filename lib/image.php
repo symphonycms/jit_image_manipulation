@@ -206,9 +206,9 @@
 			trigger_error(sprintf('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
 		}
 		else{
-			$meta = Image::getMetaInformation($cache_file);
+			$meta = Image::getMetaInformation($image_path);
 			Image::renderOutputHeaders($meta->type);
-			readfile($cache_file);
+			readfile($image_path);
 		}
 		exit;
 	}
