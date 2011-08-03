@@ -23,7 +23,7 @@ Information about [installing and updating extensions](http://symphony-cms.com/l
 Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
 before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
-	### IMAGE RULES	
+	### IMAGE RULES
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 It is not absolutely necessary to do this, but may prevent problems with future releases.
@@ -69,6 +69,8 @@ The extra fifth setting makes the url look like this:
 
 	<img src="{$root}/image/2/80/80/5/fff/{image/@path}/{image/filename}" />
 
+- *If you wish to crop and maintain the aspect ratio of an image but only have one fixed dimension (that is, width or height), simply set the other dimension to 0*
+
 ### Trusted Sites
 
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
@@ -104,7 +106,7 @@ In order pull images from external sources, you must set up a white-list of trus
 
 **Version 1.06**
 
-- Code responsible for `.htaccess` update will no longer try to append the rewrite base to for path to extensions folder 
+- Code responsible for `.htaccess` update will no longer try to append the rewrite base to for path to extensions folder
 
 **Version 1.05**
 
