@@ -176,11 +176,6 @@
 		$etag = NULL;
 	}
 
-	if(is_null($last_modified)) {
-		// Guess not, return 404.
-		send404($image_path);
-	}
-
 	// Check to see if the requested image needs to be generated or if a 304
 	// can just be returned to the browser to use it's cached version.
 	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
