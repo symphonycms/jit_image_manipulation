@@ -199,6 +199,7 @@
 			unlink($cache_file);
 		}
 		else if(is_file($cache_file)) {
+			$image_path = $cache_file;
 			touch($cache_file);
 			$param->mode = MODE_NONE;
 		}
@@ -216,11 +217,9 @@
 			// Guess not, return 404.
 			send404($image_path);
 		}
-		else{
-			$meta = Image::getMetaInformation($cache_file);
-			Image::renderOutputHeaders($meta->type);
-			readfile($cache_file);
-		}
+		$meta = Image::getMetaInformation($image_path);
+		Image::renderOutputHeaders($meta->type);
+		readfile($image_path);
 		exit;
 	}
 
