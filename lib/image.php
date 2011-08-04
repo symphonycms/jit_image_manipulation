@@ -112,6 +112,13 @@
 		}
 	}
 
+	function send404($image_path) {
+		header('HTTP/1.0 404 Not Found');
+		trigger_error(sprintf('Image <code>%s</code> could not be found.', $image_path), E_USER_ERROR);
+		echo sprintf('Image <code>%s</code> could not be found.', $image_path);
+		exit;
+	}
+
 	$meta = $cache_file = NULL;
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
@@ -169,6 +176,11 @@
 		$etag = NULL;
 	}
 
+	if(is_null($last_modified)) {
+		// Guess not, return 404.
+		send404($image_path);
+	}
+
 	// Check to see if the requested image needs to be generated or if a 304
 	// can just be returned to the browser to use it's cached version.
 	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
@@ -202,8 +214,7 @@
 			|| ($param->external === FALSE && (!file_exists($image_path) || !is_readable($image_path)))
 		) {
 			// Guess not, return 404.
-			header('HTTP/1.0 404 Not Found');
-			trigger_error(sprintf('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
+			send404($image_path);
 		}
 		else{
 			$meta = Image::getMetaInformation($cache_file);
@@ -224,8 +235,10 @@
 		}
 	}
 	catch(Exception $e){
-		header('HTTP/1.0 404 Not Found');
+		header('HTTP/1.0 400 Bad Request');
 		trigger_error($e->getMessage(), E_USER_ERROR);
+		echo $e->getMessage();
+		exit;
 	}
 
 	// Apply the filter to the Image class (`$image`)
@@ -273,14 +286,20 @@
 	// Configuration.
 	if(CACHING && !is_file($cache_file)){
 		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
+			header('HTTP/1.0 404 Not Found');
 			trigger_error('Error generating image', E_USER_ERROR);
+			echo 'Error generating image, failed to create cache file.';
+			exit;
 		}
 	}
 
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
 	if(!$image->display(intval($settings['image']['quality']))) {
+		header('HTTP/1.0 404 Not Found');
 		trigger_error('Error generating image', E_USER_ERROR);
+		echo 'Error generating image';
+		exit;
 	}
 
 	exit;
