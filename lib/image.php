@@ -187,6 +187,7 @@
 			unlink($cache_file);
 		}
 		else if(is_file($cache_file)) {
+			$image_path = $cache_file;
 			touch($cache_file);
 			$param->mode = MODE_NONE;
 		}
@@ -205,11 +206,9 @@
 			header('HTTP/1.0 404 Not Found');
 			trigger_error(sprintf('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
 		}
-		else{
-			$meta = Image::getMetaInformation($cache_file);
-			Image::renderOutputHeaders($meta->type);
-			readfile($cache_file);
-		}
+		$meta = Image::getMetaInformation($image_path);
+		Image::renderOutputHeaders($meta->type);
+		readfile($image_path);
 		exit;
 	}
 
