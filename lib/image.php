@@ -186,7 +186,7 @@
 	}
 
 	// The 'image_path' may change and point to a cache file, but we will
-	// still need to know the requested file; we call it 'original_file'.
+	// still need to know which file is supposed to be processed.
 	$original_file = $image_path;
 
 	// If CACHING is enabled, check to see that the cached file is still valid.
