@@ -185,10 +185,13 @@
 		}
 	}
 
+	// The 'image_path' may change and point to a cache file, but we will
+	// still need to know the requested file; we call it 'original_file'.
+	$original_file = $image_path;
+
 	// If CACHING is enabled, check to see that the cached file is still valid.
 	if(CACHING === true){
 		$cache_file = sprintf('%s/%s_%s', CACHE, md5($_REQUEST['param'] . intval($settings['image']['quality'])), basename($image_path));
-		$original_file = $image_path;
 
 		// Cache has expired or doesn't exist
 		if(is_file($cache_file) && (filemtime($cache_file) < $last_modified)){
