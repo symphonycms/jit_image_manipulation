@@ -176,11 +176,6 @@
 		$etag = NULL;
 	}
 
-	if(is_null($last_modified)) {
-		// Guess not, return 404.
-		send404($image_path);
-	}
-
 	// Check to see if the requested image needs to be generated or if a 304
 	// can just be returned to the browser to use it's cached version.
 	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
@@ -189,6 +184,10 @@
 			exit;
 		}
 	}
+
+	// The 'image_path' may change and point to a cache file, but we will
+	// still need to know which file is supposed to be processed.
+	$original_file = $image_path;
 
 	// If CACHING is enabled, check to see that the cached file is still valid.
 	if(CACHING === true){
@@ -210,9 +209,9 @@
 	if($param->mode == MODE_NONE){
 		if(
 			// If the external file still exists
-			($param->external && Image::getHttpResponseCode($image_path) !== 200)
+			($param->external && Image::getHttpResponseCode($original_file) !== 200)
 			// If the file is local, does it exist and can we read it?
-			|| ($param->external === FALSE && (!file_exists($image_path) || !is_readable($image_path)))
+			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
 			// Guess not, return 404.
 			send404($image_path);
