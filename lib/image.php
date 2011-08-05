@@ -214,7 +214,7 @@
 			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
 			// Guess not, return 404.
-			send404($image_path);
+			send404($original_file);
 		}
 		$meta = Image::getMetaInformation($image_path);
 		Image::renderOutputHeaders($meta->type);
