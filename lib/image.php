@@ -114,8 +114,8 @@
 
 	function send404($image_path) {
 		header('HTTP/1.0 404 Not Found');
-		trigger_error(sprintf('Image <code>%s</code> could not be found.', $image_path), E_USER_ERROR);
-		echo sprintf('Image <code>%s</code> could not be found.', $image_path);
+		trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path)), E_USER_ERROR);
+		echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path));
 		exit;
 	}
 

@@ -76,7 +76,7 @@
 		 */
 		public static function load($image){
 			if(!is_file($image) || !is_readable($image)){
-				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', $image));
+				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
 			}
 
 			$meta = self::getMetaInformation($image);
@@ -94,7 +94,7 @@
 					}
 					// Can't handle CMYK JPEG files
 					else{
-						throw new Exception('Cannot load CMYK JPG Images');
+						throw new Exception('Cannot load CMYK JPG images');
 					}
 					break;
 
@@ -109,7 +109,7 @@
 			}
 
 			if(!is_resource($resource)){
-				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', $image));
+				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
 			}
 
 			$obj = new self($resource, $meta);
