@@ -3,8 +3,8 @@
 "Just in time" image manipulation for Symphony.
 It is part of the Symphony core download package.
 
-- Version: 1.11
-- Date: 1st August 2011
+- Version: 1.12
+- Date: 5th August 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Constributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
@@ -76,6 +76,12 @@ The extra fifth setting makes the url look like this:
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.12**
+
+- Fixes issue where cached images would be delivered even though the original file was removed (thanks @michael-e)
+- Fixes direct display mode (thanks @michael-e)
+- Output errors and correctly set 404 headers when things go wrong
 
 **Version 1.11**
 
