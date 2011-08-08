@@ -49,6 +49,7 @@ There are four possible modes:
 - `1` resize
 - `2` resize and crop (used in the example)
 - `3` crop
+- `4` resize to fit
 
 If you're using mode `2` or `3` for image cropping you need to specify the reference position:
 
