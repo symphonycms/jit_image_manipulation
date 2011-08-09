@@ -270,7 +270,7 @@
 				$image->applyFilter('resize', array(NULL, $dst_h));
 			}
 
-			if($src_w >= $dst_w) {
+			else if($src_w >= $dst_w) {
 				$image->applyFilter('resize', array($dst_w, NULL));
 			}
 
