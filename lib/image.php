@@ -261,16 +261,19 @@
 			$dst_w = $param->width;
 			$dst_h = $param->height;
 
+			$src_r = ($src_w / $src_h);
+			$dst_r = ($dst_w / $dst_h);
+
 			if ($src_h <= $dst_h && $src_w <= $dst_w){
 				$image->applyFilter('resize', array($src_w,$src_h));
 				break;
 			}
 
-			if($src_h >= $dst_h) {
+			if($src_h >= $dst_h && $src_r <= $dst_r) {
 				$image->applyFilter('resize', array(NULL, $dst_h));
 			}
 
-			else if($src_w >= $dst_w) {
+			if($src_w >= $dst_w && $src_r >= $dst_r) {
 				$image->applyFilter('resize', array($dst_w, NULL));
 			}
 
