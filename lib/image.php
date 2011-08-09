@@ -188,7 +188,7 @@
 
 	// Check to see if the requested image needs to be generated or if a 304
 	// can just be returned to the browser to use it's cached version.
-	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+	if(CACHING === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
 		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
 			header('HTTP/1.1 304 Not Modified');
 			exit;
