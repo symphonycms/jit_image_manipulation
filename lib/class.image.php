@@ -30,10 +30,9 @@
 		/**
 		 * This function will attempt to load an image from a remote URL using
 		 * CURL. If CURL is not available, `file_get_contents` will attempt to resolve
-		 * the given `$uri`. The remote image will be saved into PHP's temporary directory
-		 * as determined by `sys_get_temp_dir`. Once the remote image has been
-		 * saved to the temp directory, it's path will be passed to `Image::load`
-		 * to return an instance of this `Image` class. If the file cannot be found
+		 * the given `$uri`. The remote image will be saved into Symphony's `TMP`
+		 * directory. Once saved, the path will be passed to `Image::load` to return
+		 * an instance of this `Image` class. If the file cannot be found
 		 * an Exception is thrown.
 		 *
 		 * @param string $uri
@@ -57,7 +56,7 @@
 				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
 			}
 
-			$dest = @tempnam(@sys_get_temp_dir(), 'IMAGE');
+			$dest = @tempnam(TMP, 'IMAGE');
 
 			if(!@file_put_contents($dest, $tmp)) new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
 
