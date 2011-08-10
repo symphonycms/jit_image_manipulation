@@ -143,30 +143,28 @@
 
 		$rules = array_map('trim', $rules);
 
-		if(count($rules) > 0){
-			foreach($rules as $rule) {
-				$rule = str_replace('http://', NULL, $rule);
+		if(count($rules) > 0) foreach($rules as $rule) {
+			$rule = str_replace(array('http://', 'https://'), NULL, $rule);
 
-				if($rule == '*'){
-					$allowed = true;
-					break;
-				}
+			if($rule == '*'){
+				$allowed = true;
+				break;
+			}
 
-				else if(substr($rule, -1) == '*' && strncasecmp($param->file, $rule, strlen($rule) - 1) == 0){
-					$allowed = true;
-					break;
-				}
+			else if(substr($rule, -1) == '*' && strncasecmp($param->file, $rule, strlen($rule) - 1) == 0){
+				$allowed = true;
+				break;
+			}
 
-				else if(strcasecmp($rule, $param->file) == 0){
-					$allowed = true;
-					break;
-				}
+			else if(strcasecmp($rule, $param->file) == 0){
+				$allowed = true;
+				break;
 			}
 		}
 
 		if($allowed == false){
 			header('HTTP/1.0 403 Forbidden');
-			exit(sprintf('Error: Connecting to %s is not permitted.', array($param->file)));
+			exit(sprintf('Error: Connecting to %s is not permitted.', $param->file));
 		}
 
 		$last_modified = strtotime(Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
