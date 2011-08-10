@@ -256,8 +256,21 @@
 		case MODE_FIT:
 			$src_w = $image->Meta()->width;
 			$src_h = $image->Meta()->height;
+
 			$dst_w = $param->width;
 			$dst_h = $param->height;
+
+			if($param->height == 0) {
+				$ratio = ($src_h / $src_w);
+				$dst_w = $param->width;
+				$dst_h = round($dst_w * $ratio);
+			}
+
+			else if($param->width == 0) {
+				$ratio = ($src_w / $src_h);
+				$dst_h = $param->height;
+				$dst_w = round($dst_h * $ratio);
+			}
 
 			$src_r = ($src_w / $src_h);
 			$dst_r = ($dst_w / $dst_h);
