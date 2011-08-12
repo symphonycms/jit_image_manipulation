@@ -1,13 +1,12 @@
 # JIT Image Manipulation #
 
-"Just in time" image manipulation for Symphony.
-It is part of the Symphony core download package.
+"Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
 
-- Version: 1.12
-- Date: 5th August 2011
+- Version: 1.13RC1
+- Date: 12th August 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
-- Constributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
+- Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
 
 ## Synopsis
@@ -32,7 +31,7 @@ It is not absolutely necessary to do this, but may prevent problems with future 
 
 ### Basics
 
-The image manipulation is controlled via the URL, e. g.:
+The image manipulation is controlled via the URL, eg.:
 
 	<img src="{$root}/image/2/80/80/5{image/@path}/{image/filename}" />
 
@@ -42,6 +41,7 @@ The extension accepts four numeric settings for the manipulation:
 2. width
 3. height
 4. reference position (for cropping only)
+5. background color (for cropping only)
 
 There are four possible modes:
 
@@ -63,8 +63,8 @@ If you're using mode `2` or `3` for image cropping you need to specify the refer
 
 If you're using mode `2` or `3` for image cropping, there is an optional fifth background color setting. This can accept shorthand or full hex colors.
 
-- *For Jpeg images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
-- *For transparent Png or Gif images, supplying the background color will fill the image. This is why the setting is optional*
+- *For `.jpg` images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
+- *For transparent `.png` or `.gif` images, supplying the background color will fill the image. This is why the setting is optional*
 
 The extra fifth setting makes the url look like this:
 
@@ -77,6 +77,12 @@ The extra fifth setting makes the url look like this:
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.13**
+- Add a new mode, Resize to Fit, that will conditionally resize your image if it is above the desired width/height otherwise it will leave the image as it. (thanks @21studios)
+- Output the correct file path in 404 errors (thanks @michael-e)
+- Fixes error in the error message when connecting to an external site
+- No longer serves 304 headers when `CACHING` is disabled in the configuration
 
 **Version 1.12**
 
