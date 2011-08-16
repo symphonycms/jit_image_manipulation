@@ -2,8 +2,8 @@
 
 "Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
 
-- Version: 1.13RC1
-- Date: 12th August 2011
+- Version: 1.13
+- Date: 16th August 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)

@@ -5,8 +5,8 @@
 		public function about(){
 			return array(
 				'name' => 'JIT Image Manipulation',
-				'version' => '1.13RC1',
-				'release-date' => '2011-08-12',
+				'version' => '1.13',
+				'release-date' => '2011-08-16',
 				'author' => array(
 					array(
 						'name' => 'Alistair Kearney',
