@@ -37,60 +37,63 @@
 			);
 		}
 
-		public function install(){
-			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+		public function install() {
+			try {
+				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
 
-			if($htaccess === false) return false;
+				## Cannot use $1 in a preg_replace replacement string, so using a token instead
+				$token = md5(time());
 
-			## Cannot use $1 in a preg_replace replacement string, so using a token instead
-			$token = md5(time());
-
-			$rule = "
+				$rule = "
 	### IMAGE RULES
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]\n\n";
 
-			## Remove existing the rules
-			$htaccess = self::__removeImageRules($htaccess);
+				## Remove existing the rules
+				$htaccess = self::__removeImageRules($htaccess);
 
-			if(preg_match('/### IMAGE RULES/', $htaccess)){
-				$htaccess = preg_replace('/### IMAGE RULES/', $rule, $htaccess);
+				if(preg_match('/### IMAGE RULES/', $htaccess)){
+					$htaccess = preg_replace('/### IMAGE RULES/', $rule, $htaccess);
+				}
+				else{
+					$htaccess = preg_replace('/RewriteRule .\* - \[S=14\]\s*/i', "RewriteRule .* - [S=14]\n{$rule}\t", $htaccess);
+				}
+
+				## Replace the token with the real value
+				$htaccess = str_replace($token, '$1', $htaccess);
+
+				return file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 			}
-			else{
-				$htaccess = preg_replace('/RewriteRule .\* - \[S=14\]\s*/i', "RewriteRule .* - [S=14]\n{$rule}\t", $htaccess);
+			catch (Exception $ex) {
+				$extension = $this->about();
+				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array($extension['name'], $ex->getMessage())), Alert::ERROR);
+				return false;
 			}
-
-			## Replace the token with the real value
-			$htaccess = str_replace($token, '$1', $htaccess);
-
-			return @file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-		}
-
-		public function uninstall(){
-			if(file_exists(MANIFEST . '/jit-trusted-sites')) unlink(MANIFEST . '/jit-trusted-sites');
-
-			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
-
-			if($htaccess === false) return false;
-
-			$htaccess = self::__removeImageRules($htaccess);
-			$htaccess = preg_replace('/### IMAGE RULES/', NULL, $htaccess);
-
-			return @file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 		}
 
 		public function enable(){
 			return $this->install();
 		}
 
-		public function disable(){
-			$htaccess = @file_get_contents(DOCROOT . '/.htaccess');
+		public function uninstall(){
+			if(file_exists(MANIFEST . '/jit-trusted-sites')) unlink(MANIFEST . '/jit-trusted-sites');
 
-			if($htaccess === false) return false;
+			return $this->disable();
+		}
 
-			$htaccess = self::__removeImageRules($htaccess);
-			$htaccess = preg_replace('/### IMAGE RULES/', NULL, $htaccess);
+		public function disable() {
+			try {
+				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
 
-			return @file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+				$htaccess = self::__removeImageRules($htaccess);
+				$htaccess = preg_replace('/### IMAGE RULES/', NULL, $htaccess);
+
+				return file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+			}
+			catch (Exception $ex) {
+				$extension = $this->about();
+				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array($extension['name'], $ex->getMessage())), Alert::ERROR);
+				return false;
+			}
 		}
 
 	/*-------------------------------------------------------------------------
@@ -98,11 +101,15 @@
 	-------------------------------------------------------------------------*/
 
 		public function trusted(){
-		    return (file_exists(MANIFEST . '/jit-trusted-sites') ? @file_get_contents(MANIFEST . '/jit-trusted-sites') : NULL);
+			return is_readable(MANIFEST . '/jit-trusted-sites')
+				? file_get_contents(MANIFEST . '/jit-trusted-sites')
+				: NULL;
 		}
 
 		public function saveTrusted($string){
-			return @file_put_contents(MANIFEST . '/jit-trusted-sites', $string);
+			return is_writable(MANIFEST . '/jit-trusted-sites')
+				? file_put_contents(MANIFEST . '/jit-trusted-sites', $string)
+				: false;
 		}
 
 		private static function __removeImageRules($string){
