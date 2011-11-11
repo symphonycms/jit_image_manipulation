@@ -62,8 +62,8 @@
 			// and then use `TMP` (the Symphony constant).
 			// @link https://github.com/symphonycms/jit_image_manipulation/commit/728adf15c9db31f2453baca6b6888cb318fb956f#comments
 			$dir = @sys_get_temp_dir();
-			if($dir == false) $dir = @ini_get('upload_tmp_dir');
-			if($dir == false) $dir = TMP;
+			if($dir == false || !is_writable($dir)) $dir = @ini_get('upload_tmp_dir');
+			if($dir == false || !is_writable($dir)) $dir = TMP;
 
 			$dest = tempnam($dir, 'IMAGE');
 
