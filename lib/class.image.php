@@ -57,9 +57,19 @@
 				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
 			}
 
-			$dest = @tempnam(@sys_get_temp_dir(), 'IMAGE');
+			// The `sys_get_temp_dir` is our preference, but on some shared hosting
+			// this is unavailable. If this fails, we'll attempt the `upload_tmp_dir`
+			// and then use `TMP` (the Symphony constant).
+			// @link https://github.com/symphonycms/jit_image_manipulation/commit/728adf15c9db31f2453baca6b6888cb318fb956f#comments
+			$dir = @sys_get_temp_dir();
+			if($dir == false) $dir = @ini_get('upload_tmp_dir');
+			if($dir == false) $dir = TMP;
 
-			if(!@file_put_contents($dest, $tmp)) new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
+			$dest = tempnam($dir, 'IMAGE');
+
+			if(!file_put_contents($dest, $tmp)) {
+				new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
+			}
 
 			return self::load($dest);
 		}
