@@ -2,8 +2,8 @@
 
 "Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
 
-- Version: 1.13
-- Date: 16th August 2011
+- Version: 1.14
+- Date: 11th November 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
@@ -19,7 +19,7 @@ Information about [installing and updating extensions](http://symphony-cms.com/l
 
 ## Updating
 
-Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
+Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything
 before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
 	### IMAGE RULES
@@ -77,6 +77,10 @@ The extra fifth setting makes the url look like this:
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.14**
+- More robust detection of a temp directory
+- More robust installation
 
 **Version 1.13**
 - Add a new mode, Resize to Fit, that will conditionally resize your image if it is above the desired width/height otherwise it will leave the image as it. (thanks @21studios)
