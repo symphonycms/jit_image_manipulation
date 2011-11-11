@@ -11,11 +11,15 @@
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
 
+	// Setup the environment
+	DateTimeObj::setSettings($settings['region']);
+
 	define_safe('MODE_NONE', 0);
 	define_safe('MODE_RESIZE', 1);
 	define_safe('MODE_RESIZE_CROP', 2);
 	define_safe('MODE_CROP', 3);
 	define_safe('MODE_FIT', 4);
+	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
 
 	set_error_handler('__errorHandler');
 
@@ -98,8 +102,6 @@
 	}
 
 	$param = processParams($_GET['param']);
-	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
-
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		global $param;
 
