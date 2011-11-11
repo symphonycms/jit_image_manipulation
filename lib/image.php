@@ -12,7 +12,12 @@
 	require_once('class.image.php');
 
 	// Setup the environment
-	DateTimeObj::setSettings($settings['region']);
+	if(method_exists('DateTimeObj', 'setSettings')) {
+		DateTimeObj::setSettings($settings['region']);
+	}
+	else {
+		DateTimeObj::setDefaultTimezone($settings['region']['timezone']);
+	}
 
 	define_safe('MODE_NONE', 0);
 	define_safe('MODE_RESIZE', 1);
