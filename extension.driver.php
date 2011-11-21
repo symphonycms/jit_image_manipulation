@@ -278,6 +278,8 @@
 
 			$group->appendChild($duplicator);
 
+			$group->appendChild(new XMLElement('p', __('Some help text...'), array('class' => 'help')));
+
 			// checkbox to disable regular rules
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
