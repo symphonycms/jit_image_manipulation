@@ -176,9 +176,12 @@
 			$label = Widget::Label(__('URL Parameter'));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
 			$li->appendChild($label);
+			if ($mode === 'regex') {
+				$li->appendChild(new XMLElement('p', __('Regular Expression'), array('class' => 'help')));
+			}
 
-			// width and height for modes 1, 2 and 3
-			if ($mode === '1' || $mode === '2' || $mode === '3') {
+			// width and height for modes 1, 2, 3 and 4
+			if ($mode === '1' || $mode === '2' || $mode === '3' || $mode === '4') {
 				$group = new XMLElement('div');
 				$group->setAttribute('class', 'group');
 				$label = Widget::Label(__('Width'));
@@ -263,6 +266,7 @@
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('1'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('2'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('3'));
+			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('4'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('regex'));
 
 			if(file_exists(MANIFEST . '/jit-recipes.php')) include(MANIFEST . '/jit-recipes.php');

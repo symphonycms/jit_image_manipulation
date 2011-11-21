@@ -99,6 +99,17 @@
 							return $param;
 						}
 						break;
+					case '4':
+						if (strpos($string, $recipe['url-parameter']) === 0) {
+							$param->mode = 4;
+							$param->width = $recipe['width'];
+							$param->height = $recipe['height'];
+							$param->external = (bool)$recipe['external'];
+							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							return $param;
+						}
+						break;
 				}
 			}
 
