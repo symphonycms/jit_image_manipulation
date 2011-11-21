@@ -11,10 +11,20 @@
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
 
+	// Setup the environment
+	if(method_exists('DateTimeObj', 'setSettings')) {
+		DateTimeObj::setSettings($settings['region']);
+	}
+	else {
+		DateTimeObj::setDefaultTimezone($settings['region']['timezone']);
+	}
+
 	define_safe('MODE_NONE', 0);
 	define_safe('MODE_RESIZE', 1);
 	define_safe('MODE_RESIZE_CROP', 2);
 	define_safe('MODE_CROP', 3);
+	define_safe('MODE_FIT', 4);
+	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
 
 	set_error_handler('__errorHandler');
 
@@ -134,6 +144,15 @@
 			$param->file = $matches[0][4];
 		}
 
+		// Mode 4: Image fit resize
+		elseif(preg_match_all('/^4\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+			$param->mode = 4;
+			$param->width = $matches[0][1];
+			$param->height = $matches[0][2];
+			$param->external = (bool)$matches[0][3];
+			$param->file = $matches[0][4];
+		}
+
 		// Mode 0: Direct displaying of image
 		elseif(preg_match_all('/^(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->external = (bool)$matches[0][1];
@@ -187,6 +206,13 @@
 		}
 	}
 
+	function send404($image_path) {
+		header('HTTP/1.0 404 Not Found');
+		trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path)), E_USER_ERROR);
+		echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path));
+		exit;
+	}
+
 	$meta = $cache_file = NULL;
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
@@ -201,30 +227,28 @@
 
 		$rules = array_map('trim', $rules);
 
-		if(count($rules) > 0){
-			foreach($rules as $rule) {
-				$rule = str_replace('http://', NULL, $rule);
+		if(count($rules) > 0) foreach($rules as $rule) {
+			$rule = str_replace(array('http://', 'https://'), NULL, $rule);
 
-				if($rule == '*'){
-					$allowed = true;
-					break;
-				}
+			if($rule == '*'){
+				$allowed = true;
+				break;
+			}
 
-				else if(substr($rule, -1) == '*' && strncasecmp($param->file, $rule, strlen($rule) - 1) == 0){
-					$allowed = true;
-					break;
-				}
+			else if(substr($rule, -1) == '*' && strncasecmp($param->file, $rule, strlen($rule) - 1) == 0){
+				$allowed = true;
+				break;
+			}
 
-				else if(strcasecmp($rule, $param->file) == 0){
-					$allowed = true;
-					break;
-				}
+			else if(strcasecmp($rule, $param->file) == 0){
+				$allowed = true;
+				break;
 			}
 		}
 
 		if($allowed == false){
 			header('HTTP/1.0 403 Forbidden');
-			exit(sprintf('Error: Connecting to %s is not permitted.', array($param->file)));
+			exit(sprintf('Error: Connecting to %s is not permitted.', $param->file));
 		}
 
 		$last_modified = strtotime(Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
@@ -246,12 +270,16 @@
 
 	// Check to see if the requested image needs to be generated or if a 304
 	// can just be returned to the browser to use it's cached version.
-	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+	if(CACHING === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
 		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
 			header('HTTP/1.1 304 Not Modified');
 			exit;
 		}
 	}
+
+	// The 'image_path' may change and point to a cache file, but we will
+	// still need to know which file is supposed to be processed.
+	$original_file = $image_path;
 
 	// If CACHING is enabled, check to see that the cached file is still valid.
 	if(CACHING === true){
@@ -262,6 +290,7 @@
 			unlink($cache_file);
 		}
 		else if(is_file($cache_file)) {
+			$image_path = $cache_file;
 			touch($cache_file);
 			$param->mode = MODE_NONE;
 		}
@@ -272,19 +301,16 @@
 	if($param->mode == MODE_NONE){
 		if(
 			// If the external file still exists
-			($param->external && Image::getHttpResponseCode($image_path) !== 200)
+			($param->external && Image::getHttpResponseCode($original_file) !== 200)
 			// If the file is local, does it exist and can we read it?
-			|| ($param->external === FALSE && (!file_exists($image_path) || !is_readable($image_path)))
+			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
 			// Guess not, return 404.
-			header('HTTP/1.0 404 Not Found');
-			trigger_error(sprintf('Image <code>%s</code> could not be found.', array($image_path)), E_USER_ERROR);
+			send404($original_file);
 		}
-		else{
-			$meta = Image::getMetaInformation($cache_file);
-			Image::renderOutputHeaders($meta->type);
-			readfile($cache_file);
-		}
+		$meta = Image::getMetaInformation($image_path);
+		Image::renderOutputHeaders($meta->type);
+		readfile($image_path);
 		exit;
 	}
 
@@ -299,14 +325,53 @@
 		}
 	}
 	catch(Exception $e){
-		header('HTTP/1.0 404 Not Found');
+		header('HTTP/1.0 400 Bad Request');
 		trigger_error($e->getMessage(), E_USER_ERROR);
+		echo $e->getMessage();
+		exit;
 	}
 
 	// Apply the filter to the Image class (`$image`)
 	switch($param->mode) {
 		case MODE_RESIZE:
 			$image->applyFilter('resize', array($param->width, $param->height));
+			break;
+
+		case MODE_FIT:
+			$src_w = $image->Meta()->width;
+			$src_h = $image->Meta()->height;
+
+			$dst_w = $param->width;
+			$dst_h = $param->height;
+
+			if($param->height == 0) {
+				$ratio = ($src_h / $src_w);
+				$dst_w = $param->width;
+				$dst_h = round($dst_w * $ratio);
+			}
+
+			else if($param->width == 0) {
+				$ratio = ($src_w / $src_h);
+				$dst_h = $param->height;
+				$dst_w = round($dst_h * $ratio);
+			}
+
+			$src_r = ($src_w / $src_h);
+			$dst_r = ($dst_w / $dst_h);
+
+			if ($src_h <= $dst_h && $src_w <= $dst_w){
+				$image->applyFilter('resize', array($src_w,$src_h));
+				break;
+			}
+
+			if($src_h >= $dst_h && $src_r <= $dst_r) {
+				$image->applyFilter('resize', array(NULL, $dst_h));
+			}
+
+			if($src_w >= $dst_w && $src_r >= $dst_r) {
+				$image->applyFilter('resize', array($dst_w, NULL));
+			}
+
 			break;
 
 		case MODE_RESIZE_CROP:
@@ -348,14 +413,20 @@
 	// Configuration.
 	if(CACHING && !is_file($cache_file)){
 		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
+			header('HTTP/1.0 404 Not Found');
 			trigger_error('Error generating image', E_USER_ERROR);
+			echo 'Error generating image, failed to create cache file.';
+			exit;
 		}
 	}
 
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
 	if(!$image->display(intval($settings['image']['quality']))) {
+		header('HTTP/1.0 404 Not Found');
 		trigger_error('Error generating image', E_USER_ERROR);
+		echo 'Error generating image';
+		exit;
 	}
 
 	exit;

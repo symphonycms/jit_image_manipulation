@@ -1,13 +1,12 @@
 # JIT Image Manipulation #
 
-"Just in time" image manipulation for Symphony.
-It is part of the Symphony core download package.
+"Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
 
-- Version: 1.11pre
-- Date: unreleased
+- Version: 1.14
+- Date: 11th November 2011
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
-- Constributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
+- Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
 
 ## Synopsis
@@ -20,10 +19,10 @@ Information about [installing and updating extensions](http://symphony-cms.com/l
 
 ## Updating
 
-Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony .htaccess to remove anything
+Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything
 before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
-	### IMAGE RULES	
+	### IMAGE RULES
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
 
 It is not absolutely necessary to do this, but may prevent problems with future releases.
@@ -32,7 +31,7 @@ It is not absolutely necessary to do this, but may prevent problems with future 
 
 ### Basics
 
-The image manipulation is controlled via the URL, e. g.:
+The image manipulation is controlled via the URL, eg.:
 
 	<img src="{$root}/image/2/80/80/5{image/@path}/{image/filename}" />
 
@@ -42,6 +41,7 @@ The extension accepts four numeric settings for the manipulation:
 2. width
 3. height
 4. reference position (for cropping only)
+5. background color (for cropping only)
 
 There are four possible modes:
 
@@ -49,6 +49,7 @@ There are four possible modes:
 - `1` resize
 - `2` resize and crop (used in the example)
 - `3` crop
+- `4` resize to fit
 
 If you're using mode `2` or `3` for image cropping you need to specify the reference position:
 
@@ -62,18 +63,36 @@ If you're using mode `2` or `3` for image cropping you need to specify the refer
 
 If you're using mode `2` or `3` for image cropping, there is an optional fifth background color setting. This can accept shorthand or full hex colors.
 
-- *For Jpeg images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
-- *For transparent Png or Gif images, supplying the background color will fill the image. This is why the setting is optional*
+- *For `.jpg` images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
+- *For transparent `.png` or `.gif` images, supplying the background color will fill the image. This is why the setting is optional*
 
 The extra fifth setting makes the url look like this:
 
 	<img src="{$root}/image/2/80/80/5/fff/{image/@path}/{image/filename}" />
+
+- *If you wish to crop and maintain the aspect ratio of an image but only have one fixed dimension (that is, width or height), simply set the other dimension to 0*
 
 ### Trusted Sites
 
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
 
 ## Change Log
+
+**Version 1.14**
+- More robust detection of a temp directory
+- More robust installation
+
+**Version 1.13**
+- Add a new mode, Resize to Fit, that will conditionally resize your image if it is above the desired width/height otherwise it will leave the image as it. (thanks @21studios)
+- Output the correct file path in 404 errors (thanks @michael-e)
+- Fixes error in the error message when connecting to an external site
+- No longer serves 304 headers when `CACHING` is disabled in the configuration
+
+**Version 1.12**
+
+- Fixes issue where cached images would be delivered even though the original file was removed (thanks @michael-e)
+- Fixes direct display mode (thanks @michael-e)
+- Output errors and correctly set 404 headers when things go wrong
 
 **Version 1.11**
 
@@ -104,7 +123,7 @@ In order pull images from external sources, you must set up a white-list of trus
 
 **Version 1.06**
 
-- Code responsible for `.htaccess` update will no longer try to append the rewrite base to for path to extensions folder 
+- Code responsible for `.htaccess` update will no longer try to append the rewrite base to for path to extensions folder
 
 **Version 1.05**
 
