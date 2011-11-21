@@ -140,12 +140,13 @@
 			return preg_replace('/RewriteRule \^image[^\r\n]+[\r\n]?/i', NULL, $string);
 		}
 
-		public function createRecipeDuplicatorTemplate($mode = 0, $position = -1, $values = array()){
+		public function createRecipeDuplicatorTemplate($mode = '0', $position = '-1', $values = array()){
 			$modes = array(
-				0 => __('Direct display'),
-				1 => __('Resize'),
-				2 => __('Crop to Fill'),
-				3 => __('Resize Canvas'),
+				'0' => __('Direct display'),
+				'1' => __('Resize'),
+				'2' => __('Crop to Fill'),
+				'3' => __('Resize Canvas'),
+				'4' => __('Resize to Fit'),
 				'regex' => __('Custom')
 			);
 
@@ -177,7 +178,7 @@
 			$li->appendChild($label);
 
 			// width and height for modes 1, 2 and 3
-			if ($mode == 1 || $mode == 2 || $mode == 3) {
+			if ($mode === '1' || $mode === '2' || $mode === '3') {
 				$group = new XMLElement('div');
 				$group->setAttribute('class', 'group');
 				$label = Widget::Label(__('Width'));
@@ -190,7 +191,7 @@
 			}
 
 			// position and background for mode 2 and 3
-			if ($mode == 2 || $mode == 3) {
+			if ($mode === '2' || $mode === '3') {
 				$group = new XMLElement('div');
 				$group->setAttribute('class', 'group');
 				$label = Widget::Label(__('Position'));
@@ -204,7 +205,7 @@
 			}
 
 			// regex mode
-			if ($mode == 'regex') {
+			if ($mode === 'regex') {
 				$label = Widget::Label(__('JIT Parameter'));
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][jit-parameter]", $values['jit-parameter']));
 				$li->appendChild($label);
@@ -217,7 +218,7 @@
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
 			$group->appendChild($label);
-			if ($mode != 'regex') {
+			if ($mode !== 'regex') {
 				$label = Widget::Label();
 				$hidden = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '0', 'hidden');
 				$input = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '1', 'checkbox');
@@ -258,10 +259,10 @@
 			$duplicator = new XMLElement('ol');
 			$duplicator->setAttribute('class', 'jit-duplicator');
 
-			$duplicator->appendChild(self::createRecipeDuplicatorTemplate());
-			$duplicator->appendChild(self::createRecipeDuplicatorTemplate(1));
-			$duplicator->appendChild(self::createRecipeDuplicatorTemplate(2));
-			$duplicator->appendChild(self::createRecipeDuplicatorTemplate(3));
+			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('0'));
+			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('1'));
+			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('2'));
+			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('3'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('regex'));
 
 			if(file_exists(MANIFEST . '/jit-recipes.php')) include(MANIFEST . '/jit-recipes.php');

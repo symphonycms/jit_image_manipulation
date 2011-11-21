@@ -54,7 +54,7 @@
 							break 2;
 						}
 						break;
-					case 0:
+					case '0':
 						if (strpos($string, $recipe['url-parameter']) === 0) {
 							$param->external = (bool)$recipe['external'];
 							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
@@ -62,7 +62,7 @@
 							return $param;
 						}
 						break;
-					case 1:
+					case '1':
 						if (strpos($string, $recipe['url-parameter']) === 0) {
 							$param->mode = 1;
 							$param->width = $recipe['width'];
@@ -73,7 +73,7 @@
 							return $param;
 						}
 						break;
-					case 2:
+					case '2':
 						if (strpos($string, $recipe['url-parameter']) === 0) {
 							$param->mode = 2;
 							$param->width = $recipe['width'];
@@ -86,7 +86,7 @@
 							return $param;
 						}
 						break;
-					case 3:
+					case '3':
 						if (strpos($string, $recipe['url-parameter']) === 0) {
 							$param->mode = 3;
 							$param->width = $recipe['width'];
