@@ -288,7 +288,7 @@
 
 			$group->appendChild($label);
 
-			$group->appendChild(new XMLElement('p', __('Check this field if you want to allow only custom JIT rules.'), array('class' => 'help')));
+			$group->appendChild(new XMLElement('p', __('Disable dynamic JIT URLs and use named recipes only.'), array('class' => 'help')));
 
 			$context['wrapper']->appendChild($group);
 		}
