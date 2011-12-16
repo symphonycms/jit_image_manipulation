@@ -40,7 +40,7 @@
 		<release version="1.09" date="2010-05-04" min="2.0.5" max="2.1.x">
 			- Sending `ETag` header with response
 			- Added support for `HTTP_IF_MODIFIED_SINCE` and `HTTP_IF_NONE_MATCH` request headers, which will mean a `304 Not Modified` header can be set (Thanks to Nick Dunn for helping on this one)
-			- Added Portuguese and Italian translations (Thanks to Rainer Borene & Simone Economo for those)
+			- Added Portuguese and Italian translations (Thanks to @rainerborene &amp; @eKoeS for those)
 		</release>
 		<release version="1.08" date="2010-02-23" min="2.0.5" max="2.1.x">
 			- Added French localisation
