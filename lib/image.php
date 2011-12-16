@@ -129,13 +129,6 @@
 		}
 	}
 
-	function send404($image_path) {
-		header('HTTP/1.0 404 Not Found');
-		trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path)), E_USER_ERROR);
-		echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path));
-		exit;
-	}
-
 	$meta = $cache_file = NULL;
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
@@ -170,7 +163,7 @@
 		}
 
 		if($allowed == false){
-			header('HTTP/1.0 403 Forbidden');
+			header('Status: 403 Forbidden', true, 403);
 			exit(sprintf('Error: Connecting to %s is not permitted.', $param->file));
 		}
 
@@ -195,7 +188,7 @@
 	// can just be returned to the browser to use it's cached version.
 	if(CACHING === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
 		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
-			header('HTTP/1.1 304 Not Modified');
+			header('Status: 304 Not Modified', true, 304);
 			exit;
 		}
 	}
@@ -229,7 +222,10 @@
 			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
 			// Guess not, return 404.
-			send404($original_file);
+			header('Status: 404 Not Found', true, 404);
+			trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file)), E_USER_ERROR);
+			echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file));
+			exit;
 		}
 		$meta = Image::getMetaInformation($image_path);
 		Image::renderOutputHeaders($meta->type);
@@ -248,7 +244,7 @@
 		}
 	}
 	catch(Exception $e){
-		header('HTTP/1.0 400 Bad Request');
+		header('Status: 400 Bad Request', true, 400);
 		trigger_error($e->getMessage(), E_USER_ERROR);
 		echo $e->getMessage();
 		exit;
@@ -336,7 +332,7 @@
 	// Configuration.
 	if(CACHING && !is_file($cache_file)){
 		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
-			header('HTTP/1.0 404 Not Found');
+			header('Status: 404 Not Found', true, 404);
 			trigger_error('Error generating image', E_USER_ERROR);
 			echo 'Error generating image, failed to create cache file.';
 			exit;
@@ -346,7 +342,7 @@
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
 	if(!$image->display(intval($settings['image']['quality']))) {
-		header('HTTP/1.0 404 Not Found');
+		header('Status: 404 Not Found', true, 404);
 		trigger_error('Error generating image', E_USER_ERROR);
 		echo 'Error generating image';
 		exit;
