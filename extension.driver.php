@@ -181,7 +181,11 @@
 			// general template settings
 			$li = new XMLElement('li');
 			$li->setAttribute('class', $position >= 0 ? 'instance expanded' : 'template');
-			$li->appendChild(new XMLElement('h4', $modes[$mode]));
+			$li->setAttribute('data-type', 'mode-' . $mode);
+			$header = new XMLElement('header', NULL, array('data-name' => $modes[$mode]));
+			$label = (!empty($values['url-parameter'])) ? $values['url-parameter'] : __('New Recipe');
+			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $modes[$mode] . '</span>'));
+			$li->appendChild($header);
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
@@ -271,6 +275,7 @@
 
 			// recipes duplicator
 			$group->appendChild(new XMLElement('p', __('Recipes'), array('class' => 'label')));
+			$div = new XMLElement('div', null, array('class' => 'frame'));
 			$duplicator = new XMLElement('ol');
 			$duplicator->setAttribute('class', 'jit-duplicator');
 
@@ -288,7 +293,8 @@
 				}
 			}
 
-			$group->appendChild($duplicator);
+			$div->appendChild($duplicator);
+			$group->appendChild($div);
 
 			$group->appendChild(new XMLElement('p', __('Some help text...'), array('class' => 'help')));
 
