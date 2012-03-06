@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension id="jit_image_manipulation" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+	<name>Just In Time (JIT) Image Manipulation</name>
+	<description>Image thumbnailer</description>
+	<repo type="github">https://github.com/symphonycms/jit_image_manipulation</repo>
+	<url type="discuss">http://symphony-cms.com/discuss/thread/32795/</url>
+	<types>
+		<type>Multimedia</type>
+	</types>
+	<authors>
+		<author>
+			<name github="symphonycms" symphony="team">Symphony Team</name>
+			<website>http://symphony-cms.com</website>
+		</author>
+	</authors>
+	<releases>
+		<release version="1.14" date="2011-11-11" min="2.0.5" max="2.2.x">
+			- More robust detection of a temp directory
+			- More robust installation
+		</release>
+		<release version="1.13" date="2011-08-16" min="2.0.5" max="2.2.x">
+			- Add a new mode, Resize to Fit, that will conditionally resize your image if it is above the desired width/height otherwise it will leave the image as it. (thanks @21studios)
+			- Output the correct file path in 404 errors (thanks @michael-e)
+			- Fixes error in the error message when connecting to an external site
+			- No longer serves 304 headers when `CACHING` is disabled in the configuration
+		</release>
+		<release version="1.12" date="2011-08-06" min="2.0.5" max="2.2.x">
+			- Fixes issue where cached images would be delivered even though the original file was removed (thanks @michael-e)
+			- Fixes direct display mode (thanks @michael-e)
+			- Output errors and correctly set 404 headers when things go wrong
+		</release>
+		<release version="1.11" date="2011-08-01" min="2.0.5" max="2.2.x">
+			- Allow external images to be cached (thanks @michael-e)
+			- Fixes PNG and GIF transparency issues (thanks to @designermonkey)
+			- Background color on crop becomes optional
+		</release>
+		<release version="1.10" date="2011-04-15" min="2.0.5" max="2.2.x">
+			- Compatibility with Symphony 2.2
+		</release>
+		<release version="1.09" date="2010-05-04" min="2.0.5" max="2.1.x">
+			- Sending `ETag` header with response
+			- Added support for `HTTP_IF_MODIFIED_SINCE` and `HTTP_IF_NONE_MATCH` request headers, which will mean a `304 Not Modified` header can be set (Thanks to Nick Dunn for helping on this one)
+			- Added Portuguese and Italian translations (Thanks to @rainerborene &amp; @eKoeS for those)
+		</release>
+		<release version="1.08" date="2010-02-23" min="2.0.5" max="2.1.x">
+			- Added French localisation
+			- Adjusted German localisation
+			- Fixed a Symphony 2.0.7RC2 compatibility issue.
+		</release>
+		<release version="1.07" date="2010-01-20" min="2.0.5" max="2.0.6">
+			- Added localisation files for Dutch, German, Portuguese (Brazil) and Russian
+			- `trusted()` will look for the `jit-trusted-sites` before attempting to return its contents. This prevents warnings from showing up in the logs.
+		</release>
+		<release version="1.06" date="2009-08-10" min="2.0.2" max="2.0.6">
+			- Code responsible for `.htaccess` update will no longer try to append the rewrite base to for path to extensions folder
+		</release>
+		<release version="1.05" date="2009-08-03" min="2.0.2" max="2.0.6">
+			- Fixed bug introduced by usage of the `imageAntiAlias()` function
+			- Errors and warnings are logged in the main Symphony log
+			- A dump of internal params are logged in addition to any errors
+		</release>
+		<release version="1.04" date="2009-07-23" min="2.0.2" max="2.0.6">
+			- Adding support for alpha masked images.
+		</release>
+		<release version="1.03" date="2009-03-06" min="2.0.2" max="2.0.6">
+			- Minor changes to how `DOCROOT`` is determined
+		</release>
+		<release version="1.02" date="2009-03-05" min="2.0.2" max="2.0.6">
+			- Disabling extension will remove rule from `.htaccess`
+		</release>
+		<release version="1.01" date="2011-03-05" min="2.0.2" max="2.0.6">
+			- Updated to work with 2.0.2 config changes
+		</release>
+	</releases>
+</extension>

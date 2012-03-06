@@ -41,14 +41,14 @@
 			try {
 				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
 
-				## Cannot use $1 in a preg_replace replacement string, so using a token instead
+				// Cannot use $1 in a preg_replace replacement string, so using a token instead
 				$token = md5(time());
 
 				$rule = "
 	### IMAGE RULES
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]\n\n";
 
-				## Remove existing the rules
+				// Remove existing the rules
 				$htaccess = self::__removeImageRules($htaccess);
 
 				if(preg_match('/### IMAGE RULES/', $htaccess)){
@@ -58,10 +58,22 @@
 					$htaccess = preg_replace('/RewriteRule .\* - \[S=14\]\s*/i', "RewriteRule .* - [S=14]\n{$rule}\t", $htaccess);
 				}
 
-				## Replace the token with the real value
+				// Replace the token with the real value
 				$htaccess = str_replace($token, '$1', $htaccess);
 
-				return file_put_contents(DOCROOT . '/.htaccess', $htaccess);
+				if(file_put_contents(DOCROOT . '/.htaccess', $htaccess)) {
+					// Now add Configuration values
+					Symphony::Configuration()->set('cache', '1', 'image');
+					Symphony::Configuration()->set('quality', '90', 'image');
+
+					if(method_exists('Configuration', 'write')) {
+						return Symphony::Configuration()->write();
+					}
+					else {
+						return Administration::instance()->saveConfig();
+					}
+				}
+				else return false;
 			}
 			catch (Exception $ex) {
 				$extension = $this->about();
