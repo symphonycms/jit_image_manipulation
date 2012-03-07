@@ -189,7 +189,7 @@
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
-            $label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle');
+            $label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
 			$label = Widget::Label(__($label_text));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
 			$li->appendChild($label);
