@@ -276,6 +276,8 @@
 			$div = new XMLElement('div', null, array('class' => 'frame'));
 			$duplicator = new XMLElement('ol');
 			$duplicator->setAttribute('class', 'jit-duplicator');
+			$duplicator->setAttribute('data-add', __('Add recipe'));
+			$duplicator->setAttribute('data-remove', __('Remove recipe'));
 
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('0'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('1'));
