@@ -189,12 +189,10 @@
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
-			$label = Widget::Label(__('URL Parameter'));
+            $label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle');
+			$label = Widget::Label(__($label_text));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
 			$li->appendChild($label);
-			if ($mode === 'regex') {
-				$li->appendChild(new XMLElement('p', __('Regular Expression'), array('class' => 'help')));
-			}
 
 			// width and height for modes 1, 2, 3 and 4
 			if ($mode === '1' || $mode === '2' || $mode === '3' || $mode === '4') {
