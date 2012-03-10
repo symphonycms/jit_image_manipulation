@@ -92,7 +92,7 @@
 		public function update($previousVersion = false){
 			if(version_compare($previousVersion, '1.15', '<')) {
 				// Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
-				if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'))) {
+				if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory')) && file_exists(MANIFEST . '/jit-trusted-sites')) {
 					rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites');
 				}
 			}
