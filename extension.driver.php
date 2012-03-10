@@ -189,12 +189,10 @@
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
-			$label = Widget::Label(__('URL Parameter'));
+            $label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
+			$label = Widget::Label(__($label_text));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
 			$li->appendChild($label);
-			if ($mode === 'regex') {
-				$li->appendChild(new XMLElement('p', __('Regular Expression'), array('class' => 'help')));
-			}
 
 			// width and height for modes 1, 2, 3 and 4
 			if ($mode === '1' || $mode === '2' || $mode === '3' || $mode === '4') {
@@ -278,6 +276,8 @@
 			$div = new XMLElement('div', null, array('class' => 'frame'));
 			$duplicator = new XMLElement('ol');
 			$duplicator->setAttribute('class', 'jit-duplicator');
+			$duplicator->setAttribute('data-add', __('Add recipe'));
+			$duplicator->setAttribute('data-remove', __('Remove recipe'));
 
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('0'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('1'));
@@ -302,11 +302,9 @@
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
 			if(Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' ' . __('Disable regular JIT rules'));
+			$label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only'));
 
 			$group->appendChild($label);
-
-			$group->appendChild(new XMLElement('p', __('Disable dynamic JIT URLs and use named recipes only.'), array('class' => 'help')));
 
 			$context['wrapper']->appendChild($group);
 		}
