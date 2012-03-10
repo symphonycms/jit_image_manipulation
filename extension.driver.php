@@ -5,8 +5,8 @@
 		public function about(){
 			return array(
 				'name' => 'JIT Image Manipulation',
-				'version' => '1.14',
-				'release-date' => '2011-11-11',
+				'version' => '1.15',
+				'release-date' => '2012-03-10',
 				'author' => array(
 					array(
 						'name' => 'Alistair Kearney',
@@ -66,6 +66,9 @@
 					Symphony::Configuration()->set('cache', '1', 'image');
 					Symphony::Configuration()->set('quality', '90', 'image');
 
+					// Create workspace directory
+					General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
+
 					if(method_exists('Configuration', 'write')) {
 						return Symphony::Configuration()->write();
 					}
@@ -86,9 +89,15 @@
 			return $this->install();
 		}
 
+		public function update($previousVersion = false){
+			if(version_compare($previousVersion, '1.15', '<')) {
+				// Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
+				rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/jit-trusted-sites');
+			}
+		}
+
 		public function uninstall(){
-			if(file_exists(MANIFEST . '/jit-trusted-sites')) unlink(MANIFEST . '/jit-trusted-sites');
-			if(file_exists(MANIFEST . '/jit-recipes.php')) unlink(MANIFEST . '/jit-recipes.php');
+			General::deleteDirectory(WORKSPACE . '/jit-image-manipulation');
 
 			return $this->disable();
 		}
@@ -114,15 +123,13 @@
 	-------------------------------------------------------------------------*/
 
 		public function trusted(){
-			return is_readable(MANIFEST . '/jit-trusted-sites')
-				? file_get_contents(MANIFEST . '/jit-trusted-sites')
+			return is_readable(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites')
+				? file_get_contents(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites')
 				: NULL;
 		}
 
 		public function saveTrusted($string){
-			return is_writable(MANIFEST . '/jit-trusted-sites')
-				? file_put_contents(MANIFEST . '/jit-trusted-sites', $string)
-				: false;
+			return General::writeFile(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites', $string, Symphony::Configuration()->get('write_mode', 'file'));
 		}
 
 		public function saveRecipes($recipes){
@@ -144,7 +151,7 @@
 			}
 			$string .= "\r\n\t);\n\n";
 
-			return General::writeFile(MANIFEST . '/jit-recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'));
+			return General::writeFile(WORKSPACE . '/jit-image-manipulation/jit-recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'));
 
 		}
 
@@ -183,27 +190,34 @@
 			$li->setAttribute('class', $position >= 0 ? 'instance expanded' : 'template');
 			$li->setAttribute('data-type', 'mode-' . $mode);
 			$header = new XMLElement('header', NULL, array('data-name' => $modes[$mode]));
-			$label = (!empty($values['url-parameter'])) ? $values['url-parameter'] : __('New Recipe');
+			$label = (!empty($values['name'])) ? $values['name'] : __('New Recipe');
 			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $modes[$mode] . '</span>'));
 			$li->appendChild($header);
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
-			$label = Widget::Label(__('URL Parameter'));
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'two columns');
+
+			$label = Widget::Label(__('Name'), null, 'column');
+			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", $values['name']));
+			$group->appendChild($label);
+
+			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
+			$label = Widget::Label(__($label_text), null, 'column');
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
-			$li->appendChild($label);
-			if ($mode === 'regex') {
-				$li->appendChild(new XMLElement('p', __('Regular Expression'), array('class' => 'help')));
-			}
+			$group->appendChild($label);
+
+			$li->appendChild($group);
 
 			// width and height for modes 1, 2, 3 and 4
 			if ($mode === '1' || $mode === '2' || $mode === '3' || $mode === '4') {
 				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
-				$label = Widget::Label(__('Width'));
+				$group->setAttribute('class', 'two columns');
+				$label = Widget::Label(__('Width'), null, 'column');
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][width]", $values['width']));
 				$group->appendChild($label);
-				$label = Widget::Label(__('Height'));
+				$label = Widget::Label(__('Height'), null, 'column');
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][height]", $values['height']));
 				$group->appendChild($label);
 				$li->appendChild($group);
@@ -212,11 +226,11 @@
 			// position and background for mode 2 and 3
 			if ($mode === '2' || $mode === '3') {
 				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
-				$label = Widget::Label(__('Position'));
+				$group->setAttribute('class', 'two columns');
+				$label = Widget::Label(__('Position'), null, 'column');
 				$label->appendChild(Widget::Select("jit_image_manipulation[recipes][{$position}][position]", $positionOptions));
 				$group->appendChild($label);
-				$label = Widget::Label(__('Background Color'));
+				$label = Widget::Label(__('Background Color'), null, 'column');
 				$label->appendChild(new XMLElement('i', __('Optional')));
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][background]", $values['background']));
 				$group->appendChild($label);
@@ -232,16 +246,17 @@
 
 			// more general settings, except external image for regex mode
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-			$label = Widget::Label(__('Image quality'));
+			$group->setAttribute('class', 'two columns');
+			$label = Widget::Label(__('Image quality'), null, 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
 			$group->appendChild($label);
 			if ($mode !== 'regex') {
 				$label = Widget::Label();
+				$label->setAttribute('class', 'column justified');
 				$hidden = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '0', 'hidden');
 				$input = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '1', 'checkbox');
-				if($values['external'] == 'true') $input->setAttribute('checked', 'checked');
+				if($values['external'] == '1') $input->setAttribute('checked', 'checked');
 				$label->setValue($input->generate() . ' ' . __('External Image'));
 				$group->appendChild($hidden);
 				$group->appendChild($label);
@@ -278,6 +293,8 @@
 			$div = new XMLElement('div', null, array('class' => 'frame'));
 			$duplicator = new XMLElement('ol');
 			$duplicator->setAttribute('class', 'jit-duplicator');
+			$duplicator->setAttribute('data-add', __('Add recipe'));
+			$duplicator->setAttribute('data-remove', __('Remove recipe'));
 
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('0'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('1'));
@@ -286,7 +303,7 @@
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('4'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('regex'));
 
-			if(file_exists(MANIFEST . '/jit-recipes.php')) include(MANIFEST . '/jit-recipes.php');
+			if(file_exists(WORKSPACE . '/jit-image-manipulation/jit-recipes.php')) include(WORKSPACE . '/jit-image-manipulation/jit-recipes.php');
 			if (is_array($recipes) && !empty($recipes)) {
 				foreach($recipes as $position => $recipe) {
 					$duplicator->appendChild(self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe));
@@ -302,11 +319,9 @@
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
 			if(Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' ' . __('Disable regular JIT rules'));
+			$label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only'));
 
 			$group->appendChild($label);
-
-			$group->appendChild(new XMLElement('p', __('Disable dynamic JIT URLs and use named recipes only.'), array('class' => 'help')));
 
 			$context['wrapper']->appendChild($group);
 		}
