@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
 			orderable: true,
 			collapsible: true
 		})
-		.on('keyup', '.instance input[name*="[url-parameter]"]', function(event) {
+		.on('keyup', '.instance input[name*="[name]"]', function(event) {
 			var label = $(this),
 				value = label.val();
 

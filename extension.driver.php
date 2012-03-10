@@ -183,16 +183,25 @@
 			$li->setAttribute('class', $position >= 0 ? 'instance expanded' : 'template');
 			$li->setAttribute('data-type', 'mode-' . $mode);
 			$header = new XMLElement('header', NULL, array('data-name' => $modes[$mode]));
-			$label = (!empty($values['url-parameter'])) ? $values['url-parameter'] : __('New Recipe');
+			$label = (!empty($values['name'])) ? $values['name'] : __('New Recipe');
 			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $modes[$mode] . '</span>'));
 			$li->appendChild($header);
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'two columns');
+
+			$label = Widget::Label(__('Name'), null, 'column');
+			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", $values['name']));
+			$group->appendChild($label);
+
 			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
-			$label = Widget::Label(__($label_text));
+			$label = Widget::Label(__($label_text), null, 'column');
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
-			$li->appendChild($label);
+			$group->appendChild($label);
+
+			$li->appendChild($group);
 
 			// width and height for modes 1, 2, 3 and 4
 			if ($mode === '1' || $mode === '2' || $mode === '3' || $mode === '4') {
@@ -240,7 +249,7 @@
 				$label->setAttribute('class', 'column justified');
 				$hidden = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '0', 'hidden');
 				$input = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '1', 'checkbox');
-				if($values['external'] == 'true') $input->setAttribute('checked', 'checked');
+				if($values['external'] == '1') $input->setAttribute('checked', 'checked');
 				$label->setValue($input->generate() . ' ' . __('External Image'));
 				$group->appendChild($hidden);
 				$group->appendChild($label);
