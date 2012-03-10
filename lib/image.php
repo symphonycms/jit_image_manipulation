@@ -121,7 +121,7 @@
 		if($image_settings['disable_regular_rules'] == 'yes' && $is_regex != true){
 			header('HTTP/1.0 404 Not Found');
 			trigger_error('Error generating image', E_USER_ERROR);
-			echo 'Regular JIT rules are disabled and no matching recipe is found.';
+			echo 'Regular JIT rules are disabled and no matching recipe was found.';
 			exit;
 		}
 
