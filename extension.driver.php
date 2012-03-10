@@ -5,8 +5,8 @@
 		public function about(){
 			return array(
 				'name' => 'JIT Image Manipulation',
-				'version' => '1.14',
-				'release-date' => '2011-11-11',
+				'version' => '1.15',
+				'release-date' => '2012-03-10',
 				'author' => array(
 					array(
 						'name' => 'Alistair Kearney',
@@ -66,6 +66,9 @@
 					Symphony::Configuration()->set('cache', '1', 'image');
 					Symphony::Configuration()->set('quality', '90', 'image');
 
+					// Create workspace directory
+					General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
+
 					if(method_exists('Configuration', 'write')) {
 						return Symphony::Configuration()->write();
 					}
@@ -86,9 +89,15 @@
 			return $this->install();
 		}
 
+		public function update($previousVersion = false){
+			if(version_compare($previousVersion, '1.15', '<')) {
+				// Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
+				rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/jit-trusted-sites');
+			}
+		}
+
 		public function uninstall(){
-			if(file_exists(MANIFEST . '/jit-trusted-sites')) unlink(MANIFEST . '/jit-trusted-sites');
-			if(file_exists(MANIFEST . '/jit-recipes.php')) unlink(MANIFEST . '/jit-recipes.php');
+			General::deleteDirectory(WORKSPACE . '/jit-image-manipulation');
 
 			return $this->disable();
 		}
@@ -114,15 +123,13 @@
 	-------------------------------------------------------------------------*/
 
 		public function trusted(){
-			return is_readable(MANIFEST . '/jit-trusted-sites')
-				? file_get_contents(MANIFEST . '/jit-trusted-sites')
+			return is_readable(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites')
+				? file_get_contents(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites')
 				: NULL;
 		}
 
 		public function saveTrusted($string){
-			return is_writable(MANIFEST . '/jit-trusted-sites')
-				? file_put_contents(MANIFEST . '/jit-trusted-sites', $string)
-				: false;
+			return General::writeFile(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites', $string, Symphony::Configuration()->get('write_mode', 'file'));
 		}
 
 		public function saveRecipes($recipes){
@@ -144,7 +151,7 @@
 			}
 			$string .= "\r\n\t);\n\n";
 
-			return General::writeFile(MANIFEST . '/jit-recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'));
+			return General::writeFile(WORKSPACE . '/jit-image-manipulation/jit-recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'));
 
 		}
 
@@ -296,7 +303,7 @@
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('4'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('regex'));
 
-			if(file_exists(MANIFEST . '/jit-recipes.php')) include(MANIFEST . '/jit-recipes.php');
+			if(file_exists(WORKSPACE . '/jit-image-manipulation/jit-recipes.php')) include(WORKSPACE . '/jit-image-manipulation/jit-recipes.php');
 			if (is_array($recipes) && !empty($recipes)) {
 				foreach($recipes as $position => $recipe) {
 					$duplicator->appendChild(self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe));
