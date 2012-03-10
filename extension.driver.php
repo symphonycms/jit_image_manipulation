@@ -189,7 +189,7 @@
 
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
-            $label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
+			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
 			$label = Widget::Label(__($label_text));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
 			$li->appendChild($label);
@@ -197,11 +197,11 @@
 			// width and height for modes 1, 2, 3 and 4
 			if ($mode === '1' || $mode === '2' || $mode === '3' || $mode === '4') {
 				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
-				$label = Widget::Label(__('Width'));
+				$group->setAttribute('class', 'two columns');
+				$label = Widget::Label(__('Width'), null, 'column');
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][width]", $values['width']));
 				$group->appendChild($label);
-				$label = Widget::Label(__('Height'));
+				$label = Widget::Label(__('Height'), null, 'column');
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][height]", $values['height']));
 				$group->appendChild($label);
 				$li->appendChild($group);
@@ -210,11 +210,11 @@
 			// position and background for mode 2 and 3
 			if ($mode === '2' || $mode === '3') {
 				$group = new XMLElement('div');
-				$group->setAttribute('class', 'group');
-				$label = Widget::Label(__('Position'));
+				$group->setAttribute('class', 'two columns');
+				$label = Widget::Label(__('Position'), null, 'column');
 				$label->appendChild(Widget::Select("jit_image_manipulation[recipes][{$position}][position]", $positionOptions));
 				$group->appendChild($label);
-				$label = Widget::Label(__('Background Color'));
+				$label = Widget::Label(__('Background Color'), null, 'column');
 				$label->appendChild(new XMLElement('i', __('Optional')));
 				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][background]", $values['background']));
 				$group->appendChild($label);
@@ -230,13 +230,14 @@
 
 			// more general settings, except external image for regex mode
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-			$label = Widget::Label(__('Image quality'));
+			$group->setAttribute('class', 'two columns');
+			$label = Widget::Label(__('Image quality'), null, 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
 			$group->appendChild($label);
 			if ($mode !== 'regex') {
 				$label = Widget::Label();
+				$label->setAttribute('class', 'column justified');
 				$hidden = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '0', 'hidden');
 				$input = Widget::Input("jit_image_manipulation[recipes][{$position}][external]", '1', 'checkbox');
 				if($values['external'] == 'true') $input->setAttribute('checked', 'checked');
