@@ -93,7 +93,7 @@
 			if(version_compare($previousVersion, '1.15', '<')) {
 				// Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
 				if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'))) {
-					rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/jit-trusted-sites');
+					rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites');
 				}
 			}
 		}
@@ -125,13 +125,13 @@
 	-------------------------------------------------------------------------*/
 
 		public function trusted(){
-			return is_readable(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites')
-				? file_get_contents(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites')
+			return is_readable(WORKSPACE . '/jit-image-manipulation/trusted-sites')
+				? file_get_contents(WORKSPACE . '/jit-image-manipulation/trusted-sites')
 				: NULL;
 		}
 
 		public function saveTrusted($string){
-			return General::writeFile(WORKSPACE . '/jit-image-manipulation/jit-trusted-sites', $string, Symphony::Configuration()->get('write_mode', 'file'));
+			return General::writeFile(WORKSPACE . '/jit-image-manipulation/trusted-sites', $string, Symphony::Configuration()->get('write_mode', 'file'));
 		}
 
 		public function saveRecipes($recipes){
@@ -153,7 +153,7 @@
 			}
 			$string .= "\r\n\t);\n\n";
 
-			return General::writeFile(WORKSPACE . '/jit-image-manipulation/jit-recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'));
+			return General::writeFile(WORKSPACE . '/jit-image-manipulation/recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'));
 
 		}
 
@@ -305,7 +305,7 @@
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('4'));
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('regex'));
 
-			if(file_exists(WORKSPACE . '/jit-image-manipulation/jit-recipes.php')) include(WORKSPACE . '/jit-image-manipulation/jit-recipes.php');
+			if(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) include(WORKSPACE . '/jit-image-manipulation/recipes.php');
 			if (is_array($recipes) && !empty($recipes)) {
 				foreach($recipes as $position => $recipe) {
 					$duplicator->appendChild(self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe));
