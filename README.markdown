@@ -2,8 +2,8 @@
 
 "Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
 
-- Version: 1.14
-- Date: 11th November 2011
+- Version: 1.15
+- Date: 10th March 2012
 - Requirements: Symphony 2.0.5 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
@@ -19,8 +19,7 @@ Information about [installing and updating extensions](http://symphony-cms.com/l
 
 ## Updating
 
-Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything
-before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
+Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
 	### IMAGE RULES
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
@@ -66,11 +65,19 @@ If you're using mode `2` or `3` for image cropping, there is an optional fifth b
 - *For `.jpg` images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
 - *For transparent `.png` or `.gif` images, supplying the background color will fill the image. This is why the setting is optional*
 
-The extra fifth setting makes the url look like this:
+The extra fifth setting makes the URL look like this:
 
 	<img src="{$root}/image/2/80/80/5/fff/{image/@path}/{image/filename}" />
 
 - *If you wish to crop and maintain the aspect ratio of an image but only have one fixed dimension (that is, width or height), simply set the other dimension to 0*
+
+### Recipes
+
+Recipes are named rules for the JIT settings. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like
+
+	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
+
+Recipes make image URLs more secure, semantic and convenient. They are more secure because dynamic JIT rules can be disabled so that DOS attacks with large or multiple image dimensions can be prevented. They are more semantic because you can choose a descriptive name. They are more convenient because you can copy recipes between installations and recipe changes will be reflected by every image using this recipe.
 
 ### Trusted Sites
 
