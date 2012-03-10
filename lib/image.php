@@ -40,7 +40,7 @@
 		);
 
 		// Check for matching recipes
-		if(file_exists(MANIFEST . '/jit-recipes.php')) include(MANIFEST . '/jit-recipes.php');
+		if(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) include(WORKSPACE . '/jit-image-manipulation/recipes.php');
 
 		if (is_array($recipes) && !empty($recipes)) {
 			foreach($recipes as $recipe) {
@@ -227,7 +227,7 @@
 	}
 	// Image is external, check to see that it is a trusted source
 	else {
-		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		$rules = file(WORKSPACE . '/jit-image-manipulation/trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$allowed = false;
 
 		$rules = array_map('trim', $rules);
