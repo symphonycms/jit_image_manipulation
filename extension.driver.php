@@ -282,14 +282,6 @@
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('JIT Image Manipulation')));
 
-			// textarea for trusted sites
-			$label = Widget::Label(__('Trusted Sites'));
-			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 10, 50, $this->trusted()));
-
-			$group->appendChild($label);
-
-			$group->appendChild(new XMLElement('p', __('Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.'), array('class' => 'help')));
-
 			// recipes duplicator
 			$group->appendChild(new XMLElement('p', __('Recipes'), array('class' => 'label')));
 			$div = new XMLElement('div', null, array('class' => 'frame'));
@@ -315,8 +307,6 @@
 			$div->appendChild($duplicator);
 			$group->appendChild($div);
 
-			$group->appendChild(new XMLElement('p', __('Some help text...'), array('class' => 'help')));
-
 			// checkbox to disable regular rules
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
@@ -324,6 +314,14 @@
 			$label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only'));
 
 			$group->appendChild($label);
+
+			// textarea for trusted sites
+			$label = Widget::Label(__('Trusted Sites'));
+			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, $this->trusted()));
+
+			$group->appendChild($label);
+
+			$group->appendChild(new XMLElement('p', __('Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.'), array('class' => 'help')));
 
 			$context['wrapper']->appendChild($group);
 		}
