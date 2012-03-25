@@ -139,7 +139,7 @@
 			$string = "<?php\n";
 
 			$string .= "\n\t\$recipes = array(";
-			
+
 			if (is_array($recipes) && !empty($recipes)) {
 				foreach($recipes as $recipe => $data){
 					$string .= "\r\n\r\n\r\n\t\t########";
@@ -265,10 +265,10 @@
 			}
 
 			$li->appendChild($group);
-			
+
 			return $li;
 		}
-		
+
 
 	/*-------------------------------------------------------------------------
 		Delegates:

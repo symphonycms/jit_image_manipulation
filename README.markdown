@@ -4,7 +4,7 @@
 
 - Version: 1.15
 - Date: 10th March 2012
-- Requirements: Symphony 2.0.5 or later
+- Requirements: Symphony 2.3 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
@@ -81,4 +81,4 @@ Recipes make image URLs more secure, semantic and convenient. They are more secu
 
 ### Trusted Sites
 
-In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
+In order pull images from external sources, you must set up a white-list of trusted sites. To do this, go to "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (`*`).
