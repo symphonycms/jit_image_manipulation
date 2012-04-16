@@ -73,7 +73,7 @@ The extra fifth setting makes the URL look like this:
 
 ### Recipes
 
-Recipes are named rules for the JIT settings. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like
+Recipes are named rules for the JIT settings. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like:
 
 	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
 

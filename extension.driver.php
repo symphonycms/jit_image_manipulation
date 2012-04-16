@@ -69,12 +69,7 @@
 					// Create workspace directory
 					General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
 
-					if(method_exists('Configuration', 'write')) {
-						return Symphony::Configuration()->write();
-					}
-					else {
-						return Administration::instance()->saveConfig();
-					}
+					return Symphony::Configuration()->write();
 				}
 				else return false;
 			}
@@ -205,7 +200,7 @@
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", $values['name']));
 			$group->appendChild($label);
 
-			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/my-image.jpg</i>';
+			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/path/to/my-image.jpg</i>';
 			$label = Widget::Label(__($label_text), null, 'column');
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
 			$group->appendChild($label);
@@ -281,6 +276,9 @@
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
 			$group->appendChild(new XMLElement('legend', __('JIT Image Manipulation')));
+			$group->appendChild(
+				new XMLElement('p', __('Recipes are named rules for the JIT settings.'), array('class' => 'help'))
+			);
 
 			// recipes duplicator
 			$group->appendChild(new XMLElement('p', __('Recipes'), array('class' => 'label')));
