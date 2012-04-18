@@ -1,12 +1,10 @@
 jQuery(document).ready(function($) {
-	var duplicator = $('.jit-duplicator');
-
-	duplicator
+	$('.jit-duplicator')
 		.symphonyDuplicator({
 			orderable: true,
 			collapsible: true
 		})
-		.on('keyup', '.instance input[name*="[name]"]', function(event) {
+		.on('input blur keyup', '.instance input[name*="[name]"]', function(event) {
 			var label = $(this),
 				value = label.val();
 
