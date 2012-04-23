@@ -270,6 +270,26 @@
 	-------------------------------------------------------------------------*/
 
 		public function appendPreferences($context){
+			// Check if JIT configuration folder exists
+			if (!file_exists(WORKSPACE . '/jit-image-manipulation/')) {
+				Symphony::Engine()->Page->pageAlert(__('The JIT configuration folder, %s, does not exist. You will not be able to save recipes and trusted sites.', array('<code>/workspace/jit-image-manipulation/</code>')), Alert::ERROR);
+			} 
+
+			// Alert messages for JIT configuration errors
+			$errors = Symphony::Engine()->Page->_errors;
+			if (isset($errors['jit-trusted-sites'])) {
+				Symphony::Engine()->Page->pageAlert(
+					$errors['jit-trusted-sites']
+					, Alert::ERROR
+				);
+			}
+			if (isset($errors['jit-recipes'])) {
+				Symphony::Engine()->Page->pageAlert(
+					$errors['jit-recipes']
+					, Alert::ERROR
+				);
+			}
+
 			// JavaScript for recipes duplicator
 			Symphony::Engine()->Page->addScriptToHead(URL . '/extensions/jit_image_manipulation/assets/jit_image_manipulation.preferences.js', 3134);
 
@@ -329,7 +349,11 @@
 				$context['settings']['image']['disable_regular_rules'] = 'no';
 			}
 
-			$this->saveTrusted(stripslashes($_POST['jit_image_manipulation']['trusted_external_sites']));
-			$this->saveRecipes($_POST['jit_image_manipulation']['recipes']);
+			if (!$this->saveTrusted(stripslashes($_POST['jit_image_manipulation']['trusted_external_sites']))) {
+				$context['errors']['jit-trusted-sites'] = __('An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/recipes.php</code>'));
+			};
+			if (!$this->saveRecipes($_POST['jit_image_manipulation']['recipes'])) {
+				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/trusted-sites</code>'));
+			};
 		}
 	}
