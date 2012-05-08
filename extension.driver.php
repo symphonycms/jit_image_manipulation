@@ -241,13 +241,15 @@
 				$li->appendChild($label);
 			}
 
-			// more general settings, except external image for regex mode
+			// more general settings, except quality for direct display and external image for regex mode
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'two columns');
-			$label = Widget::Label(__('Image quality'), null, 'column');
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
-			$group->appendChild($label);
+			if ($mode !== '0') {
+				$label = Widget::Label(__('Image quality'), null, 'column');
+				$label->appendChild(new XMLElement('i', __('Optional')));
+				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
+				$group->appendChild($label);
+			}
 			if ($mode !== 'regex') {
 				$label = Widget::Label();
 				$label->setAttribute('class', 'column justified');
