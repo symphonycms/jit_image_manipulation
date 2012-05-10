@@ -6,9 +6,9 @@
 
 		const __ERROR_TRUSTED__ = 200;
 
-		const __ERROR_RECIPES__ = 250;
+		const __INVALID_RECIPES__ = 250;
 
-		const __DUPLICATE_RECIPES__ = 300;
+		const __ERROR_SAVING_RECIPES__ = 300;
 
 		public $recipes_errors = array();
 
@@ -141,16 +141,25 @@
 		}
 
 		public function saveRecipes($recipes){
-
 			$string = "<?php\n";
-
 			$string .= "\n\t\$recipes = array(";
 
 			if (is_array($recipes) && !empty($recipes)) {
 				// array to collect recipe handles
 				$handles = array();
 
-				foreach($recipes as $position => $recipe){
+				foreach($recipes as $position => $recipe) {
+					if(empty($recipe['name'])) {
+						$this->recipes_errors[$position] = array(
+							'missing' => __('This is a required field.')
+						);
+						break;
+					}
+
+					if(empty($recipe['url-parameter']) && $recipe['mode'] !== 'regex') {
+						$recipe['url-parameter'] = $_POST['jit_image_manipulation']['recipes'][$position]['url-parameter'] = Lang::createHandle($recipe['name']);
+					}
+
 					// check for recipes with same handles
 					if (!in_array($recipe['url-parameter'], $handles)) {
 						// handle does not exist => save recipe
@@ -161,26 +170,35 @@
 						}
 						$string .= "\r\n\t\t),";
 						$string .= "\r\n\t\t########";
-					} else {
-						// handle does exist => set error
-						$this->recipes_errors[] = $position;
-					}
 
-					// collect recipe handle
-					$handles[] = $recipe['url-parameter'];
+						// collect recipe handle
+						$handles[] = $recipe['url-parameter'];
+					}
+					else if($mode === 'regex') {
+						// regex already exists => set error
+						$this->recipes_errors[$position] = array(
+							'invalid' => __('A recipe with this regular expression already exists.')
+						);
+					}
+					else {
+						// handle does exist => set error
+						$this->recipes_errors[$position] = array(
+							'invalid' => __('A recipe with this handle already exists. All handles must be unique.')
+						);
+					}
 				}
 			}
 
 			$string .= "\r\n\t);\n\n";
 
-			// try to write recipes file
-			if (!General::writeFile(WORKSPACE . '/jit-image-manipulation/recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'))) {
-				return self::__ERROR_RECIPES__;
-			}
-
 			// notify for duplicate recipes handles
 			if (!empty($this->recipes_errors)) {
-				return self::__DUPLICATE_RECIPES__;
+				return self::__INVALID_RECIPES__;
+			}
+
+			// try to write recipes file
+			if (!General::writeFile(WORKSPACE . '/jit-image-manipulation/recipes.php', $string, Symphony::Configuration()->get('write_mode', 'file'))) {
+				return self::__ERROR_SAVING_RECIPES__;
 			}
 
 			// all went fine
@@ -225,26 +243,29 @@
 			$label = (!empty($values['name'])) ? $values['name'] : __('New Recipe');
 			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $modes[$mode] . '</span>'));
 			$li->appendChild($header);
-
 			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
 
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'two columns');
 
+			// Name
 			$label = Widget::Label(__('Name'), null, 'column');
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", $values['name']));
-			$group->appendChild($label);
+			if(is_array($error) && isset($error['missing'])) {
+				$group->appendChild(Widget::Error($label, $error['missing']));
+			}
+			else {
+				$group->appendChild($label);
+			}
 
+			// Handle
 			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/path/to/my-image.jpg</i>';
 			$label = Widget::Label(__($label_text), null, 'column');
 			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
-			if ($error) {
-				$column = new XMLElement('div');
-				$column->setAttribute('class', 'invalid');
-				$column->appendChild($label);
-				$column->appendChild(new XMLElement('p', __('Handles must be unique.')));
-				$group->appendChild($column);
-			} else {
+			if(is_array($error) && isset($error['invalid'])) {
+				$group->appendChild(Widget::Error($label, $error['invalid']));
+			}
+			else {
 				$group->appendChild($label);
 			}
 
@@ -316,26 +337,20 @@
 		public function appendPreferences($context){
 			// Check if JIT configuration folder exists
 			if (!file_exists(WORKSPACE . '/jit-image-manipulation/')) {
-				Symphony::Engine()->Page->pageAlert(__('The JIT configuration folder, %s, does not exist. You will not be able to save recipes and trusted sites.', array('<code>/workspace/jit-image-manipulation/</code>')), Alert::ERROR);
-			} 
+				Administration::instance()->Page->pageAlert(__('The JIT configuration folder, %s, does not exist. You will not be able to save recipes and trusted sites.', array('<code>/workspace/jit-image-manipulation/</code>')), Alert::ERROR);
+			}
 
 			// Alert messages for JIT configuration errors
 			$errors = $context['errors'];
 			if (isset($errors['jit-trusted-sites'])) {
-				Symphony::Engine()->Page->pageAlert(
-					$errors['jit-trusted-sites']
-					, Alert::ERROR
-				);
+				Administration::instance()->Page->pageAlert($errors['jit-trusted-sites'], Alert::ERROR);
 			}
 			if (isset($errors['jit-recipes'])) {
-				Symphony::Engine()->Page->pageAlert(
-					$errors['jit-recipes']
-					, Alert::ERROR
-				);
+				Administration::instance()->Page->pageAlert($errors['jit-recipes'], Alert::ERROR);
 			}
 
 			// JavaScript for recipes duplicator
-			Symphony::Engine()->Page->addScriptToHead(URL . '/extensions/jit_image_manipulation/assets/jit_image_manipulation.preferences.js', 3134);
+			Administration::instance()->Page->addScriptToHead(URL . '/extensions/jit_image_manipulation/assets/jit_image_manipulation.preferences.js', 3134);
 
 			$group = new XMLElement('fieldset');
 			$group->setAttribute('class', 'settings');
@@ -362,7 +377,9 @@
 			// use recipes POST datain case of an error
 			if (is_array($_POST['jit_image_manipulation']['recipes']) && !empty($_POST['jit_image_manipulation']['recipes']) && !empty($this->recipes_errors)) {
 				foreach ($_POST['jit_image_manipulation']['recipes'] as $position => $recipe) {
-					$duplicator->appendChild(self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe, in_array($position, $this->recipes_errors)));
+					$duplicator->appendChild(
+						self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe, $this->recipes_errors[$position])
+					);
 				}
 			}
 			// otherwise use saved recipes data
@@ -370,7 +387,9 @@
 				if(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) include(WORKSPACE . '/jit-image-manipulation/recipes.php');
 				if (is_array($recipes) && !empty($recipes)) {
 					foreach($recipes as $position => $recipe) {
-						$duplicator->appendChild(self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe));
+						$duplicator->appendChild(
+							self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe)
+						);
 					}
 				}
 			}
@@ -391,7 +410,6 @@
 			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, $this->trusted()));
 
 			$group->appendChild($label);
-
 			$group->appendChild(new XMLElement('p', __('Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.'), array('class' => 'help')));
 
 			$context['wrapper']->appendChild($group);
@@ -411,12 +429,12 @@
 				$context['errors']['jit-trusted-sites'] = __('An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/trusted-sites</code>'));
 			};
 			// there were errors saving the recipes
-			if ($recipes_saved == self::__ERROR_RECIPES__) {
+			if ($recipes_saved == self::__ERROR_SAVING_RECIPES__) {
 				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/recipes.php</code>'));
 			};
 			// there were duplicate recipes handles
-			if ($recipes_saved == self::__DUPLICATE_RECIPES__) {
-				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes. Recipe handles must be unique.');
+			if ($recipes_saved == self::__INVALID_RECIPES__) {
+				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes.');
 			};
 		}
 	}

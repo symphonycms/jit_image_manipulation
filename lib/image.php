@@ -112,7 +112,6 @@
 						break;
 				}
 			}
-
 		}
 
 		// Check if only recipes are allowed.
