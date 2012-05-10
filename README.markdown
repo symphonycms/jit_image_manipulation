@@ -1,6 +1,6 @@
 # JIT Image Manipulation #
 
-"Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
+A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
 
 - Version: 1.15
 - Date: 10th March 2012
@@ -9,15 +9,14 @@
 - Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
 
-## Synopsis
-
-A simple way to manipulate images on the fly via the URL. Supports caching, image quality settings and loading of offsite images.
 
 ## Installation
 
-Information about [installing and updating extensions](http://symphony-cms.com/learn/tasks/view/install-an-extension/) can be found in the Symphony documentation at <http://symphony-cms.com/learn/>.
+Information about [installing and updating extensions](http://symphony-cms.com/learn/tasks/view/install-an-extension/) can be found in the [Symphony documentation](http://symphony-cms.com/learn/).
 
 ## Updating
+
+Since version `1.15`, JIT configuration has moved from `/manifest/` to the `/workspace/` folder. This change will automatically happen when you update the extension from the "System > Extensions" page.
 
 Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
@@ -71,14 +70,16 @@ The extra fifth setting makes the URL look like this:
 
 - *If you wish to crop and maintain the aspect ratio of an image but only have one fixed dimension (that is, width or height), simply set the other dimension to 0*
 
-### Recipes
-
-Recipes are named rules for the JIT settings. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like:
-
-	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
-
-Recipes make image URLs more secure, semantic and convenient. They are more secure because dynamic JIT rules can be disabled so that DOS attacks with large or multiple image dimensions can be prevented. They are more semantic because you can choose a descriptive name. They are more convenient because you can copy recipes between installations and recipe changes will be reflected by every image using this recipe.
-
 ### Trusted Sites
 
 In order pull images from external sources, you must set up a white-list of trusted sites. To do this, go to "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (`*`).
+
+### Recipes
+
+Recipes are named rules for the JIT settings which help improve security and are more convenient. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like:
+
+	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
+
+When JIT parses a URL like this, it will check the recipes file for a recipe with a handle of `thumbnail` and apply it's rules. You can completely disable dynamic JIT rules and choose to use recipes only which will prevent a malicious user from hammering your server with large or multiple JIT requests.
+
+Recipes can be copied between installations and changes will be reflected by every image using this recipe.
