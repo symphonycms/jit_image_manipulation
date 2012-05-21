@@ -1,26 +1,23 @@
 # JIT Image Manipulation #
 
-"Just in time" image manipulation for Symphony. It is part of the Symphony core download package.
+A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
 
-- Version: 1.14
-- Date: 11th November 2011
-- Requirements: Symphony 2.0.5 or later
+- Version: 1.15
+- Date: 21st May 2012
+- Requirements: Symphony 2.3 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
-- Contributors: [A list of contributors can be found in the commit history](http://github.com/symphonycms/jit_image_manipulation/commits/master)
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
 
-## Synopsis
-
-A simple way to manipulate images on the fly via the URL. Supports caching, image quality settings and loading of offsite images.
 
 ## Installation
 
-Information about [installing and updating extensions](http://symphony-cms.com/learn/tasks/view/install-an-extension/) can be found in the Symphony documentation at <http://symphony-cms.com/learn/>.
+Information about [installing and updating extensions](http://symphony-cms.com/learn/tasks/view/install-an-extension/) can be found in the [Symphony documentation](http://symphony-cms.com/learn/).
 
 ## Updating
 
-Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything
-before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
+Since version `1.15`, JIT configuration has moved from `/manifest/` to the `/workspace/` folder. This change will automatically happen when you update the extension from the "System > Extensions" page.
+
+Due to some `.htaccess` changes in Symphony 2.0.6+, it is recommended that you edit your core Symphony `.htaccess` to remove anything before 'extensions/' in the JIT rewrite. It should look like the following regardless of where you installed Symphony:
 
 	### IMAGE RULES
 	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]
@@ -66,7 +63,7 @@ If you're using mode `2` or `3` for image cropping, there is an optional fifth b
 - *For `.jpg` images, it is advised to use this if the crop size is larger than the original, otherwise the extra canvas will be black.*
 - *For transparent `.png` or `.gif` images, supplying the background color will fill the image. This is why the setting is optional*
 
-The extra fifth setting makes the url look like this:
+The extra fifth setting makes the URL look like this:
 
 	<img src="{$root}/image/2/80/80/5/fff/{image/@path}/{image/filename}" />
 
@@ -74,4 +71,14 @@ The extra fifth setting makes the url look like this:
 
 ### Trusted Sites
 
-In order pull images from external sources, you must set up a white-list of trusted sites. To do this, goto "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (*).
+In order pull images from external sources, you must set up a white-list of trusted sites. To do this, go to "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (`*`).
+
+### Recipes
+
+Recipes are named rules for the JIT settings which help improve security and are more convenient. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like:
+
+	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
+
+When JIT parses a URL like this, it will check the recipes file for a recipe with a handle of `thumbnail` and apply it's rules. You can completely disable dynamic JIT rules and choose to use recipes only which will prevent a malicious user from hammering your server with large or multiple JIT requests.
+
+Recipes can be copied between installations and changes will be reflected by every image using this recipe.

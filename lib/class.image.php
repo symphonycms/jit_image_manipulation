@@ -293,7 +293,7 @@
 		 * @return boolean
 		 */
 		public function applyFilter($filter = null, array $args = array()) {
-			if(is_null($filter) || !is_file("filters/filter.{$filter}.php")) return false;
+			if(is_null($filter) || !is_file(EXTENSIONS . "/jit_image_manipulation/lib/filters/filter.{$filter}.php")) return false;
 
 			require_once("filters/filter.{$filter}.php");
 

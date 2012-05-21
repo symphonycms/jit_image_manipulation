@@ -28,7 +28,7 @@
 
 	set_error_handler('__errorHandler');
 
-	function processParams($string){
+	function processParams($string, &$image_settings){
 		$param = (object)array(
 			'mode' => 0,
 			'width' => 0,
@@ -38,6 +38,91 @@
 			'file' => 0,
 			'external' => false
 		);
+
+		// Check for matching recipes
+		if(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) include(WORKSPACE . '/jit-image-manipulation/recipes.php');
+
+		if (is_array($recipes) && !empty($recipes)) {
+			foreach($recipes as $recipe) {
+				switch ($recipe['mode']) {
+					case 'regex':
+						if(preg_match($recipe['url-parameter'], $string, $matches) == 1) {
+							// change URL to a "normal" JIT URL
+							$string = preg_replace($recipe['url-parameter'], $recipe['jit-parameter'], $string);
+							$is_regex = true;
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							break 2;
+						}
+						break;
+					case '0':
+						if (strpos($string, $recipe['url-parameter']) === 0) {
+							$param->external = (bool)$recipe['external'];
+							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							return $param;
+						}
+						break;
+					case '1':
+						if (strpos($string, $recipe['url-parameter']) === 0) {
+							$param->mode = 1;
+							$param->width = $recipe['width'];
+							$param->height = $recipe['height'];
+							$param->external = (bool)$recipe['external'];
+							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							return $param;
+						}
+						break;
+					case '2':
+						if (strpos($string, $recipe['url-parameter']) === 0) {
+							$param->mode = 2;
+							$param->width = $recipe['width'];
+							$param->height = $recipe['height'];
+							$param->position = $recipe['position'];
+							$param->background = $recipe['background'];
+							$param->external = (bool)$recipe['external'];
+							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							return $param;
+						}
+						break;
+					case '3':
+						if (strpos($string, $recipe['url-parameter']) === 0) {
+							$param->mode = 3;
+							$param->width = $recipe['width'];
+							$param->height = $recipe['height'];
+							$param->position = $recipe['position'];
+							$param->background = $recipe['background'];
+							$param->external = (bool)$recipe['external'];
+							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							return $param;
+						}
+						break;
+					case '4':
+						if (strpos($string, $recipe['url-parameter']) === 0) {
+							$param->mode = 4;
+							$param->width = $recipe['width'];
+							$param->height = $recipe['height'];
+							$param->external = (bool)$recipe['external'];
+							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
+							return $param;
+						}
+						break;
+				}
+			}
+		}
+
+		// Check if only recipes are allowed.
+		// We only have to check if we are using a `regex` recipe
+		// because the other recipes already return `$param`.
+		if($image_settings['disable_regular_rules'] == 'yes' && $is_regex != true){
+			header('HTTP/1.0 404 Not Found');
+			trigger_error('Error generating image', E_USER_ERROR);
+			echo 'Regular JIT rules are disabled and no matching recipe was found.';
+			exit;
+		}
 
 		// Mode 3: Resize Canvas
 		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
@@ -85,28 +170,31 @@
 			$param->file = $matches[0][2];
 		}
 
-		// If the background has been set, ensure that it's not mistakenly
-		// a folder. This is rare edge case in that if a folder is named like
-		// a hexcode, JIT will interpret it as the background colour instead of
-		// the filepath.
-		// @link https://github.com/symphonycms/jit_image_manipulation/issues/8
-		if(($param->background !== 0 || empty($param->background)) && $param->external === false) {
-			// Also check the case of `bbbbbb/bbbbbb/file.png`, which should resolve
-			// as background = bbbbbb, file = bbbbbb/file.png (if that's the correct path of
-			// course)
-			if(
-				is_dir(WORKSPACE . '/'. $param->background)
-				&& (!is_file(WORKSPACE . '/' . $param->file) && is_file(WORKSPACE . '/' . $param->background . '/' . $param->file))
-			) {
-				$param->file = $param->background . '/' . $param->file;
-				$param->background = 0;
-			}
-		}
-
 		return $param;
 	}
 
-	$param = processParams($_GET['param']);
+	$param = processParams($_GET['param'], $settings['image']);
+
+	// If the background has been set, ensure that it's not mistakenly
+	// a folder. This is rare edge case in that if a folder is named like
+	// a hexcode, JIT will interpret it as the background colour instead of
+	// the filepath.
+	// @link https://github.com/symphonycms/jit_image_manipulation/issues/8
+	if(($param->background !== 0 || empty($param->background)) && $param->external === false) {
+		// Also check the case of `bbbbbb/bbbbbb/file.png`, which should resolve
+		// as background = bbbbbb, file = bbbbbb/file.png (if that's the correct path of
+		// course)
+		if(
+			is_dir(WORKSPACE . '/'. $param->background)
+			&& (!is_file(WORKSPACE . '/' . $param->file) && is_file(WORKSPACE . '/' . $param->background . '/' . $param->file))
+		) {
+			$param->file = $param->background . '/' . $param->file;
+			$param->background = 0;
+		}
+	}
+
+	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
+
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		global $param;
 
@@ -129,13 +217,6 @@
 		}
 	}
 
-	function send404($image_path) {
-		header('HTTP/1.0 404 Not Found');
-		trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path)), E_USER_ERROR);
-		echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $image_path));
-		exit;
-	}
-
 	$meta = $cache_file = NULL;
 	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
 
@@ -145,7 +226,7 @@
 	}
 	// Image is external, check to see that it is a trusted source
 	else {
-		$rules = file(MANIFEST . '/jit-trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		$rules = file(WORKSPACE . '/jit-image-manipulation/trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$allowed = false;
 
 		$rules = array_map('trim', $rules);
@@ -170,7 +251,7 @@
 		}
 
 		if($allowed == false){
-			header('HTTP/1.0 403 Forbidden');
+			header('Status: 403 Forbidden', true, 403);
 			exit(sprintf('Error: Connecting to %s is not permitted.', $param->file));
 		}
 
@@ -195,7 +276,7 @@
 	// can just be returned to the browser to use it's cached version.
 	if(CACHING === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
 		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
-			header('HTTP/1.1 304 Not Modified');
+			header('Status: 304 Not Modified', true, 304);
 			exit;
 		}
 	}
@@ -229,7 +310,10 @@
 			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
 			// Guess not, return 404.
-			send404($original_file);
+			header('Status: 404 Not Found', true, 404);
+			trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file)), E_USER_ERROR);
+			echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file));
+			exit;
 		}
 		$meta = Image::getMetaInformation($image_path);
 		Image::renderOutputHeaders($meta->type);
@@ -248,7 +332,7 @@
 		}
 	}
 	catch(Exception $e){
-		header('HTTP/1.0 400 Bad Request');
+		header('Status: 400 Bad Request', true, 400);
 		trigger_error($e->getMessage(), E_USER_ERROR);
 		echo $e->getMessage();
 		exit;
@@ -336,7 +420,7 @@
 	// Configuration.
 	if(CACHING && !is_file($cache_file)){
 		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
-			header('HTTP/1.0 404 Not Found');
+			header('Status: 404 Not Found', true, 404);
 			trigger_error('Error generating image', E_USER_ERROR);
 			echo 'Error generating image, failed to create cache file.';
 			exit;
@@ -346,7 +430,7 @@
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
 	if(!$image->display(intval($settings['image']['quality']))) {
-		header('HTTP/1.0 404 Not Found');
+		header('Status: 404 Not Found', true, 404);
 		trigger_error('Error generating image', E_USER_ERROR);
 		echo 'Error generating image';
 		exit;
