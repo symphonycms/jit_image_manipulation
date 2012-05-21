@@ -12,26 +12,6 @@
 
 		public $recipes_errors = array();
 
-		public function about(){
-			return array(
-				'name' => 'JIT Image Manipulation',
-				'version' => '1.15',
-				'release-date' => '2012-03-10',
-				'author' => array(
-					array(
-						'name' => 'Alistair Kearney',
-						'website' => 'http://pointybeard.com',
-						'email' => 'alistair@pointybeard.com'
-					),
-					array(
-						'name' => 'Symphony Team',
-						'website' => 'http://symphony-cms.com/',
-						'email' => 'team@symphony-cms.com'
-					)
-				)
-			);
-		}
-
 		public function getSubscribedDelegates(){
 			return array(
 				array(

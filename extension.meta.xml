@@ -15,8 +15,9 @@
 	</authors>
 	<releases>
 		<release version="1.15" date="2012-03-10" min="2.3">
-			- Recipes
+			- Add recipes
 			- Moved settings into `/workspace`
+			- Improve compatibility with servers other than Apache
 		</release>
 		<release version="1.14" date="2011-11-11" min="2.0.5" max="2.2.x">
 			- More robust detection of a temp directory
