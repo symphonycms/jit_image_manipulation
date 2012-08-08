@@ -164,6 +164,7 @@
 		 *  than display it inline
 		 */
 		public static function renderOutputHeaders($type, $destination=NULL){
+			ob_clean();
 			header('Content-Type: ' . image_type_to_mime_type($type));
 
 			if(is_null($destination)) return;
