@@ -7,6 +7,7 @@
 
 		const DEFAULT_QUALITY = 80;
 		const DEFAULT_INTERLACE = true;
+		const CURL_MAXREDIRS = 6;
 
 		private function __construct($resource, stdClass $meta){
 			$this->_resource = $resource;
@@ -47,6 +48,8 @@
 				curl_setopt($ch, CURLOPT_URL, $uri);
 				curl_setopt($ch, CURLOPT_HEADER, 0);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+				curl_setopt($ch, CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
 
 				$tmp = curl_exec($ch);
 				curl_close($ch);
@@ -193,6 +196,8 @@
 				CURLOPT_RETURNTRANSFER => true,
 				CURLOPT_HEADER => true,
 				CURLOPT_NOBODY => true,
+				CURLOPT_FOLLOWLOCATION => true,
+				CURLOPT_MAXREDIRS => Image::CURL_MAXREDIRS,
 			);
 			curl_setopt_array($ch, $options);
 			curl_exec($ch);
@@ -229,6 +234,8 @@
 				CURLOPT_RETURNTRANSFER => true,
 				CURLOPT_HEADER => true,
 				CURLOPT_NOBODY => true,
+				CURLOPT_FOLLOWLOCATION => true,
+				CURLOPT_MAXREDIRS => Image::CURL_MAXREDIRS,
 			);
 			curl_setopt_array($ch, $options);
 			$head = curl_exec($ch);
