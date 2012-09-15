@@ -13,7 +13,7 @@
 		public function about(){
 			return array(
 				'name' => 'JIT Image Manipulation Recipes',
-				'version' => '1.0',
+				'version' => '1.16',
 				'release-date' => '2012-05-17',
 				'author' => array(
 					'name' => 'Symphony Team',
