@@ -14,6 +14,12 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.16" date="2012-09-16" min="2.3">
+			- Add a Recipes data source
+			- Update German translation
+			- Fix issue with Apache outputting corrupted images in some situations
+			- JIT now follows redirects on external URL's
+		</release>
 		<release version="1.15" date="2012-03-10" min="2.3">
 			- Add recipes
 			- Moved settings into `/workspace`
