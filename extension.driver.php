@@ -3,11 +3,8 @@
 	Class extension_JIT_Image_Manipulation extends Extension{
 
 		const __OK__ = 100;
-
 		const __ERROR_TRUSTED__ = 200;
-
 		const __INVALID_RECIPES__ = 250;
-
 		const __ERROR_SAVING_RECIPES__ = 300;
 
 		public $recipes_errors = array();
@@ -36,7 +33,7 @@
 
 				$rule = "
 	### IMAGE RULES
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]\n\n";
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]\n\n";
 
 				// Remove existing the rules
 				$htaccess = self::__removeImageRules($htaccess);
@@ -64,8 +61,7 @@
 				else return false;
 			}
 			catch (Exception $ex) {
-				$extension = $this->about();
-				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array($extension['name'], $ex->getMessage())), Alert::ERROR);
+				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
 				return false;
 			}
 		}
@@ -74,7 +70,24 @@
 			return $this->install();
 		}
 
-		public function update($previousVersion = false){
+		public function update($previousVersion = false) {
+			if(version_compare($previousVersion, '1.17', '<')) {
+				// Add [B] flag to the .htaccess rule [#37]
+				try {
+					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
+					$htaccess = str_replace(
+						'extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]',
+						'extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]',
+						$htaccess
+					);
+				} catch (Exception $ex) {
+					if(!file_put_contents(DOCROOT . '/.htaccess', $htaccess)) {
+						Administration::instance()->Page->pageAlert(__('An error occurred while updating %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
+						return false;
+					}
+				}
+			}
+
 			if(version_compare($previousVersion, '1.15', '<')) {
 				// Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
 				if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory')) && file_exists(MANIFEST . '/jit-trusted-sites')) {
@@ -85,22 +98,19 @@
 
 		public function uninstall(){
 			General::deleteDirectory(WORKSPACE . '/jit-image-manipulation');
-
 			return $this->disable();
 		}
 
 		public function disable() {
 			try {
 				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
-
 				$htaccess = self::__removeImageRules($htaccess);
 				$htaccess = preg_replace('/### IMAGE RULES/', NULL, $htaccess);
 
 				return file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 			}
 			catch (Exception $ex) {
-				$extension = $this->about();
-				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array($extension['name'], $ex->getMessage())), Alert::ERROR);
+				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
 				return false;
 			}
 		}

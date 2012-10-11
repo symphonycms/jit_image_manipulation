@@ -2,7 +2,7 @@
 
 A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
 
-- Version: 1.16
+- Version: 1.17
 - Date: 16th September 2012
 - Requirements: Symphony 2.3 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
