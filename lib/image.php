@@ -338,81 +338,157 @@
 		exit;
 	}
 
-	// Apply the filter to the Image class (`$image`)
-	switch($param->mode) {
-		case MODE_RESIZE:
-			$image->applyFilter('resize', array($param->width, $param->height));
-			break;
+	// check if filters are applied
 
-		case MODE_FIT:
-			$src_w = $image->Meta()->width;
-			$src_h = $image->Meta()->height;
+	if ($param->mode) {
 
-			$dst_w = $param->width;
-			$dst_h = $param->height;
+		// fix orientation if necessary
 
-			if($param->height == 0) {
-				$ratio = ($src_h / $src_w);
-				$dst_w = $param->width;
-				$dst_h = round($dst_w * $ratio);
-			}
+		switch ($image->Meta()->orientation) {
 
-			else if($param->width == 0) {
-				$ratio = ($src_w / $src_h);
-				$dst_h = $param->height;
-				$dst_w = round($dst_h * $ratio);
-			}
+			case 2 :
 
-			$src_r = ($src_w / $src_h);
-			$dst_r = ($dst_w / $dst_h);
+				// horizontal flip
 
-			if ($src_h <= $dst_h && $src_w <= $dst_w){
-				$image->applyFilter('resize', array($src_w,$src_h));
+				$image->applyFilter('flip');
+
 				break;
-			}
 
-			if($src_h >= $dst_h && $src_r <= $dst_r) {
-				$image->applyFilter('resize', array(NULL, $dst_h));
-			}
+			case 3 :
 
-			if($src_w >= $dst_w && $src_r >= $dst_r) {
-				$image->applyFilter('resize', array($dst_w, NULL));
-			}
+				// 180 rotate left
 
-			break;
+				$image->applyFilter('rotate', array(180));
 
-		case MODE_RESIZE_CROP:
-			$src_w = $image->Meta()->width;
-			$src_h = $image->Meta()->height;
+				break;
 
-			$dst_w = $param->width;
-			$dst_h = $param->height;
+			case 4 :
 
-			if($param->height == 0) {
-				$ratio = ($src_h / $src_w);
+				// 180 rotate left + horizontal flip
+
+				$image->applyFilter('rotate', array(180));
+
+				$image->applyFilter('flip');
+
+				break;
+
+			case 5 :
+
+				// 90 rotate right + horizontal flip
+
+				$image->applyFilter('rotate', array(-90));
+
+				$image->applyFilter('flip');
+
+				break;
+
+			case 6 :
+
+				// 90 rotate right
+
+				$image->applyFilter('rotate', array(-90));
+
+				break;
+
+			case 7 :
+
+				// 90 rotate left + horizontal flip
+
+				$image->applyFilter('rotate', array(90));
+
+				$image->applyFilter('flip');
+
+				break;
+
+			case 8 :
+
+				// 90 rotate left
+
+				$image->applyFilter('rotate', array(90));
+
+				break;
+
+			default :
+
+				break;
+		}
+
+		// Apply the filter to the Image class (`$image`)
+		switch($param->mode) {
+			case MODE_RESIZE:
+				$image->applyFilter('resize', array($param->width, $param->height));
+				break;
+
+			case MODE_FIT:
+				$src_w = $image->Meta()->width;
+				$src_h = $image->Meta()->height;
+
 				$dst_w = $param->width;
-				$dst_h = round($dst_w * $ratio);
-			}
-
-			else if($param->width == 0) {
-				$ratio = ($src_w / $src_h);
 				$dst_h = $param->height;
-				$dst_w = round($dst_h * $ratio);
-			}
 
-			$src_r = ($src_w / $src_h);
-			$dst_r = ($dst_w / $dst_h);
+				if($param->height == 0) {
+					$ratio = ($src_h / $src_w);
+					$dst_w = $param->width;
+					$dst_h = round($dst_w * $ratio);
+				}
 
-			if($src_r < $dst_r) {
-				$image->applyFilter('resize', array($dst_w, NULL));
-			}
-			else {
-				$image->applyFilter('resize', array(NULL, $dst_h));
-			}
+				else if($param->width == 0) {
+					$ratio = ($src_w / $src_h);
+					$dst_h = $param->height;
+					$dst_w = round($dst_h * $ratio);
+				}
 
-		case MODE_CROP:
-			$image->applyFilter('crop', array($param->width, $param->height, $param->position, $param->background));
-			break;
+				$src_r = ($src_w / $src_h);
+				$dst_r = ($dst_w / $dst_h);
+
+				if ($src_h <= $dst_h && $src_w <= $dst_w){
+					$image->applyFilter('resize', array($src_w,$src_h));
+					break;
+				}
+
+				if($src_h >= $dst_h && $src_r <= $dst_r) {
+					$image->applyFilter('resize', array(NULL, $dst_h));
+				}
+
+				if($src_w >= $dst_w && $src_r >= $dst_r) {
+					$image->applyFilter('resize', array($dst_w, NULL));
+				}
+
+				break;
+
+			case MODE_RESIZE_CROP:
+				$src_w = $image->Meta()->width;
+				$src_h = $image->Meta()->height;
+
+				$dst_w = $param->width;
+				$dst_h = $param->height;
+
+				if($param->height == 0) {
+					$ratio = ($src_h / $src_w);
+					$dst_w = $param->width;
+					$dst_h = round($dst_w * $ratio);
+				}
+
+				else if($param->width == 0) {
+					$ratio = ($src_w / $src_h);
+					$dst_h = $param->height;
+					$dst_w = round($dst_h * $ratio);
+				}
+
+				$src_r = ($src_w / $src_h);
+				$dst_r = ($dst_w / $dst_h);
+
+				if($src_r < $dst_r) {
+					$image->applyFilter('resize', array($dst_w, NULL));
+				}
+				else {
+					$image->applyFilter('resize', array(NULL, $dst_h));
+				}
+
+			case MODE_CROP:
+				$image->applyFilter('crop', array($param->width, $param->height, $param->position, $param->background));
+				break;
+		}
 	}
 
 	// If CACHING is enabled, and a cache file doesn't already exist,
