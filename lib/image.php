@@ -420,8 +420,8 @@
 				break;
 
 			case MODE_FIT:
-				$src_w = $image->Meta()->width;
-				$src_h = $image->Meta()->height;
+				$src_w = Image::width($image->Resource());
+				$src_h = Image::height($image->Resource());
 
 				$dst_w = $param->width;
 				$dst_h = $param->height;
@@ -457,8 +457,8 @@
 				break;
 
 			case MODE_RESIZE_CROP:
-				$src_w = $image->Meta()->width;
-				$src_h = $image->Meta()->height;
+				$src_w = Image::width($image->Resource());
+				$src_h = Image::height($image->Resource());
 
 				$dst_w = $param->width;
 				$dst_h = $param->height;
