@@ -211,6 +211,21 @@
 				__('Bottom right'),
 			);
 			$positionOptions = array();
+
+			if(empty($values)) {
+				$values = array(
+					'position' => null,
+					'name' => null,
+					'url-parameter' => null,
+					'external' => null,
+					'width' => null,
+					'height' => null,
+					'background' => null,
+					'quality' => null,
+					'jit-parameter' => null
+				);
+			}
+
 			foreach ($referencePositions as $i => $p) {
 				$positionOptions[] = array($i + 1, $i + 1 == $values['position'] ? true : false, $p);
 			}
@@ -355,8 +370,10 @@
 			$duplicator->appendChild(self::createRecipeDuplicatorTemplate('regex'));
 
 			// use recipes POST datain case of an error
-			if (is_array($_POST['jit_image_manipulation']['recipes']) && !empty($_POST['jit_image_manipulation']['recipes']) && !empty($this->recipes_errors)) {
-				foreach ($_POST['jit_image_manipulation']['recipes'] as $position => $recipe) {
+			$post_recipes = (isset($_POST['jit_image_manipulation']['recipes'])) ? $_POST['jit_image_manipulation']['recipes'] : array();
+
+			if (!empty($post_recipes) && !empty($this->recipes_errors)) {
+				foreach ($post_recipes as $position => $recipe) {
 					$duplicator->appendChild(
 						self::createRecipeDuplicatorTemplate($recipe['mode'], $position, $recipe, $this->recipes_errors[$position])
 					);
@@ -364,7 +381,7 @@
 			}
 			// otherwise use saved recipes data
 			else {
-				if(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) include(WORKSPACE . '/jit-image-manipulation/recipes.php');
+				(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) ? include(WORKSPACE . '/jit-image-manipulation/recipes.php') : $recipes = array();
 				if (is_array($recipes) && !empty($recipes)) {
 					foreach($recipes as $position => $recipe) {
 						$duplicator->appendChild(
