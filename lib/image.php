@@ -118,7 +118,7 @@
 		// We only have to check if we are using a `regex` recipe
 		// because the other recipes already return `$param`.
 		if($image_settings['disable_regular_rules'] == 'yes' && $is_regex != true){
-			header('HTTP/1.0 404 Not Found');
+			header('Status: 404 Not Found', true, 404);
 			trigger_error('Error generating image', E_USER_ERROR);
 			echo 'Regular JIT rules are disabled and no matching recipe was found.';
 			exit;
