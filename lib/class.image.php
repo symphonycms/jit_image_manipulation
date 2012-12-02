@@ -148,6 +148,13 @@
 			$meta['type'] = $array[2];
 			$meta['channels'] = isset($array['channels']) ? $array['channels'] : false;
 
+			if (function_exists('exif_read_data')) {
+
+				$exif = exif_read_data($file);
+
+				$meta['orientation'] = $exif['Orientation'];
+			}
+
 			return (object)$meta;
 		}
 
