@@ -338,28 +338,31 @@
 		exit;
 	}
 
+	// Calculate the correct dimensions. If necessary, avoid upscaling the image.
+	$src_w = $image->Meta()->width;
+	$src_h = $image->Meta()->height;
+	if ($settings['image']['disable_upscaling'] == 'yes') {
+		$dst_w = min($param->width, $src_w);
+		$dst_h = min($param->height, $src_h);
+	} else {
+		$dst_w = $param->width;
+		$dst_h = $param->height;
+	}
+
 	// Apply the filter to the Image class (`$image`)
 	switch($param->mode) {
 		case MODE_RESIZE:
-			$image->applyFilter('resize', array($param->width, $param->height));
+			$image->applyFilter('resize', array($dst_w, $dst_h));
 			break;
 
 		case MODE_FIT:
-			$src_w = $image->Meta()->width;
-			$src_h = $image->Meta()->height;
-
-			$dst_w = $param->width;
-			$dst_h = $param->height;
-
 			if($param->height == 0) {
 				$ratio = ($src_h / $src_w);
-				$dst_w = $param->width;
 				$dst_h = round($dst_w * $ratio);
 			}
 
 			else if($param->width == 0) {
 				$ratio = ($src_w / $src_h);
-				$dst_h = $param->height;
 				$dst_w = round($dst_h * $ratio);
 			}
 
@@ -382,21 +385,13 @@
 			break;
 
 		case MODE_RESIZE_CROP:
-			$src_w = $image->Meta()->width;
-			$src_h = $image->Meta()->height;
-
-			$dst_w = $param->width;
-			$dst_h = $param->height;
-
 			if($param->height == 0) {
 				$ratio = ($src_h / $src_w);
-				$dst_w = $param->width;
 				$dst_h = round($dst_w * $ratio);
 			}
 
 			else if($param->width == 0) {
 				$ratio = ($src_w / $src_h);
-				$dst_h = $param->height;
 				$dst_w = round($dst_h * $ratio);
 			}
 
@@ -411,7 +406,7 @@
 			}
 
 		case MODE_CROP:
-			$image->applyFilter('crop', array($param->width, $param->height, $param->position, $param->background));
+			$image->applyFilter('crop', array($dst_w, $dst_h, $param->position, $param->background));
 			break;
 	}
 

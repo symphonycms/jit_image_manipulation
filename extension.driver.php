@@ -412,6 +412,13 @@
 
 			$group->appendChild($label);
 
+			// checkbox to disable up-scaling
+			$label = Widget::Label();
+			$input = Widget::Input('settings[image][disable_upscaling]', 'yes', 'checkbox');
+			if (Symphony::Configuration()->get('disable_upscaling', 'image') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue($input->generate() . ' ' . __('Disable upscaling of images beyond the original size'));
+			$group->appendChild($label);
+
 			// textarea for trusted sites
 			$label = Widget::Label(__('Trusted Sites'));
 			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, $this->trusted()));
@@ -425,6 +432,10 @@
 		public function __SavePreferences($context){
 			if(!isset($context['settings']['image']['disable_regular_rules'])){
 				$context['settings']['image']['disable_regular_rules'] = 'no';
+			}
+
+			if (!isset($context['settings']['image']['disable_upscaling'])) {
+				$context['settings']['image']['disable_upscaling'] = 'no';
 			}
 
 			// save trusted sites and recipes
