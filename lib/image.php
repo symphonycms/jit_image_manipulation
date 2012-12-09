@@ -10,6 +10,7 @@
 	require_once(CORE . '/class.errorhandler.php');
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
+	require_once(CONFIG);
 
 	// Setup the environment
 	if(method_exists('DateTimeObj', 'setSettings')) {
