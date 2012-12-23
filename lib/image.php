@@ -248,6 +248,11 @@
 				$allowed = true;
 				break;
 			}
+			
+			else if(substr($rule, 0, 1) == '*' && preg_match("/(".substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2).")/", $param->file)){
+				$allowed = true;
+				break;
+			}
 		}
 
 		if($allowed == false){
