@@ -1,5 +1,7 @@
 <?php
 
+	require_once(TOOLKIT . '/class.gateway.php');
+
 	Class Image {
 		private $_resource;
 		private $_meta;
@@ -42,22 +44,22 @@
 		 * @return Image
 		 */
 		public static function loadExternal($uri){
-			if(function_exists('curl_init')){
-				$ch = curl_init();
+			// create the Gateway object
+			$gateway = new Gateway();
 
-				curl_setopt($ch, CURLOPT_URL, $uri);
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-				curl_setopt($ch, CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
+			// set our url
+			$gateway->init($uri);
+			// set some options
+			$gateway->setopt(CURLOPT_HEADER, 0);
+			$gateway->setopt(CURLOPT_RETURNTRANSFER, 1);
+			$gateway->setopt(CURLOPT_FOLLOWLOCATION, 1);
+			$gateway->setopt(CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
 
-				$tmp = curl_exec($ch);
-				curl_close($ch);
-			}
-			else $tmp = @file_get_contents($uri);
+			// get the raw response, ignore errors
+			$response = @$gateway->exec();
 
-			if($tmp === false){
-				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
+			if($response === false){
+				throw new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
 			}
 
 			// The `sys_get_temp_dir` is our preference, but on some shared hosting
@@ -70,8 +72,8 @@
 
 			$dest = tempnam($dir, 'IMAGE');
 
-			if(!file_put_contents($dest, $tmp)) {
-				new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
+			if(!file_put_contents($dest, $response)) {
+				throw new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
 			}
 
 			return self::load($dest);
