@@ -16,7 +16,7 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="1.17" date="unreleased" min="2.3">
+		<release version="1.17" date="unreleased" min="2.3.2">
 			- Allow JIT to function with image filenames that have special characters
 			- Use Gateway instead of curl directly for HTTP Requests
 			- Use the Page class in order to generate HTTP Status codes
