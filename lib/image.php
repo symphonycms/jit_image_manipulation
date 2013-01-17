@@ -10,6 +10,7 @@
 	require_once(CORE . '/class.errorhandler.php');
 	require_once(CORE . '/class.log.php');
 	require_once('class.image.php');
+	require_once(TOOLKIT . '/class.page.php');
 	require_once(CONFIG);
 
 	// Setup the environment
@@ -119,7 +120,7 @@
 		// We only have to check if we are using a `regex` recipe
 		// because the other recipes already return `$param`.
 		if($image_settings['disable_regular_rules'] == 'yes' && $is_regex != true){
-			header('Status: 404 Not Found', true, 404);
+			Page::renderStatusCode(Page::HTTP_STATUS_NOT_FOUND);
 			trigger_error('Error generating image', E_USER_ERROR);
 			echo 'Regular JIT rules are disabled and no matching recipe was found.';
 			exit;
@@ -249,7 +250,7 @@
 				$allowed = true;
 				break;
 			}
-			
+
 			else if(substr($rule, 0, 1) == '*' && preg_match("/(".substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2).")/", $param->file)){
 				$allowed = true;
 				break;
@@ -257,7 +258,7 @@
 		}
 
 		if($allowed == false){
-			header('Status: 403 Forbidden', true, 403);
+			Page::renderStatusCode(Page::HTTP_STATUS_FORBIDDEN);
 			exit(sprintf('Error: Connecting to %s is not permitted.', $param->file));
 		}
 
@@ -282,7 +283,7 @@
 	// can just be returned to the browser to use it's cached version.
 	if(CACHING === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
 		if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
-			header('Status: 304 Not Modified', true, 304);
+			Page::renderStatusCode(Page::HTTP_NOT_MODIFIED);
 			exit;
 		}
 	}
@@ -316,7 +317,7 @@
 			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
 			// Guess not, return 404.
-			header('Status: 404 Not Found', true, 404);
+			Page::renderStatusCode(Page::HTTP_STATUS_NOT_FOUND);
 			trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file)), E_USER_ERROR);
 			echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file));
 			exit;
@@ -338,7 +339,7 @@
 		}
 	}
 	catch(Exception $e){
-		header('Status: 400 Bad Request', true, 400);
+		Page::renderStatusCode(Page::HTTP_STATUS_BAD_REQUEST);
 		trigger_error($e->getMessage(), E_USER_ERROR);
 		echo $e->getMessage();
 		exit;
@@ -421,7 +422,7 @@
 	// Configuration.
 	if(CACHING && !is_file($cache_file)){
 		if(!$image->save($cache_file, intval($settings['image']['quality']))) {
-			header('Status: 404 Not Found', true, 404);
+			Page::renderStatusCode(Page::HTTP_STATUS_NOT_FOUND);
 			trigger_error('Error generating image', E_USER_ERROR);
 			echo 'Error generating image, failed to create cache file.';
 			exit;
@@ -431,7 +432,7 @@
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
 	if(!$image->display(intval($settings['image']['quality']))) {
-		header('Status: 404 Not Found', true, 404);
+		Page::renderStatusCode(Page::HTTP_STATUS_NOT_FOUND);
 		trigger_error('Error generating image', E_USER_ERROR);
 		echo 'Error generating image';
 		exit;
