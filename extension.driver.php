@@ -430,6 +430,8 @@
 		}
 
 		public function __SavePreferences($context){
+			$recipes_saved = self::__OK__;
+
 			if(!isset($context['settings']['image']['disable_regular_rules'])){
 				$context['settings']['image']['disable_regular_rules'] = 'no';
 			}
@@ -438,14 +440,17 @@
 				$context['settings']['image']['disable_upscaling'] = 'no';
 			}
 
-			// save trusted sites and recipes
+			// save trusted sites
 			$trusted_saved = $this->saveTrusted(stripslashes($_POST['jit_image_manipulation']['trusted_external_sites']));
-			$recipes_saved = $this->saveRecipes($_POST['jit_image_manipulation']['recipes']);
-
 			// there were errors saving the trusted files
 			if ($trusted_saved == self::__ERROR_TRUSTED__) {
 				$context['errors']['jit-trusted-sites'] = __('An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/trusted-sites</code>'));
 			};
+
+			// save recipes
+			if(isset($_POST['jit_image_manipulation']['recipes'])) {
+				$recipes_saved = $this->saveRecipes($_POST['jit_image_manipulation']['recipes']);
+			}
 			// there were errors saving the recipes
 			if ($recipes_saved == self::__ERROR_SAVING_RECIPES__) {
 				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/recipes.php</code>'));
