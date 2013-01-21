@@ -1,5 +1,7 @@
 <?php
 
+	require_once(TOOLKIT . '/class.gateway.php');
+
 	Class Image {
 		private $_resource;
 		private $_meta;
@@ -42,23 +44,24 @@
 		 * @return Image
 		 */
 		public static function loadExternal($uri){
-			if(function_exists('curl_init')){
-				$ch = curl_init();
+			// create the Gateway object
+			$gateway = new Gateway();
+			// set our url
+			$gateway->init($uri);
+			// set some options
+			$gateway->setopt(CURLOPT_HEADER, false);
+			$gateway->setopt(CURLOPT_RETURNTRANSFER, true);
+			$gateway->setopt(CURLOPT_FOLLOWLOCATION, true);
+			$gateway->setopt(CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
+			// get the raw body response, ignore errors
+			$response = @$gateway->exec();
 
-				curl_setopt($ch, CURLOPT_URL, $uri);
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-				curl_setopt($ch, CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
-
-				$tmp = curl_exec($ch);
-				curl_close($ch);
+			if($response === false){
+				throw new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
 			}
-			else $tmp = @file_get_contents($uri);
 
-			if($tmp === false){
-				new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
-			}
+			// clean up
+			$gateway->flush();
 
 			// The `sys_get_temp_dir` is our preference, but on some shared hosting
 			// this is unavailable. If this fails, we'll attempt the `upload_tmp_dir`
@@ -70,8 +73,8 @@
 
 			$dest = tempnam($dir, 'IMAGE');
 
-			if(!file_put_contents($dest, $tmp)) {
-				new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
+			if(!file_put_contents($dest, $response)) {
+				throw new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
 			}
 
 			return self::load($dest);
@@ -190,22 +193,8 @@
 		 * @return integer - HTTP response code
 		 */
 		public static function getHttpResponseCode($url){
-			$ch = curl_init();
-			$options = array(
-				CURLOPT_URL => $url,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_HEADER => true,
-				CURLOPT_NOBODY => true,
-				CURLOPT_FOLLOWLOCATION => true,
-				CURLOPT_MAXREDIRS => Image::CURL_MAXREDIRS,
-			);
-			curl_setopt_array($ch, $options);
-			curl_exec($ch);
-		    $info = curl_getinfo($ch);
-			curl_close($ch);
-
-			$status = $info['http_code'];
-			return $status;
+			$head = self:: getHttpHead($url);
+			return $head['info']['http_code'];
 		}
 
 		/**
@@ -217,8 +206,7 @@
 		 */
 		public static function getHttpHeaderFieldValue($url, $field){
 			$headers = self::getHttpHeaders($url);
-			$value = $headers[$field];
-			return $value;
+			return $headers[$field];
 		}
 
 		/**
@@ -228,20 +216,46 @@
 		 * @return array - response headers
 		 */
 		public static function getHttpHeaders($url){
-			$ch = curl_init();
-			$options = array(
-				CURLOPT_URL => $url,
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_HEADER => true,
-				CURLOPT_NOBODY => true,
-				CURLOPT_FOLLOWLOCATION => true,
-				CURLOPT_MAXREDIRS => Image::CURL_MAXREDIRS,
+			$head = self:: getHttpHead($url);
+			return $head['headers'];
+		}
+
+		/**
+		 * Gett all HTTP response headers and info as an array of arrays.
+		 *
+		 * @since 1.17
+		 *
+		 * @param string $url
+		 * @return array
+		 *  Contains the headers and the infos
+		 */
+		public static function getHttpHead($url){
+			// create the Gateway object
+			$gateway = new Gateway();
+			// set our url
+			$gateway->init($url);
+			// set some options
+			$gateway->setopt(CURLOPT_URL, $url);
+			$gateway->setopt(CURLOPT_RETURNTRANSFER, true);
+			$gateway->setopt(CURLOPT_HEADER, true);
+			$gateway->setopt(CURLOPT_NOBODY, true);
+			$gateway->setopt(CURLOPT_FOLLOWLOCATION, true);
+			$gateway->setopt(CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
+			// get the raw head response, ignore errors
+			$head = @$gateway->exec();
+			// Get all info
+			$result = array(
+				'headers' => array(),
+				'info' => $gateway->getInfoLast()
 			);
-			curl_setopt_array($ch, $options);
-			$head = curl_exec($ch);
-			curl_close($ch);
-			$headers = self::parseHttpHeaderFields($head);
-			return $headers;
+			// Clean up
+			$gateway->flush();
+
+			if ($head !== false) {
+				$result['headers'] = self::parseHttpHeaderFields($head);
+			}
+
+			return $result;
 		}
 
 		/**

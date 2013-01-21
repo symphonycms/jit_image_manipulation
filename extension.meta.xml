@@ -6,6 +6,8 @@
 	<url type="discuss">http://symphony-cms.com/discuss/thread/32795/</url>
 	<types>
 		<type>Multimedia</type>
+		<type>Image</type>
+		<type>Thumbnail</type>
 	</types>
 	<authors>
 		<author>
@@ -14,8 +16,10 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="1.17" date="unreleased" min="2.3">
+		<release version="1.17" date="unreleased" min="2.3.2">
 			- Allow JIT to function with image filenames that have special characters
+			- Use Gateway instead of curl directly for HTTP Requests
+			- Use the Page class in order to generate HTTP Status codes
 		</release>
 		<release version="1.16" date="2012-09-16" min="2.3">
 			- Add a Recipes data source
