@@ -236,21 +236,25 @@
 		if(count($rules) > 0) foreach($rules as $rule) {
 			$rule = str_replace(array('http://', 'https://'), NULL, $rule);
 
+			// Wildcard
 			if($rule == '*'){
 				$allowed = true;
 				break;
 			}
 
+			// Wildcard after domain
 			else if(substr($rule, -1) == '*' && strncasecmp($param->file, $rule, strlen($rule) - 1) == 0){
 				$allowed = true;
 				break;
 			}
 
-			else if(strcasecmp($rule, $param->file) == 0){
+			// Match the start of the rule with file path
+			else if(strcasecmp($rule, $param->file, strlen($rule)) == 0){
 				$allowed = true;
 				break;
 			}
 
+			// Match subdomain wildcards
 			else if(substr($rule, 0, 1) == '*' && preg_match("/(".substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2).")/", $param->file)){
 				$allowed = true;
 				break;
