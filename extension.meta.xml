@@ -16,10 +16,12 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="1.17" date="unreleased" min="2.3.2">
+		<release version="1.17" date="2013-02-22" min="2.3.2">
 			- Allow JIT to function with image filenames that have special characters
 			- Use Gateway instead of curl directly for HTTP Requests
 			- Use the Page class in order to generate HTTP Status codes
+			- Adding an option to disable upscaling images
+			- Update trusted sites to support subdomains `*.ytimg.com` etc.
 		</release>
 		<release version="1.16" date="2012-09-16" min="2.3">
 			- Add a Recipes data source

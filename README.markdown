@@ -3,8 +3,8 @@
 A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
 
 - Version: 1.17
-- Date: 16th September 2012
-- Requirements: Symphony 2.3 or later
+- Date: 22nd February 2013
+- Requirements: Symphony 2.3.2 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>
 
@@ -14,6 +14,12 @@ A simple way to manipulate images "just in time" via the URL. Supports caching, 
 Information about [installing and updating extensions](http://symphony-cms.com/learn/tasks/view/install-an-extension/) can be found in the [Symphony documentation](http://symphony-cms.com/learn/).
 
 ## Updating
+
+### 1.17
+
+This release raises the minimum requirement to Apache 2.2+.
+
+### 1.15
 
 Since version `1.15`, JIT configuration has moved from `/manifest/` to the `/workspace/` folder. This change will automatically happen when you update the extension from the "System > Extensions" page.
 
