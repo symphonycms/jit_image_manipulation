@@ -249,7 +249,7 @@
 			}
 
 			// Match the start of the rule with file path
-			else if(strcasecmp($rule, $param->file, strlen($rule)) == 0){
+			else if(strncasecmp($rule, $param->file, strlen($rule)) == 0){
 				$allowed = true;
 				break;
 			}
