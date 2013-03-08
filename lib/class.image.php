@@ -6,6 +6,7 @@
 		private $_resource;
 		private $_meta;
 		private $_image;
+		static $_result;
 
 		const DEFAULT_QUALITY = 80;
 		const DEFAULT_INTERLACE = true;
@@ -221,7 +222,7 @@
 		}
 
 		/**
-		 * Gett all HTTP response headers and info as an array of arrays.
+		 * Get all HTTP response headers and info as an array of arrays.
 		 *
 		 * @since 1.17
 		 *
@@ -230,6 +231,11 @@
 		 *  Contains the headers and the infos
 		 */
 		public static function getHttpHead($url){
+			// Check if we have a cached result
+			if(isset(self::$_result[$url])) {
+				return self::$_result[$url];
+			}
+
 			// create the Gateway object
 			$gateway = new Gateway();
 			// set our url
@@ -254,6 +260,9 @@
 			if ($head !== false) {
 				$result['headers'] = self::parseHttpHeaderFields($head);
 			}
+
+			// Save for subsequent requests
+			self::$_result[$url] = $result;
 
 			return $result;
 		}
