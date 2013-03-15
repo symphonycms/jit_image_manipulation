@@ -1,6 +1,7 @@
 <?php
 
 	@ini_set('display_errors', 'off');
+	@ini_set("gd.jpeg_ignore_warning", 1);
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
