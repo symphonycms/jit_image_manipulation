@@ -58,7 +58,7 @@
 				}
 				// Nope, we're not regex, so make a regex and then check whether we this recipe matches
 				// the URL string. If not, continue to the next recipe.
-				else if(!preg_match('/' . $recipe['url-parameter'] . '/i', $string, $matches)) {
+				else if(!preg_match('/^' . $recipe['url-parameter'] . '\//i', $string, $matches)) {
 					continue;
 				}
 
