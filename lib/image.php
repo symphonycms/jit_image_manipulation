@@ -46,73 +46,61 @@
 
 		if (is_array($recipes) && !empty($recipes)) {
 			foreach($recipes as $recipe) {
+				// Is the mode regex? If so, bail early and let not JIT process it.
+				if($recipe['mode'] === 'regex' && preg_match($recipe['url-parameter'], $string)) {
+					// change URL to a "normal" JIT URL
+					$string = preg_replace($recipe['url-parameter'], $recipe['jit-parameter'], $string);
+					$is_regex = true;
+					if (!empty($recipe['quality'])) {
+						$image_settings['quality'] = $recipe['quality'];
+					}
+					break 2;
+				}
+				// Nope, we're not regex, so make a regex and then check whether we this recipe matches
+				// the URL string. If not, continue to the next recipe.
+				else if(!preg_match('/' . $recipe['url-parameter'] . '/i', $string, $matches)) {
+					continue;
+				}
+
+				// If we're here, the recipe name matches, so we'll go on to fill out the params
+
+				// Is it an external image?
+				$param->external = (bool)$recipe['external'];
+
+				// Path to file
+				$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
+
+				// Set output quality
+				if (!empty($recipe['quality'])) {
+					$image_settings['quality'] = $recipe['quality'];
+				}
+
+				// Specific variables based off mode
+				// 0 is ignored (direct display)
+				// regex is already handled
 				switch ($recipe['mode']) {
-					case 'regex':
-						if(preg_match($recipe['url-parameter'], $string, $matches) == 1) {
-							// change URL to a "normal" JIT URL
-							$string = preg_replace($recipe['url-parameter'], $recipe['jit-parameter'], $string);
-							$is_regex = true;
-							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
-							break 2;
-						}
-						break;
-					case '0':
-						if (strpos($string, $recipe['url-parameter']) === 0) {
-							$param->external = (bool)$recipe['external'];
-							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
-							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
-							return $param;
-						}
-						break;
+					// Resize
 					case '1':
-						if (strpos($string, $recipe['url-parameter']) === 0) {
-							$param->mode = 1;
-							$param->width = $recipe['width'];
-							$param->height = $recipe['height'];
-							$param->external = (bool)$recipe['external'];
-							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
-							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
-							return $param;
-						}
-						break;
-					case '2':
-						if (strpos($string, $recipe['url-parameter']) === 0) {
-							$param->mode = 2;
-							$param->width = $recipe['width'];
-							$param->height = $recipe['height'];
-							$param->position = $recipe['position'];
-							$param->background = $recipe['background'];
-							$param->external = (bool)$recipe['external'];
-							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
-							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
-							return $param;
-						}
-						break;
-					case '3':
-						if (strpos($string, $recipe['url-parameter']) === 0) {
-							$param->mode = 3;
-							$param->width = $recipe['width'];
-							$param->height = $recipe['height'];
-							$param->position = $recipe['position'];
-							$param->background = $recipe['background'];
-							$param->external = (bool)$recipe['external'];
-							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
-							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
-							return $param;
-						}
-						break;
+					// Resize to fit
 					case '4':
-						if (strpos($string, $recipe['url-parameter']) === 0) {
-							$param->mode = 4;
-							$param->width = $recipe['width'];
-							$param->height = $recipe['height'];
-							$param->external = (bool)$recipe['external'];
-							$param->file = substr($string, strlen($recipe['url-parameter']) + 1);
-							if (!empty($recipe['quality'])) $image_settings['quality'] = $recipe['quality'];
-							return $param;
-						}
+						$param->mode = (int)$recipe['mode'];
+						$param->width = (int)$recipe['width'];
+						$param->height = (int)$recipe['height'];
+						break;
+
+					// Resize and crop
+					case '2':
+					// Crop
+					case '3':
+						$param->mode = (int)$recipe['mode'];
+						$param->width = (int)$recipe['width'];
+						$param->height = (int)$recipe['height'];
+						$param->position = (int)$recipe['position'];
+						$param->background = $recipe['background'];
 						break;
 				}
+
+				return $param;
 			}
 		}
 
@@ -126,47 +114,29 @@
 			exit;
 		}
 
-		// Mode 3: Resize Canvas
-		if(preg_match_all('/^3\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
-			$param->mode = 3;
-			$param->width = $matches[0][1];
-			$param->height = $matches[0][2];
-			$param->position = $matches[0][3];
-			$param->background = trim($matches[0][4],'/');
-			$param->external = (bool)$matches[0][5];
-			$param->file = $matches[0][6];
+		// Mode 2: Resize and crop
+		// Mode 3: Crop
+		if(preg_match_all('/^(2|3)\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+			$param->mode = (int)$matches[0][1];
+			$param->width = (int)$matches[0][2];
+			$param->height = (int)$matches[0][3];
+			$param->position = (int)$matches[0][4];
+			$param->background = trim($matches[0][5],'/');
+			$param->external = (bool)$matches[0][6];
+			$param->file = $matches[0][7];
 		}
 
-		// Mode 2: Crop to fill
-		else if(preg_match_all('/^2\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
-			$param->mode = 2;
-			$param->width = $matches[0][1];
-			$param->height = $matches[0][2];
-			$param->position = $matches[0][3];
-			$param->background = trim($matches[0][4],'/');
-			$param->external = (bool)$matches[0][5];
-			$param->file = $matches[0][6];
+		// Mode 1: Resize
+		// Mode 4: Resize to fit
+		else if(preg_match_all('/^(1|4)\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
+			$param->mode = (int)$matches[0][1];
+			$param->width = (int)$matches[0][2];
+			$param->height = (int)$matches[0][3];
+			$param->external = (bool)$matches[0][4];
+			$param->file = $matches[0][5];
 		}
 
-		// Mode 1: Image resize
-		else if(preg_match_all('/^1\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
-			$param->mode = 1;
-			$param->width = $matches[0][1];
-			$param->height = $matches[0][2];
-			$param->external = (bool)$matches[0][3];
-			$param->file = $matches[0][4];
-		}
-
-		// Mode 4: Image fit resize
-		elseif(preg_match_all('/^4\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
-			$param->mode = 4;
-			$param->width = $matches[0][1];
-			$param->height = $matches[0][2];
-			$param->external = (bool)$matches[0][3];
-			$param->file = $matches[0][4];
-		}
-
-		// Mode 0: Direct displaying of image
+		// Mode 0: Direct display of image
 		elseif(preg_match_all('/^(?:(0|1)\/)?(.+)$/i', $string, $matches, PREG_SET_ORDER)){
 			$param->external = (bool)$matches[0][1];
 			$param->file = $matches[0][2];
