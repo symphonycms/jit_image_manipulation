@@ -33,7 +33,7 @@
 
 				$rule = "
 	### IMAGE RULES
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]\n\n";
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
 
 				// Remove existing the rules
 				$htaccess = self::__removeImageRules($htaccess);
@@ -42,7 +42,7 @@
 					$htaccess = preg_replace('/### IMAGE RULES/', $rule, $htaccess);
 				}
 				else{
-					$htaccess = preg_replace('/RewriteRule .\* - \[S=14\]\s*/i', "RewriteRule .* - [S=14]\n{$rule}\t", $htaccess);
+					$htaccess = preg_replace('/RewriteRule .\* - \[S=14\]\s*/i', "RewriteRule .* - [S=14]" . PHP_EOL ."{$rule}\t", $htaccess);
 				}
 
 				// Replace the token with the real value
@@ -131,8 +131,8 @@
 		}
 
 		public function saveRecipes($recipes){
-			$string = "<?php\n";
-			$string .= "\n\t\$recipes = array(";
+			$string = "<?php" . PHP_EOL;
+			$string .= PHP_EOL ."\t\$recipes = array(" . PHP_EOL;
 
 			if (is_array($recipes) && !empty($recipes)) {
 				// array to collect recipe handles
@@ -153,13 +153,13 @@
 					// check for recipes with same handles
 					if (!in_array($recipe['url-parameter'], $handles)) {
 						// handle does not exist => save recipe
-						$string .= "\r\n\r\n\r\n\t\t########";
-						$string .= "\r\n\t\tarray(";
+						$string .= PHP_EOL . "\t\t########";
+						$string .= PHP_EOL . "\t\tarray(";
 						foreach($recipe as $key => $value){
-							$string .= "\r\n\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'NULL').",";
+							$string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'NULL').",";
 						}
-						$string .= "\r\n\t\t),";
-						$string .= "\r\n\t\t########";
+						$string .= PHP_EOL . "\t\t),";
+						$string .= PHP_EOL . "\t\t########" . PHP_EOL;
 
 						// collect recipe handle
 						$handles[] = $recipe['url-parameter'];
@@ -179,7 +179,7 @@
 				}
 			}
 
-			$string .= "\r\n\t);\n\n";
+			$string .= PHP_EOL ."\t);" . PHP_EOL;
 
 			// notify for duplicate recipes handles
 			if (!empty($this->recipes_errors)) {
@@ -196,7 +196,7 @@
 		}
 
 		private static function __removeImageRules($string){
-			return preg_replace('/RewriteRule \^image[^\r\n]+[\r\n]?/i', NULL, $string);
+			return preg_replace('/RewriteRule \^image[^\r\n]+[\r\n\t]?/i', NULL, $string);
 		}
 
 		public function createRecipeDuplicatorTemplate($mode = '0', $position = '-1', $values = array(), $error = false){
