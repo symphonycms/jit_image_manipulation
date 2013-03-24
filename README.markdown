@@ -2,8 +2,8 @@
 
 A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
 
-- Version: 1.17
-- Date: 22nd February 2013
+- Version: 1.18
+- Date: 24th March 2013
 - Requirements: Symphony 2.3.2 or later
 - Author: Alistair Kearney, alistair@symphony-cms.com
 - GitHub Repository: <http://github.com/symphonycms/jit_image_manipulation>

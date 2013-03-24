@@ -16,6 +16,13 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.18" date="2013-03-24" min="2.3.2">
+			- Set GD to ignore invalid JPEG's
+			- Match recipes names more specifically, using `thumbs` and `thumb` is now possible
+			- When saving the `.htaccess` changes, use the `PHP_EOL` constant for more consistent output
+			- Cache `Gateway` requests for improved performance
+			- Fix potential warnings when checking for trusted sites
+		</release>
 		<release version="1.17" date="2013-02-22" min="2.3.2">
 			- Allow JIT to function with image filenames that have special characters
 			- Use Gateway instead of curl directly for HTTP Requests
