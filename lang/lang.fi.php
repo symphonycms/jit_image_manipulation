@@ -37,7 +37,7 @@
 		'Muuta kokoa',
 
 		'Crop to Fill' => 
-		'Täytä rajaamalla',
+		'Rajaa',
 
 		'Resize Canvas' => 
 		'Muuta piirtoalueen kokoa',
