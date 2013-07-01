@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension id="jit_image_manipulation" status="released" xmlns="http://symphony-cms.com/schemas/extension/1.0">
+<extension id="jit_image_manipulation" status="released" xmlns="http://getsymphony.com/schemas/extension/1.0">
 	<name>Just In Time (JIT) Image Manipulation</name>
 	<description>Image thumbnailer</description>
 	<repo type="github">https://github.com/symphonycms/jit_image_manipulation</repo>
-	<url type="discuss">http://symphony-cms.com/discuss/thread/32795/</url>
+	<url type="discuss">http://getsymphony.com/discuss/thread/32795/</url>
 	<types>
 		<type>Multimedia</type>
 		<type>Image</type>
@@ -12,10 +12,13 @@
 	<authors>
 		<author>
 			<name github="symphonycms" symphony="team">Symphony Team</name>
-			<website>http://symphony-cms.com</website>
+			<website>http://getsymphony.com</website>
 		</author>
 	</authors>
 	<releases>
+		<release version="1.19" data="2013-07-01" min="2.3.2">
+			- Update links to **getsymphony.com**
+		</release>
 		<release version="1.18" date="2013-03-24" min="2.3.2">
 			- Set GD to ignore invalid JPEG's
 			- Match recipes names more specifically, using `thumbs` and `thumb` is now possible
