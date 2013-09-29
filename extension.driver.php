@@ -447,17 +447,23 @@
 				$context['errors']['jit-trusted-sites'] = __('An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/trusted-sites</code>'));
 			};
 
-			// save recipes
+			// save recipes (if they exist)
 			if(isset($_POST['jit_image_manipulation']['recipes'])) {
 				$recipes_saved = $this->saveRecipes($_POST['jit_image_manipulation']['recipes']);
 			}
+			// nothing posted, so clear recipes
+			else {
+				$recipes_saved = $this->saveRecipes(array());
+			}
+
 			// there were errors saving the recipes
 			if ($recipes_saved == self::__ERROR_SAVING_RECIPES__) {
 				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.', array('<code>/workspace/jit-image-manipulation/recipes.php</code>'));
-			};
+			}
+
 			// there were duplicate recipes handles
 			if ($recipes_saved == self::__INVALID_RECIPES__) {
 				$context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes.');
-			};
+			}
 		}
 	}
