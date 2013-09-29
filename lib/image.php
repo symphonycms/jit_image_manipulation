@@ -191,7 +191,7 @@
 	}
 
 	$meta = $cache_file = NULL;
-	$image_path = ($param->external === true ? "http://{$param->file}" : WORKSPACE . "/{$param->file}");
+	$image_path = ($param->external === true ? "//{$param->file}" : WORKSPACE . "/{$param->file}");
 
 	// If the image is not external check to see when the image was last modified
 	if($param->external !== true){
