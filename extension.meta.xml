@@ -16,10 +16,10 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="1.20" data="2013-09-30" min="2.3.2">
+		<release version="1.20" date="2013-09-30" min="2.3.2">
 			- Allow all recipes to be deleted from the Preferences page
 		</release>
-		<release version="1.19" data="2013-07-01" min="2.3.2">
+		<release version="1.19" date="2013-07-01" min="2.3.2">
 			- Update links to **getsymphony.com**
 		</release>
 		<release version="1.18" date="2013-03-24" min="2.3.2">
