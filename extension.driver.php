@@ -366,9 +366,8 @@
 
 			// recipes duplicator
 			$group->appendChild(new XMLElement('p', __('Recipes'), array('class' => 'label')));
-			$div = new XMLElement('div', null, array('class' => 'frame'));
+			$div = new XMLElement('div', null, array('class' => 'frame jit-duplicator'));
 			$duplicator = new XMLElement('ol');
-			$duplicator->setAttribute('class', 'jit-duplicator');
 			$duplicator->setAttribute('data-add', __('Add recipe'));
 			$duplicator->setAttribute('data-remove', __('Remove recipe'));
 
