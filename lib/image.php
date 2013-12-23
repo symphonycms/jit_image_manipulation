@@ -45,7 +45,8 @@
 		// Check for matching recipes
 		if(file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) include(WORKSPACE . '/jit-image-manipulation/recipes.php');
 
-		if (is_array($recipes) && !empty($recipes)) {
+		// check to see if $recipes is even available before even checking if it is an array
+		if (!empty($recipes) && is_array($recipes)) {
 			foreach($recipes as $recipe) {
 				// Is the mode regex? If so, bail early and let not JIT process it.
 				if($recipe['mode'] === 'regex' && preg_match($recipe['url-parameter'], $string)) {
