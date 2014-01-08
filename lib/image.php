@@ -248,7 +248,9 @@
 		$etag = md5($last_modified . $image_path);
 		header('Last-Modified: ' . $last_modified_gmt);
 		header(sprintf('ETag: "%s"', $etag));
-		header('Cache-Control: public');
+		// Add no-transform in order to prevent ISPs to
+		// serve image over http through a compressing proxy.
+		header('Cache-Control: public, no-transform');
 	}
 	else {
 		$last_modified_gmt = NULL;
