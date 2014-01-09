@@ -287,7 +287,7 @@
 	if($param->mode == MODE_NONE){
 		if(
 			// If the external file still exists
-			($param->external && Image::getHttpResponseCode($original_file) !== 200)
+			($param->external && Image::getHttpResponseCode($original_file) != 200)
 			// If the file is local, does it exist and can we read it?
 			|| ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
 		) {
