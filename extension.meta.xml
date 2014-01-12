@@ -17,10 +17,12 @@
 	</authors>
 	<releases>
 		<release version="1.21" date="2014-01-12" min="2.3.2">
-			- Fix for unused `$recipes` variable
-			- Fix for caching when using sockets instead of curl
-			- Update README with updated path
-			- Update Russian and German translations
+			- Simplification of `.htaccess` rule (@michael-e)
+			- Fix for unused `$recipes` variable (@dtan)
+			- Fix for caching when using sockets instead of curl (@dustywilson)
+			- Update README with updated path (@nitriques)
+			- Update Russian and German translations (@alexbirukov and @nilshoerrmann)
+			- Update Duplicators to Symphony 2.3 API (@nilshoerrmann)
 		</release>
 		<release version="1.20" date="2013-09-30" min="2.3.2">
 			- Allow all recipes to be deleted from the Preferences page
