@@ -33,7 +33,7 @@
 
 				$rule = "
 	### IMAGE RULES
-	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))\$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
+	RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
 
 				// Remove existing the rules
 				$htaccess = self::__removeImageRules($htaccess);
@@ -71,6 +71,23 @@
 		}
 
 		public function update($previousVersion = false) {
+			if(version_compare($previousVersion, '1.21', '<')) {
+				// Simplify JIT htaccess rule [#75]
+				try {
+					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
+					$htaccess = str_replace(
+						'RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$',
+						'RewriteRule ^image\/(.+)$',
+						$htaccess
+					);
+				} catch (Exception $ex) {
+					if(!file_put_contents(DOCROOT . '/.htaccess', $htaccess)) {
+						Administration::instance()->Page->pageAlert(__('An error occurred while updating %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
+						return false;
+					}
+				}
+			}
+
 			if(version_compare($previousVersion, '1.17', '<')) {
 				// Add [B] flag to the .htaccess rule [#37]
 				try {
