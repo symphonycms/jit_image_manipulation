@@ -434,6 +434,13 @@
 			if (Symphony::Configuration()->get('disable_upscaling', 'image') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue($input->generate() . ' ' . __('Disable upscaling of images beyond the original size'));
 			$group->appendChild($label);
+			
+			// checkbox to diable proxy transformation of images
+			$label = Widget::Label();
+			$input = Widget::Input('settings[image][disable_proxy_transform]', 'yes', 'checkbox');
+			if (Symphony::Configuration()->get('disable_proxy_transform', 'image') == 'yes') $input->setAttribute('checked', 'checked');
+			$label->setValue($input->generate() . ' ' . __('Prevent ISP proxy transformation'));
+			$group->appendChild($label);
 
 			// textarea for trusted sites
 			$label = Widget::Label(__('Trusted Sites'));
@@ -454,6 +461,10 @@
 
 			if (!isset($context['settings']['image']['disable_upscaling'])) {
 				$context['settings']['image']['disable_upscaling'] = 'no';
+			}
+			
+			if (!isset($context['settings']['image']['disable_proxy_transform'])) {
+				$context['settings']['image']['disable_proxy_transform'] = 'no';
 			}
 
 			// save trusted sites
