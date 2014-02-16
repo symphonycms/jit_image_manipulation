@@ -246,11 +246,18 @@
 	if($last_modified) {
 		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
 		$etag = md5($last_modified . $image_path);
+		$cacheControl = 'public';
+		
+		// Add no-transform in order to prevent ISPs to
+		// serve image over http through a compressing proxy
+		// See #79
+		if (Symphony::Configuration()->get('disable_proxy_transform', 'image') == 'yes') {
+			$cacheControl .= ', no-transform';
+		}
+		
 		header('Last-Modified: ' . $last_modified_gmt);
 		header(sprintf('ETag: "%s"', $etag));
-		// Add no-transform in order to prevent ISPs to
-		// serve image over http through a compressing proxy.
-		header('Cache-Control: public, no-transform');
+		header('Cache-Control: '. $cacheControl);
 	}
 	else {
 		$last_modified_gmt = NULL;
