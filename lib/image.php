@@ -251,7 +251,7 @@
 		// Add no-transform in order to prevent ISPs to
 		// serve image over http through a compressing proxy
 		// See #79
-		if (Symphony::Configuration()->get('disable_proxy_transform', 'image') == 'yes') {
+		if ($settings['image']['disable_proxy_transform'] == 'yes') {
 			$cacheControl .= ', no-transform';
 		}
 		
