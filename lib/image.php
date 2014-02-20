@@ -30,6 +30,7 @@
 	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
 
 	set_error_handler('__errorHandler');
+	ob_start();
 
 	function processParams($string, &$image_settings){
 		$param = (object)array(
