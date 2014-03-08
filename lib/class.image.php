@@ -64,15 +64,8 @@
 			// clean up
 			$gateway->flush();
 
-			// The `sys_get_temp_dir` is our preference, but on some shared hosting
-			// this is unavailable. If this fails, we'll attempt the `upload_tmp_dir`
-			// and then use `TMP` (the Symphony constant).
-			// @link https://github.com/symphonycms/jit_image_manipulation/commit/728adf15c9db31f2453baca6b6888cb318fb956f#comments
-			$dir = @sys_get_temp_dir();
-			if($dir == false || !is_writable($dir)) $dir = @ini_get('upload_tmp_dir');
-			if($dir == false || !is_writable($dir)) $dir = TMP;
-
-			$dest = tempnam($dir, 'IMAGE');
+			// Symphony 2.4 enhances the TMP constant so it can be relied upon
+			$dest = tempnam(TMP, 'IMAGE');
 
 			if(!file_put_contents($dest, $response)) {
 				throw new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
@@ -126,7 +119,7 @@
 			}
 
 			if(!is_resource($resource)){
-				throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
+				throw new Exception(sprintf('Error creating image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
 			}
 
 			$obj = new self($resource, $meta);
