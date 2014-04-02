@@ -191,7 +191,7 @@
 		}
 	}
 	
-	function __checkAbrotedConnection() {
+	function __checkAbortedConnection() {
 		// check to see if the user is still connected
 		if(connection_aborted()){
 			die('Connection lost');
@@ -282,7 +282,7 @@
 	
 	
 	// Check to see if the user is still connected
-	__checkAbrotedConnection();
+	__checkAbortedConnection();
 	
 	// The 'image_path' may change and point to a cache file, but we will
 	// still need to know which file is supposed to be processed.
@@ -304,7 +304,7 @@
 	}
 	
 	// Check to see if the user is still connected
-	__checkAbrotedConnection();
+	__checkAbortedConnection();
 
 	// If there is no mode for the requested image, just read the image
 	// from it's location (which may be external)
@@ -328,7 +328,7 @@
 	}
 	
 	// Check to see if the user is still connected
-	__checkAbrotedConnection();
+	__checkAbortedConnection();
 
 	// There is mode, or the image to JIT is external, so call `Image::load` or
 	// `Image::loadExternal` to load the image into the Image class
@@ -348,7 +348,7 @@
 	}
 	
 	// Check to see if the user is still connected
-	__checkAbrotedConnection();
+	__checkAbortedConnection();
 
 	// Calculate the correct dimensions. If necessary, avoid upscaling the image.
 	$src_w = $image->Meta()->width;
@@ -423,7 +423,7 @@
 	}
 	
 	// Check to see if the user is still connected
-	__checkAbrotedConnection();
+	__checkAbortedConnection();
 
 	// If CACHING is enabled, and a cache file doesn't already exist,
 	// save the JIT image to CACHE using the Quality setting from Symphony's
@@ -438,7 +438,7 @@
 	}
 	
 	// Check to see if the user is still connected
-	__checkAbrotedConnection();
+	__checkAbortedConnection();
 
 	// Display the image in the browser using the Quality setting from Symphony's
 	// Configuration. If this fails, trigger an error.
