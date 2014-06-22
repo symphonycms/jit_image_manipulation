@@ -16,7 +16,7 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="1.3" date="2014-04-17" min="2.4">
+		<release version="1.30" date="2014-04-17" min="2.4">
 			- Remove `ob_clean` as it was unnecessary (@DavidOliver)
 			- Add `no-transform` header to prevent ISP's from compression images (@nitriques)
 			- Simplify `TMP` directory logic (@brendo)
