@@ -47,7 +47,7 @@ class HTAccess
 
         $rule = "
     ### IMAGE RULES
-    RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
+    RewriteRule ^image\/(.+)$ index.php?mode=jit&param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
 
         if (preg_match('/### IMAGE RULES/', $this->content)) {
             $this->content = preg_replace(

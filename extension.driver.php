@@ -20,8 +20,33 @@
 					'page' => '/system/preferences/',
 					'delegate' => 'Save',
 					'callback' => '__SavePreferences'
+				),
+				array(
+					'page' => '/all/',
+					'delegate' => 'ModifySymphonyLauncher',
+					'callback' => 'modifySymphonyLauncher'
 				)
 			);
+		}
+
+		public function modifySymphonyLauncher($context) {
+            if ($_REQUEST['mode'] !== 'jit') {
+                return;
+            }
+
+			function jit_launcher($mode) {
+				if (strtolower($mode) == 'jit') {
+					require_once __DIR__ . '/lib/class.jit.php';
+
+					$renderer = JIT\JIT::instance();
+					$renderer->display();
+				}
+				else {
+					symphony_launcher($mode);
+				}
+			}
+
+			define('SYMPHONY_LAUNCHER', 'jit_launcher');
 		}
 
 		public function install() {
@@ -426,7 +451,7 @@
 			if (Symphony::Configuration()->get('disable_upscaling', 'image') == 'yes') $input->setAttribute('checked', 'checked');
 			$label->setValue($input->generate() . ' ' . __('Disable upscaling of images beyond the original size'));
 			$group->appendChild($label);
-			
+
 			// checkbox to diable proxy transformation of images
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_proxy_transform]', 'yes', 'checkbox');
@@ -460,7 +485,7 @@
 			if (!isset($context['settings']['image']['disable_upscaling'])) {
 				$context['settings']['image']['disable_upscaling'] = 'no';
 			}
-			
+
 			if (!isset($context['settings']['image']['disable_proxy_transform'])) {
 				$context['settings']['image']['disable_proxy_transform'] = 'no';
 			}
