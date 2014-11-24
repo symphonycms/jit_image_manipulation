@@ -22,6 +22,10 @@
 				imagedestroy($this->_resource);
 			}
 		}
+        
+        public function setResource($resource) {
+            $this->_resource = $resource;
+        }
 
 		public function Resource(){
 			return $this->_resource;
@@ -307,29 +311,6 @@
 		 */
 		public static function width($res){
 			return imagesx($res);
-		}
-
-		/**
-		 * Given a filter name, this function will attempt to load the filter
-		 * from the `/filters` folder and call it's `run` method. The JIT core
-		 * provides filters for 'crop', 'resize' and 'scale'.
-		 *
-		 * @param string $filter
-		 *  The filter name
-		 * @param array $args
-		 *  The arguments to pass to the filter's `run()` method
-		 * @return boolean
-		 */
-		public function applyFilter($filter = null, array $args = array()) {
-			if(is_null($filter) || !is_file(EXTENSIONS . "/jit_image_manipulation/lib/filters/filter.{$filter}.php")) return false;
-
-			require_once("filters/filter.{$filter}.php");
-
-			array_unshift($args, $this->_resource);
-
-			$this->_resource = call_user_func_array(array(sprintf('Filter%s', ucfirst($filter)), 'run'), $args);
-
-			return true;
 		}
 
 		/**
