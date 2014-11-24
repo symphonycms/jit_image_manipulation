@@ -59,7 +59,9 @@
 
 					return Symphony::Configuration()->write();
 				}
-				else return false;
+				else {
+					return false;
+				}
 			}
 			catch (Exception $ex) {
 				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);

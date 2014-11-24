@@ -16,6 +16,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.4" date="2014-11-24" min="2.6.0">
+			- Mark compatibility with Symphnoy 2.6+
+		</release>
 		<release version="1.31" date="2014-08-17" min="2.4" max="2.5.x">
 			- Mark compatibility with Symphony 2.4+
 		</release>
