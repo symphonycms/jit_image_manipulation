@@ -4,12 +4,6 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
 
     public $mode = 2;
 
-    public static function about() {
-        return array(
-            'name' => 'JIT Filter: Resize and Crop'
-        );
-    }
-
     const TOP_LEFT = 1;
     const TOP_MIDDLE = 2;
     const TOP_RIGHT = 3;
@@ -19,6 +13,12 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
     const BOTTOM_LEFT = 7;
     const BOTTOM_MIDDLE = 8;
     const BOTTOM_RIGHT = 9;
+
+    public static function about() {
+        return array(
+            'name' => 'JIT Filter: Resize and Crop'
+        );
+    }
 
     public static function parseParameters($parameter_string)
     {
@@ -37,7 +37,7 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
         return !empty($param) ? $param : false;
     }
 
-    public static function run(\Image $res, $settings) { //$width, $height, $anchor=self::TOP_LEFT, $background_fill = null){
+    public static function run(\Image $res, $settings) {
         $src_w = $res->Meta()->width;
         $src_h = $res->Meta()->height;
 
@@ -83,13 +83,15 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
             $dst_w = round($dst_h * $ratio);
         }
 
+        $image_width = Image::width($resource);
+        $image_height = Image::height($resource);
+
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
+        self::__fill($resource, $tmp, $settings['settings']['background']);
 
-        self::__fill($resource, $tmp, $background_fill);
+        list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, $image_width, $image_height, $image_width, $image_height, $settings['settings']['position']);
 
-        list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, Image::width($resource), Image::height($resource), Image::width($resource), Image::height($resource), $anchor);
-
-        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, Image::width($resource), Image::height($resource), Image::width($resource), Image::height($resource));
+        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $image_width, $image_height, $image_width, $image_height);
 
         if(is_resource($resource)) {
             imagedestroy($resource);

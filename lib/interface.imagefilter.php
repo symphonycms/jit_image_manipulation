@@ -8,8 +8,6 @@ Interface ImageFilterInterface {
 
     public static function parseParameters($parameter_string);
 
-    public static function fetchImage($parameter_string);
-
     public static function run(\Image $resource, $settings);
 
 }

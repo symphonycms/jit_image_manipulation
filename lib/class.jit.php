@@ -80,7 +80,7 @@ class JIT extends Symphony {
 
             // apply the filter
             $image = $this->applyFilterToImage($image_resource, $param);
-
+ 
             // figure out whether to cache the image or not
             if($this->caching) {
                 $this->cacheImage($image, $param);
@@ -215,15 +215,17 @@ class JIT extends Symphony {
         }
 
         // If $this->caching is enabled, check to see that the cached file is still valid.
-        if($this->caching === true){
+        if($this->caching === true) {
             $cache_file = sprintf('%s/%s_%s', CACHE, md5($_GET['param'] . intval($this->settings['quality'])), basename($image_path));
+            // Set the cached image path, worst case scenario an image will be saved here
+            // if no valid cache exists.
+            $parameters['cached_image'] = $cache_file;
 
             // Cache has expired or doesn't exist
             if(is_file($cache_file) && (filemtime($cache_file) < $parameters['last_modified'])){
                 unlink($cache_file);
             }
             else if(is_file($cache_file)) {
-                $parameters['cached_image'] = $cache_file;
                 touch($cache_file);
             }
         }
@@ -318,13 +320,12 @@ class JIT extends Symphony {
         return $resource;
     }
 
-    public function cacheImage($image, $parameters)
+    public function cacheImage(\Image $image, $parameters)
     {
-        var_dump($parameters);exit;
         // If $this->caching is enabled, and a cache file doesn't already exist,
         // save the JIT image to CACHE using the Quality setting from Symphony's
         // Configuration.
-        if(!is_file($parameters['cached_image'])){
+        if(!is_file($parameters['cached_image'])) {
             if(!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
                 throw new JITGenerationError('Error generating image, failed to create cache file.');
             }
@@ -337,87 +338,6 @@ class JIT extends Symphony {
         // Configuration. If this fails, trigger an error.
         if(!$image->display(intval($this->settings['quality']))) {
             throw new JITGenerationError('Error generating image');
-        }
-    }
-
-    public function blah()
-    {
-        // If there is no mode for the requested image, just read the image
-        // from it's location (which may be external)
-        if($param->mode == MODE_NONE){
-            if(
-                // If the external file still exists
-                ($param->external && Image::getHttpResponseCode($original_file) != 200)
-                // If the file is local, does it exist and can we read it?
-                || ($param->external === FALSE && (!file_exists($original_file) || !is_readable($original_file)))
-            ) {
-                throw new JITImageNotFound(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file)));
-            }
-
-            $meta = Image::getMetaInformation($image_path);
-            Image::renderOutputHeaders($meta->type);
-            readfile($image_path);
-            exit;
-        }
-        // Apply the filter to the Image class (`$image`)
-        switch($param->mode) {
-            case MODE_RESIZE:
-                $image->applyFilter('resize', array($dst_w, $dst_h));
-                break;
-
-            case MODE_FIT:
-                if($param->height == 0) {
-                    $ratio = ($src_h / $src_w);
-                    $dst_h = round($dst_w * $ratio);
-                }
-
-                else if($param->width == 0) {
-                    $ratio = ($src_w / $src_h);
-                    $dst_w = round($dst_h * $ratio);
-                }
-
-                $src_r = ($src_w / $src_h);
-                $dst_r = ($dst_w / $dst_h);
-
-                if ($src_h <= $dst_h && $src_w <= $dst_w){
-                    $image->applyFilter('resize', array($src_w,$src_h));
-                    break;
-                }
-
-                if($src_h >= $dst_h && $src_r <= $dst_r) {
-                    $image->applyFilter('resize', array(NULL, $dst_h));
-                }
-
-                if($src_w >= $dst_w && $src_r >= $dst_r) {
-                    $image->applyFilter('resize', array($dst_w, NULL));
-                }
-
-                break;
-
-            case MODE_RESIZE_CROP:
-                if($param->height == 0) {
-                    $ratio = ($src_h / $src_w);
-                    $dst_h = round($dst_w * $ratio);
-                }
-
-                else if($param->width == 0) {
-                    $ratio = ($src_w / $src_h);
-                    $dst_w = round($dst_h * $ratio);
-                }
-
-                $src_r = ($src_w / $src_h);
-                $dst_r = ($dst_w / $dst_h);
-
-                if($src_r < $dst_r) {
-                    $image->applyFilter('resize', array($dst_w, NULL));
-                }
-                else {
-                    $image->applyFilter('resize', array(NULL, $dst_h));
-                }
-
-            case MODE_CROP:
-                $image->applyFilter('crop', array($dst_w, $dst_h, $param->position, $param->background));
-                break;
         }
     }
 }

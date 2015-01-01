@@ -37,10 +37,13 @@ Class FilterCrop extends JIT\ImageFilter{
         return !empty($param) ? $param : false;
     }
 
-    public static function run(\Image $res, $settings) { //$width, $height, $anchor=self::TOP_LEFT, $background_fill = null){
+    public static function run(\Image $res, $settings) {
+        $resource = $res->Resource();
+        $dst_w = Image::width($resource);
+        $dst_h = Image::height($resource);
 
-        $dst_w = Image::width($res);
-        $dst_h = Image::height($res);
+        $width = $settings['settings']['width'];
+        $height = $settings['settings']['height'];
 
         if(!empty($width) && !empty($height)) {
             $dst_w = $width;
@@ -57,19 +60,23 @@ Class FilterCrop extends JIT\ImageFilter{
             $dst_w = round($dst_h * $ratio);
         }
 
+        $image_width = Image::width($resource);
+        $image_height = Image::height($resource);
+
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
+        self::__fill($resource, $tmp, $settings['settings']['background']);
 
-        self::__fill($res, $tmp, $background_fill);
+        list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, $image_width, $image_height, $image_width, $image_height, $anchor);
 
-        list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, Image::width($res), Image::height($res), Image::width($res), Image::height($res), $anchor);
+        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $image_width, $image_height, $image_width, $image_height);
 
-        imagecopyresampled($tmp, $res, $src_x, $src_y, $dst_x, $dst_y, Image::width($res), Image::height($res), Image::width($res), Image::height($res));
-
-        if(is_resource($res)) {
-            imagedestroy($res);
+        if(is_resource($resource)) {
+            imagedestroy($resource);
         }
 
-        return $tmp;
+        $res->setResource($tmp);
+
+        return $res;
     }
 
     protected static function __calculateDestSrcXY($width, $height, $src_w, $src_h, $dst_w, $dst_h, $position=self::TOP_LEFT){
