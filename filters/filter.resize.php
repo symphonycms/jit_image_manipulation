@@ -22,23 +22,16 @@ Class FilterResize extends JIT\ImageFilter {
             $param['image_path'] = $matches[0][5];
         }
 
-        if(preg_match_all('/^(2|3)\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)){
-            $param['mode'] = (int)$matches[0][1];
-            $param['settings']['width'] = (int)$matches[0][2];
-            $param['settings']['height'] = (int)$matches[0][3];
-            $param['settings']['position'] = (int)$matches[0][4];
-            $param['settings']['background'] = trim($matches[0][5],'/');
-            $param['settings']['external'] = (bool)$matches[0][6];
-            $param['image_path'] = $matches[0][7];
-        }
-
         return !empty($param) ? $param : false;
     }
 
     public static function run(\Image $res, $settings) {
+        $resource = $res->Resource();
+        $dst_w = Image::width($resource);
+        $dst_h = Image::height($resource);
 
-        $dst_w = Image::width($res);
-        $dst_h = Image::height($res);
+        $width = $settings['settings']['width'];
+        $height = $settings['settings']['height'];
 
         if(!empty($width) && !empty($height)) {
             $dst_w = $width;
@@ -52,24 +45,22 @@ Class FilterResize extends JIT\ImageFilter {
         }
 
         elseif(empty($width)) {
-
             $ratio = ($dst_w / $dst_h);
             $dst_h = $height;
             $dst_w = round($dst_h * $ratio);
-
         }
 
-        $dst = imagecreatetruecolor($dst_w, $dst_h);
+        $tmp = imagecreatetruecolor($dst_w, $dst_h);
+        self::__fill($resource, $tmp, $settings['settings']['background']);
 
-        self::__fill($res, $dst);
+        imagecopyresampled($tmp, $resource, 0, 0, 0, 0, $dst_w, $dst_h, Image::width($resource), Image::height($resource));
 
-        imagecopyresampled($dst, $res, 0, 0, 0, 0, $dst_w, $dst_h, Image::width($res), Image::height($res));
-
-        if(is_resource($res)) {
-            imagedestroy($res);
+        if(is_resource($resource)) {
+            imagedestroy($resource);
         }
 
-        return $dst;
+        $res->setResource($tmp);
 
+        return $res;
     }
 }
