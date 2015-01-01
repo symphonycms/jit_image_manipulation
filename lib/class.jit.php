@@ -11,7 +11,7 @@ require_once __DIR__ . '/class.jitfiltermanager.php';
 require_once __DIR__ . '/class.image.php';
 
 class JIT extends Symphony {
-    
+
     /**
      * @var array
      */
@@ -21,7 +21,7 @@ class JIT extends Symphony {
      * @var boolean
      */
     private $caching = false;
-    
+
     /**
      * @var array
      */
@@ -42,12 +42,12 @@ class JIT extends Symphony {
 
         return self::$_instance;
     }
-    
+
     public static function getAvailableFilters()
     {
         if (empty(self::$available_filters)) {
             $filters = JitFilterManager::listAll();
-        
+
             foreach($filters as $filter) {
                 self::$available_filters[] = JitFilterManager::create($filter['handle']);
             }
@@ -60,15 +60,15 @@ class JIT extends Symphony {
     {
         $this->settings = Symphony::Configuration()->get('image');
         $this->caching = ($this->settings['cache'] == 1 ? true : false);
-        
+
         // is this thing cached?
         if($image = $this->isImageAlreadyCached($_GET['param'])) {
             return $this->displayImage($image);
         }
-        
+
         // process the parameters
         $param = $this->parseParameters($_GET['param']);
-        
+
         // get the actual image
         $image = $this->fetchImagePath($param);
 
@@ -77,10 +77,10 @@ class JIT extends Symphony {
             //$this->sendImageHeaders($param);
 
             $image_resource = $this->fetchImage($image, $param);
-            
+
             // apply the filter
             $image = $this->applyFilterToImage($image_resource, $param);
-            
+
             // figure out whether to cache the image or not
             if($this->caching) {
                 $this->cacheImage($image, $param);
@@ -92,9 +92,9 @@ class JIT extends Symphony {
     }
 
     /**
-     * Given the parameters, check to see if this image is already in 
+     * Given the parameters, check to see if this image is already in
      * the cache.
-     * 
+     *
      * @param string $parameter_string
      * @return boolean
      */
@@ -102,7 +102,7 @@ class JIT extends Symphony {
     {
         return false;
     }
-    
+
     /**
      * Given the parameters, this function will attempt to parse them
      * to determine the mode, it's settings and the image path.
@@ -128,7 +128,7 @@ class JIT extends Symphony {
         if (($mode && $image_path) === false) {
             throw new JITParseParametersException('No JIT filter was found for this request.');
         }
-        
+
         // If the background has been set, ensure that it's not mistakenly
         // a folder. This is rare edge case in that if a folder is named like
         // a hexcode, JIT will interpret it as the background colour instead of
@@ -153,7 +153,7 @@ class JIT extends Symphony {
             'image' => $image_path
         );
     }
-    
+
     /**
      * Given the parsed parameters, this function will go and grab
      * the desired image, whether it be local, or external.
@@ -230,8 +230,8 @@ class JIT extends Symphony {
 
         return $image_path;
     }
-    
-    public function sendImageHeaders($parameters) 
+
+    public function sendImageHeaders($parameters)
     {
         // if there is no `$last_modified` value, params should be NULL and headers
         // should not be set. Otherwise, set caching headers for the browser.
@@ -239,14 +239,14 @@ class JIT extends Symphony {
             $last_modified_gmt = gmdate('D, d M Y H:i:s', $parameters['last_modified']) . ' GMT';
             $etag = md5($parameters['last_modified'] . $image_path);
             $cacheControl = 'public';
-        
+
             // Add no-transform in order to prevent ISPs to
             // serve image over http through a compressing proxy
             // See #79
             if ($this->settings['disable_proxy_transform'] == 'yes') {
                 $cacheControl .= ', no-transform';
             }
-        
+
             header('Last-Modified: ' . $last_modified_gmt);
             header(sprintf('ETag: "%s"', $etag));
             header('Cache-Control: '. $cacheControl);
@@ -266,33 +266,33 @@ class JIT extends Symphony {
         }
     }
 
-    public function fetchImage($image_path, $parameters) 
+    public function fetchImage($image_path, $parameters)
     {
-    	// There is mode, or the image to JIT is external, so call `Image::load` or
-    	// `Image::loadExternal` to load the image into the Image class
-    	try{
-    		$method = 'load' . ($parameters['external'] === true ? 'External' : NULL);
-    		$image = call_user_func_array(array('Image', $method), array($image_path));
+        // There is mode, or the image to JIT is external, so call `Image::load` or
+        // `Image::loadExternal` to load the image into the Image class
+        try{
+            $method = 'load' . ($parameters['external'] === true ? 'External' : NULL);
+            $image = call_user_func_array(array('Image', $method), array($image_path));
 
-    		if(!$image instanceof \Image) {
-    			throw new JITGenerationError('Could not load image');
-    		}
-    	} catch (Exception $ex) {
-    	    throw new JITGenerationError($ex->getMessage());
-    	}
-        
+            if(!$image instanceof \Image) {
+                throw new JITGenerationError('Could not load image');
+            }
+        } catch (Exception $ex) {
+            throw new JITGenerationError($ex->getMessage());
+        }
+
         return $image;
     }
-    
-	/**
-	 * Given a filter name, this function will attempt to load the filter
-	 * from the `/filters` folder and call it's `run` method. The JIT core
-	 * provides filters for 'crop', 'resize' and 'scale'.
-	 *
-	 * @param \Image $image
-	 * @param array $parameters
-	 * @return \Image
-	 */
+
+    /**
+     * Given a filter name, this function will attempt to load the filter
+     * from the `/filters` folder and call it's `run` method. The JIT core
+     * provides filters for 'crop', 'resize' and 'scale'.
+     *
+     * @param \Image $image
+     * @param array $parameters
+     * @return \Image
+     */
     public function applyFilterToImage(\Image $image, $parameters)
     {
         // Calculate the correct dimensions. If necessary, avoid upscaling the image.
@@ -306,7 +306,7 @@ class JIT extends Symphony {
             $parameters['meta']['width'] = $parameters['settings']['width'];
             $parameters['meta']['height'] = $parameters['settings']['height'];
         }
-        
+
         $filters = self::getAvailableFilters();
         foreach($filters as $filter) {
             if($filter->mode === $parameters['mode']) {
@@ -330,7 +330,7 @@ class JIT extends Symphony {
             }
         }
     }
-    
+
     public function displayImage($image)
     {
         // Display the image in the browser using the Quality setting from Symphony's
@@ -339,8 +339,9 @@ class JIT extends Symphony {
             throw new JITGenerationError('Error generating image');
         }
     }
-    
-    public function blah() {
+
+    public function blah()
+    {
         // If there is no mode for the requested image, just read the image
         // from it's location (which may be external)
         if($param->mode == MODE_NONE){
@@ -422,7 +423,7 @@ class JIT extends Symphony {
 }
 
 class JITException extends SymphonyErrorPage {
-    
+
     public function __construct($message, $heading = 'JIT Error', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_ERROR) {
         return parent::__construct($message, $heading, $template, $additional, $status);
     }
@@ -430,13 +431,13 @@ class JITException extends SymphonyErrorPage {
 }
 
 class JITImageNotFound extends JITException {
-    
+
     public function __construct($message, $heading = 'JIT Image Not Found', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_NOT_FOUND) {
         return parent::__construct($message, $heading, $template, $additional, $status);
     }
-    
+
 }
 
 class JITGenerationError extends JITException {}
-    
+
 class JITParseParametersException extends JITException {}
