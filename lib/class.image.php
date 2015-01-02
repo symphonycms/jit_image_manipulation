@@ -99,12 +99,17 @@
 
 				// JPEG
 				case IMAGETYPE_JPEG:
-					if($meta->channels <= 3){
-						$resource = imagecreatefromjpeg($image);
-					}
+					// GD 2.0.22 supports basic CMYK to RGB conversion.
+					// RE: https://github.com/symphonycms/jit_image_manipulation/issues/47
+					$gdSupportsCMYK = version_compare(GD_VERSION, '2.0.22', '>=');
+
 					// Can't handle CMYK JPEG files
-					else{
+					if ($meta->channels > 3 && $gdSupportsCMYK === false) {
 						throw new Exception('Cannot load CMYK JPG images');
+
+					// Can handle CMYK, or image has less than 3 channels.
+					} else{
+						$resource = imagecreatefromjpeg($image);
 					}
 					break;
 
