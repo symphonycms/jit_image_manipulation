@@ -38,9 +38,12 @@
 
 			self::__fill($res, $tmp, $background_fill);
 
-			list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, Image::width($res), Image::height($res), Image::width($res), Image::height($res), $anchor);
+			$image_width = Image::width($res);
+			$image_height = Image::height($res);
 
-			imagecopyresampled($tmp, $res, $src_x, $src_y, $dst_x, $dst_y, Image::width($res), Image::height($res), Image::width($res), Image::height($res));
+			list($src_x, $src_y, $dst_x, $dst_y) = self::__calculateDestSrcXY($dst_w, $dst_h, $image_width, $image_height, $image_width, $image_height, $anchor);
+
+			imagecopyresampled($tmp, $res, $src_x, $src_y, $dst_x, $dst_y, $image_width, $image_height, $image_width, $image_height);
 
 			if(is_resource($res)) {
 				imagedestroy($res);
