@@ -339,6 +339,13 @@
 		$dst_h = $param->height;
 	}
 
+	// Make sure we have a valid size
+	if ($dst_w == 0 && $dst_h == 0) {
+		Page::renderStatusCode(Page::HTTP_STATUS_BAD_REQUEST);
+		echo 'Both width and height can not be 0';
+		exit;
+	}
+
 	// Apply the filter to the Image class (`$image`)
 	switch($param->mode) {
 		case MODE_RESIZE:
