@@ -341,7 +341,18 @@
 
 	// Make sure we have a valid size
 	if ($dst_w == 0 && $dst_h == 0) {
+		// Return 400
 		Page::renderStatusCode(Page::HTTP_STATUS_BAD_REQUEST);
+		// Init log
+		Symphony::initialiseLog();
+		// Get referrer
+		$httpRef = General::sanitize($_SERVER["HTTP_REFERER"]);
+		if (!$httpRef) {
+			$httpRef = 'unknown referrer';
+		}
+		// push to log
+		Symphony::Log()->pushToLog(sprintf('Invalid size (0 x 0) requested from "%s"', $httpRef), E_WARNING, true);
+		// output and exit
 		echo 'Both width and height can not be 0';
 		exit;
 	}
