@@ -165,8 +165,6 @@
 		}
 	}
 
-	define_safe('CACHING', ($settings['image']['cache'] == 1 ? true : false));
-
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		global $param;
 
