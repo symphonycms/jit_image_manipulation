@@ -16,6 +16,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.0" min="2.5.2">
+			- JIT is it's own renderer now
+		</release>
 		<release version="1.4" date="2014-11-24" min="2.6.0">
 			- Mark compatibility with Symphnoy 2.6+
 		</release>
