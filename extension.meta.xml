@@ -16,6 +16,10 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.45" date="2016-03-21" min="2.6.0" max="2.x.x">
+			- Add CORS header support (@tmslnz)
+			- Added 'max-age' hidden configuration
+		</release>
 		<release version="1.44" date="2016-01-12" min="2.6.0" max="2.6.x">
 			- Fix when no bytes are written but everything worked (#116)
 		</release>
