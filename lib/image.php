@@ -260,6 +260,11 @@
 		$etag = NULL;
 	}
 
+	// Set cross-origin header
+	if ($settings['image']['allow_origin'] !== null) {
+		header('Access-Control-Allow-Origin: ' . $settings['image']['allow_origin']);
+	}
+
 	// Check to see if the requested image needs to be generated or if a 304
 	// can just be returned to the browser to use it's cached version.
 	if(CACHING === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
