@@ -446,6 +446,12 @@
 			$label->setValue($input->generate() . ' ' . __('Prevent ISP proxy transformation'));
 			$group->appendChild($label);
 
+			// text input to allow external request origins
+			$label = Widget::Label(__('Add Cross-Origin Header'));
+			$input = Widget::Input('settings[image][allow_origin]', Symphony::Configuration()->get('allow_origin', 'image'));
+			$label->appendChild($input);
+			$group->appendChild($label);
+
 			// textarea for trusted sites
 			$label = Widget::Label(__('Trusted Sites'));
 			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, $this->trusted()));
@@ -469,6 +475,10 @@
 			
 			if (!isset($context['settings']['image']['disable_proxy_transform'])) {
 				$context['settings']['image']['disable_proxy_transform'] = 'no';
+			}
+
+			if (!isset($context['settings']['image']['allow_origin'])) {
+				$context['settings']['image']['allow_origin'] = '"null"';
 			}
 
 			// save trusted sites

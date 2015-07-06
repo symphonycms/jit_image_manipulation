@@ -16,6 +16,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.42" date="2015-07-04" min="2.6.0">
+			- Add CORS header support (@tmslnz)
+		</release>
 		<release version="1.41" date="2015-03-11" min="2.6.0">
 			- [#103](https://github.com/symphonycms/jit_image_manipulation/issues/103) Fix autoloader issue with Symphony CMS 2.6.0
 			- [#101](https://github.com/symphonycms/jit_image_manipulation/issues/101) Remove duplicate CACHING declaration
