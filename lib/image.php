@@ -54,7 +54,7 @@
 					if (!empty($recipe['quality'])) {
 						$image_settings['quality'] = $recipe['quality'];
 					}
-					break 2;
+					break;
 				}
 				// Nope, we're not regex, so make a regex and then check whether we this recipe matches
 				// the URL string. If not, continue to the next recipe.
