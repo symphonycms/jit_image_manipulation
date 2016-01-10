@@ -49,7 +49,7 @@
 				$htaccess = str_replace($token, '$1', $htaccess);
 				$htaccess = preg_replace("/(" . PHP_EOL . "(\t)?){3,}/", PHP_EOL . PHP_EOL . "\t", $htaccess);
 
-				if(file_put_contents(DOCROOT . '/.htaccess', $htaccess)) {
+				if(file_put_contents(DOCROOT . '/.htaccess', $htaccess) !== false) {
 					// Now add Configuration values
 					Symphony::Configuration()->set('cache', '1', 'image');
 					Symphony::Configuration()->set('quality', '90', 'image');
