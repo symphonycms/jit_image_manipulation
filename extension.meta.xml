@@ -16,6 +16,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.44" date="2016-01-12" min="2.6.0" max="2.6.x">
+			- Fix when no bytes are written but everything worked (#116)
+		</release>
 		<release version="1.43" date="2015-08-25" min="2.6.0">
 			- Fix bad merge and tagging error (#112)
 		</release>
