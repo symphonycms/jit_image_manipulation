@@ -8,7 +8,6 @@
 
 	// Include some parts of the engine
 	require_once DOCROOT . '/vendor/autoload.php';
-	require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 	require_once 'class.image.php';
 	require_once CONFIG;
 
@@ -169,9 +168,9 @@
 		global $param;
 
 		if(error_reporting() != 0 && in_array($errno, array(E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR))){
-			$Log = new Log(ACTIVITY_LOG);
-			$Log->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), $errno, true);
-			$Log->pushToLog(
+			Symphony::initialiseLog();
+			Symphony::Log()->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), $errno, true);
+			Symphony::Log()->pushToLog(
 				sprintf(
 					'Image class param dump - mode: %d, width: %d, height: %d, position: %d, background: %d, file: %s, external: %d, raw input: %s',
 					$param->mode,
@@ -243,14 +242,14 @@
 		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
 		$etag = md5($last_modified . $image_path);
 		$cacheControl = 'public';
-		
+
 		// Add no-transform in order to prevent ISPs to
 		// serve image over http through a compressing proxy
 		// See #79
 		if ($settings['image']['disable_proxy_transform'] == 'yes') {
 			$cacheControl .= ', no-transform';
 		}
-		
+
 		header('Last-Modified: ' . $last_modified_gmt);
 		header(sprintf('ETag: "%s"', $etag));
 		header('Cache-Control: '. $cacheControl);
