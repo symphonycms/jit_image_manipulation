@@ -141,7 +141,9 @@
 		 *  The path to the image.
 		 */
 		public static function getMetaInformation($file){
-			if(!$array = @getimagesize($file)) return false;
+			if(!$array = getimagesize($file)) {
+				throw new Exception('Unable to retreive image size information for ' . $file);
+			}
 
 			$meta = array();
 
@@ -204,7 +206,12 @@
 		 */
 		public static function getHttpHeaderFieldValue($url, $field){
 			$headers = self::getHttpHeaders($url);
-			return $headers[$field];
+
+			if (isset($headers[$field])) {
+				return $headers[$field];
+			}
+
+			return '';
 		}
 
 		/**

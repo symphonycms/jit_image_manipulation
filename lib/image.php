@@ -2,6 +2,10 @@
 
 	@ini_set('display_errors', 'off');
 	@ini_set("gd.jpeg_ignore_warning", 1);
+	@ini_set('magic_quotes_runtime', false);
+
+    // Set appropriate error reporting:
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 
 	define('DOCROOT', rtrim(realpath(dirname(__FILE__) . '/../../../'), '/'));
 	define('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '/') . str_replace('/extensions/jit_image_manipulation/lib', NULL, dirname($_SERVER['PHP_SELF'])), '/'));
@@ -10,6 +14,8 @@
 	require_once DOCROOT . '/vendor/autoload.php';
 	require_once 'class.image.php';
 	require_once CONFIG;
+
+	Symphony::initialiseConfiguration($settings);
 
 	// Setup the environment
 	if(method_exists('DateTimeObj', 'setSettings')) {
@@ -167,7 +173,7 @@
 	function __errorHandler($errno=NULL, $errstr, $errfile=NULL, $errline=NULL, $errcontext=NULL){
 		global $param;
 
-		if(error_reporting() != 0 && in_array($errno, array(E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR))){
+		if(error_reporting() != 0 && in_array($errno, array(E_WARNING, E_USER_WARNING, E_ERROR, E_USER_ERROR))) {
 			Symphony::initialiseLog();
 			Symphony::Log()->pushToLog("{$errno} - ".strip_tags((is_object($errstr) ? $errstr->generate() : $errstr)).($errfile ? " in file {$errfile}" : '') . ($errline ? " on line {$errline}" : ''), $errno, true);
 			Symphony::Log()->pushToLog(
