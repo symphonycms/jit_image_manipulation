@@ -25,47 +25,29 @@
 		}
 
 		public function install() {
-			try {
-				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
-
-				// Cannot use $1 in a preg_replace replacement string, so using a token instead
-				$token = md5(time());
-
-				$rule = "
-	### IMAGE RULES
-	RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
-
-				// Remove existing the rules
-				$htaccess = self::__removeImageRules($htaccess);
-
-				if(preg_match('/### IMAGE RULES/', $htaccess)){
-					$htaccess = preg_replace('/### IMAGE RULES/', $rule, $htaccess);
+			require_once 'lib/class.htaccess.php';
+			$htaccess = new HTAccess();
+			try{
+				if($htaccess->exists()) {
+					$htaccess->enableExtension();
 				}
-				else{
-					$htaccess = preg_replace('/RewriteRule .\* - \[S=14\]\s*/i', "RewriteRule .* - [S=14]" . PHP_EOL ."{$rule}\t", $htaccess);
-				}
+				// Create workspace directory
+				General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
+				// Now add Configuration values
+				Symphony::Configuration()->set('cache', '1', 'image');
+				Symphony::Configuration()->set('quality', '90', 'image');
 
-				// Replace the token with the real value
-				$htaccess = str_replace($token, '$1', $htaccess);
-				$htaccess = preg_replace("/(" . PHP_EOL . "(\t)?){3,}/", PHP_EOL . PHP_EOL . "\t", $htaccess);
-
-				if(file_put_contents(DOCROOT . '/.htaccess', $htaccess) !== false) {
-					// Now add Configuration values
-					Symphony::Configuration()->set('cache', '1', 'image');
-					Symphony::Configuration()->set('quality', '90', 'image');
-
-					// Create workspace directory
-					General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
-
-					return Symphony::Configuration()->write();
-				}
-				else {
-					return false;
-				}
+				Symphony::Configuration()->write();
 			}
 			catch (Exception $ex) {
-				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
-				return false;
+				$message = __(
+					'An error occured while installing %s. %s',
+					array(
+						__('JIT Image Manipulation'),
+						$ex->getMessage()
+					)
+				);
+				throw new Exception($message);
 			}
 		}
 
@@ -74,37 +56,43 @@
 		}
 
 		public function update($previousVersion = false) {
+			require_once 'lib/class.htaccess.php';
+			$htaccess = new HTAccess();
+
 			if(version_compare($previousVersion, '1.21', '<')) {
-				// Simplify JIT htaccess rule [#75]
-				try {
-					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
-					$htaccess = str_replace(
-						'RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$',
-						'RewriteRule ^image\/(.+)$',
-						$htaccess
-					);
-				} catch (Exception $ex) {
-					if(!file_put_contents(DOCROOT . '/.htaccess', $htaccess)) {
-						Administration::instance()->Page->pageAlert(__('An error occurred while updating %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
-						return false;
+				try{
+					// Simplify JIT htaccess rule [#75]
+					if($htaccess->exists()) {
+						$htaccess->simplifyJITAccessRule();
 					}
+				}catch (Exception $ex) {
+					$message = __(
+						'An error occured while updating %s. %s',
+						array(
+							__('JIT Image Manipulation'),
+							$ex->getMessage()
+						)
+					);
+					throw new Exception($message);
 				}
 			}
 
 			if(version_compare($previousVersion, '1.17', '<')) {
 				// Add [B] flag to the .htaccess rule [#37]
-				try {
-					$htaccess = file_get_contents(DOCROOT . '/.htaccess');
-					$htaccess = str_replace(
-						'extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]',
-						'extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]',
-						$htaccess
-					);
-				} catch (Exception $ex) {
-					if(!file_put_contents(DOCROOT . '/.htaccess', $htaccess)) {
-						Administration::instance()->Page->pageAlert(__('An error occurred while updating %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
-						return false;
+				try{
+					if($htaccess->exists()) {
+						$htaccess->addBFlagToRule(
+						);
 					}
+				}catch (Exception $ex) {
+					$message = __(
+						'An error occured while updating %s. %s',
+						array(
+							__('JIT Image Manipulation'),
+							$ex->getMessage()
+						)
+					);
+					throw new Exception($message);
 				}
 			}
 
@@ -122,17 +110,21 @@
 		}
 
 		public function disable() {
-			try {
-				$htaccess = file_get_contents(DOCROOT . '/.htaccess');
-				$htaccess = self::__removeImageRules($htaccess);
-				$htaccess = preg_replace('/### IMAGE RULES/', NULL, $htaccess);
-				$htaccess = preg_replace("/(" . PHP_EOL . "(\t)?){3,}/", PHP_EOL . PHP_EOL . "\t", $htaccess);
-
-				return file_put_contents(DOCROOT . '/.htaccess', $htaccess);
-			}
-			catch (Exception $ex) {
-				Administration::instance()->Page->pageAlert(__('An error occurred while installing %s. %s', array(__('JIT Image Manipulation'), $ex->getMessage())), Alert::ERROR);
-				return false;
+			require_once 'lib/class.htaccess.php';
+			$htaccess = new HTAccess();
+			try{
+				if($htaccess->exists()) {
+					$htaccess->disableExtension();
+				}
+			}catch (Exception $ex) {
+				$message = __(
+					'An error occured while disabling %s. %s',
+					array(
+						__('JIT Image Manipulation'),
+						$ex->getMessage()
+					)
+				);
+				throw new Exception($message);
 			}
 		}
 
@@ -214,10 +206,6 @@
 
 			// all went fine
 			return self::__OK__;
-		}
-
-		private static function __removeImageRules($string){
-			return preg_replace('/RewriteRule \^image[^\r\n]+[\r\n\t]?/i', NULL, $string);
 		}
 
 		public function createRecipeDuplicatorTemplate($mode = '0', $position = '-1', $values = array(), $error = false){
