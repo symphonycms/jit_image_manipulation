@@ -185,7 +185,7 @@
 						// collect recipe handle
 						$handles[] = $recipe['url-parameter'];
 					}
-					else if($mode === 'regex') {
+					else if($recipe['mode'] === 'regex') {
 						// regex already exists => set error
 						$this->recipes_errors[$position] = array(
 							'invalid' => __('A recipe with this regular expression already exists.')
