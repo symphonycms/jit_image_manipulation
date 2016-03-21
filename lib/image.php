@@ -247,7 +247,9 @@
 	if($last_modified) {
 		$last_modified_gmt = gmdate('D, d M Y H:i:s', $last_modified) . ' GMT';
 		$etag = md5($last_modified . $image_path);
-		$cacheControl = 'public; max-age=31536000';
+		// Use configured max-age or fallback on 3 days (See #88)
+		$maxage = isset($settings['image']['max-age']) ? $settings['image']['max-age'] : 86400;
+		$cacheControl = 'public; max-age=' . $maxage;
 
 		// Add no-transform in order to prevent ISPs to
 		// serve image over http through a compressing proxy
