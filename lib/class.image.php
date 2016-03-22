@@ -12,7 +12,7 @@
         const DEFAULT_INTERLACE = true;
         const CURL_MAXREDIRS = 6;
 
-        private function __construct($resource, stdClass $meta){
+        protected function __construct($resource, stdClass $meta){
             $this->_resource = $resource;
             $this->_meta = $meta;
         }
@@ -386,7 +386,7 @@
          *  which will attempt to get the constant using the `$this->Meta` accessor
          * @return boolean
          */
-        private function __render($dest, $quality = Image::DEFAULT_QUALITY, $interlacing = Image::DEFAULT_INTERLACE, $output = null){
+        protected function __render($dest, $quality = Image::DEFAULT_QUALITY, $interlacing = Image::DEFAULT_INTERLACE, $output = null){
             if(!is_resource($this->_resource)) {
                 throw new Exception('Invalid image resource supplied');
             }
