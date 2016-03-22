@@ -416,7 +416,7 @@
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
 			if(Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only'));
+			$label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only.') . '<i><strong>' . __('Warning:') . '</strong>' . __(' this will break image previews in the backend') . '</i>');
 
 			$group->appendChild($label);
 
