@@ -26,7 +26,7 @@ class datasourcejit_image_manipulation_recipes extends Datasource
         );
     }
 
-    public function grab(array &$param_pool = null)
+    public function execute(array &$param_pool = null)
     {
         $result = new XMLElement($this->dsParamROOTELEMENT);
 
