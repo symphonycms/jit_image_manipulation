@@ -1,141 +1,141 @@
 <?php
 
-	$about = array(
-		'name' => 'Finnish',
-		'author' => array(
-			'name' => 'Leo Nikkilä',
-			'email' => 'leo.nikkila@gmail.com',
-			'website' => ''
-		),
-		'release-date' => '2013-06-23'
-	);
+    $about = array(
+        'name' => 'Finnish',
+        'author' => array(
+            'name' => 'Leo Nikkilä',
+            'email' => 'leo.nikkila@gmail.com',
+            'website' => ''
+        ),
+        'release-date' => '2013-06-23'
+    );
 
-	/**
-	 * Just In Time (JIT) Image Manipulation
-	 */
-	$dictionary = array(
+    /**
+     * Just In Time (JIT) Image Manipulation
+     */
+    $dictionary = array(
 
-		'An error occurred while installing %s. %s' => 
-		'Lisäosaa %s asennettaessa tapahtui virhe. %s',
+        'An error occurred while installing %s. %s' =>
+        'Lisäosaa %s asennettaessa tapahtui virhe. %s',
 
-		'JIT Image Manipulation' => 
-		'Ajonaikainen kuvankäsittely',
+        'JIT Image Manipulation' =>
+        'Ajonaikainen kuvankäsittely',
 
-		'An error occurred while updating %s. %s' => 
-		'Lisäosaa %s päivitettäessä tapahtui virhe. %s',
+        'An error occurred while updating %s. %s' =>
+        'Lisäosaa %s päivitettäessä tapahtui virhe. %s',
 
-		'A recipe with this regular expression already exists.' => 
-		'Resepti samalla säännöllisellä lausekkeella on jo olemassa.',
+        'A recipe with this regular expression already exists.' =>
+        'Resepti samalla säännöllisellä lausekkeella on jo olemassa.',
 
-		'A recipe with this handle already exists. All handles must be unique.' => 
-		'Resepti samalla kahvalla on jo olemassa. Kaikkien kahvojen on oltava yksilöllisiä.',
+        'A recipe with this handle already exists. All handles must be unique.' =>
+        'Resepti samalla kahvalla on jo olemassa. Kaikkien kahvojen on oltava yksilöllisiä.',
 
-		'Direct display' => 
-		'Näytä sellaisenaan',
+        'Direct display' =>
+        'Näytä sellaisenaan',
 
-		'Resize' => 
-		'Muuta kokoa',
+        'Resize' =>
+        'Muuta kokoa',
 
-		'Crop to Fill' => 
-		'Rajaa',
+        'Crop to Fill' =>
+        'Rajaa',
 
-		'Resize Canvas' => 
-		'Muuta piirtoalueen kokoa',
+        'Resize Canvas' =>
+        'Muuta piirtoalueen kokoa',
 
-		'Resize to Fit' => 
-		'Sovita',
+        'Resize to Fit' =>
+        'Sovita',
 
-		'Custom' => 
-		'Mukautettu',
+        'Custom' =>
+        'Mukautettu',
 
-		'Top left' => 
-		'Ylävasen',
+        'Top left' =>
+        'Ylävasen',
 
-		'Top center' => 
-		'Yläkeski',
+        'Top center' =>
+        'Yläkeski',
 
-		'Top right' => 
-		'Yläoikea',
+        'Top right' =>
+        'Yläoikea',
 
-		'Center left' => 
-		'Keskivasen',
+        'Center left' =>
+        'Keskivasen',
 
-		'Center' => 
-		'Keski',
+        'Center' =>
+        'Keski',
 
-		'Center right' => 
-		'Keskioikea',
+        'Center right' =>
+        'Keskioikea',
 
-		'Bottom left' => 
-		'Alavasen',
+        'Bottom left' =>
+        'Alavasen',
 
-		'Bottom center' => 
-		'Alakeski',
+        'Bottom center' =>
+        'Alakeski',
 
-		'Bottom right' => 
-		'Alaoikea',
+        'Bottom right' =>
+        'Alaoikea',
 
-		'New Recipe' => 
-		'Uusi resepti',
+        'New Recipe' =>
+        'Uusi resepti',
 
-		'Regular Expression' => 
-		'Säännöllinen lauseke',
+        'Regular Expression' =>
+        'Säännöllinen lauseke',
 
-		'Width' => 
-		'Leveys',
+        'Width' =>
+        'Leveys',
 
-		'Height' => 
-		'Korkeus',
+        'Height' =>
+        'Korkeus',
 
-		'Position' => 
-		'Sijainti',
+        'Position' =>
+        'Sijainti',
 
-		'Background Color' => 
-		'Taustaväri',
+        'Background Color' =>
+        'Taustaväri',
 
-		'JIT Parameter' => 
-		'Lisäosan parametri',
+        'JIT Parameter' =>
+        'Lisäosan parametri',
 
-		'Image quality' => 
-		'Kuvanlaatu',
+        'Image quality' =>
+        'Kuvanlaatu',
 
-		'External Image' => 
-		'Ulkoinen kuva',
+        'External Image' =>
+        'Ulkoinen kuva',
 
-		'The JIT configuration folder, %s, does not exist. You will not be able to save recipes and trusted sites.' => 
-		'Lisäosan asetuskansiota %s ei ole olemassa. Et voi tallentaa reseptejä tai luotettuja sivustoja.',
+        'The JIT configuration folder, %s, does not exist. You will not be able to save recipes and trusted sites.' =>
+        'Lisäosan asetuskansiota %s ei ole olemassa. Et voi tallentaa reseptejä tai luotettuja sivustoja.',
 
-		'Recipes are named rules for the JIT settings.' => 
-		'Reseptit ovat nimettyjä kuvankäsittelyohjeita lisäosalle.',
+        'Recipes are named rules for the JIT settings.' =>
+        'Reseptit ovat nimettyjä kuvankäsittelyohjeita lisäosalle.',
 
-		'Recipes' => 
-		'Reseptit',
+        'Recipes' =>
+        'Reseptit',
 
-		'Add recipe' => 
-		'Lisää resepti',
+        'Add recipe' =>
+        'Lisää resepti',
 
-		'Remove recipe' => 
-		'Poista resepti',
+        'Remove recipe' =>
+        'Poista resepti',
 
-		'Disable dynamic URLs and use named recipes only' => 
-		'Poista dynaamiset URL:t käytöstä ja käytä vain nimettyjä reseptejä',
+        'Disable dynamic URLs and use named recipes only' =>
+        'Poista dynaamiset URL:t käytöstä ja käytä vain nimettyjä reseptejä',
 
-		'Disable upscaling of images beyond the original size' => 
-		'Älä salli kuvien skaalausta alkuperäistä kokoa suuremmaksi',
+        'Disable upscaling of images beyond the original size' =>
+        'Älä salli kuvien skaalausta alkuperäistä kokoa suuremmaksi',
 
-		'Trusted Sites' => 
-		'Luotetut sivustot',
+        'Trusted Sites' =>
+        'Luotetut sivustot',
 
-		'Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.' => 
-		'Jätä tyhjäksi poistaaksesi ulkopuolisen linkityksen käytöstä. Yksi sääntö per rivi. Lisää * säännön loppuun merkitsemään mitä tahansa merkkejä.',
+        'Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.' =>
+        'Jätä tyhjäksi poistaaksesi ulkopuolisen linkityksen käytöstä. Yksi sääntö per rivi. Lisää * säännön loppuun merkitsemään mitä tahansa merkkejä.',
 
-		'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.' => 
-		'Luotettuja sivustoja tallennettaessa tapahtui virhe. Varmista, että tiedosto %s on olemassa ja kirjoitettavissa.',
+        'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.' =>
+        'Luotettuja sivustoja tallennettaessa tapahtui virhe. Varmista, että tiedosto %s on olemassa ja kirjoitettavissa.',
 
-		'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.' => 
-		'Reseptejä tallennettaessa tapahtui virhe. Varmista, että tiedosto %s on olemassa ja kirjoitettavissa.',
+        'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.' =>
+        'Reseptejä tallennettaessa tapahtui virhe. Varmista, että tiedosto %s on olemassa ja kirjoitettavissa.',
 
-		'An error occurred while saving the JIT recipes.' => 
-		'Reseptejä tallennettaessa tapahtui virhe.',
+        'An error occurred while saving the JIT recipes.' =>
+        'Reseptejä tallennettaessa tapahtui virhe.',
 
-	);
+    );

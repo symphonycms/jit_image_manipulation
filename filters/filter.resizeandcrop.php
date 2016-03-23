@@ -1,6 +1,7 @@
 <?php
 
-Class FilterResizeAndCrop extends JIT\ImageFilter {
+class FilterResizeAndCrop extends JIT\ImageFilter
+{
 
     public $mode = 2;
 
@@ -14,7 +15,8 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
     const BOTTOM_MIDDLE = 8;
     const BOTTOM_RIGHT = 9;
 
-    public static function about() {
+    public static function about()
+    {
         return array(
             'name' => 'JIT Filter: Resize and Crop'
         );
@@ -24,12 +26,12 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
     {
         $param = array();
 
-        if(preg_match_all('/^(2|3)\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)){
+        if (preg_match_all('/^(2|3)\/([0-9]+)\/([0-9]+)\/([1-9])\/([a-fA-F0-9]{3,6}\/)?(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)) {
             $param['mode'] = (int)$matches[0][1];
             $param['settings']['width'] = (int)$matches[0][2];
             $param['settings']['height'] = (int)$matches[0][3];
             $param['settings']['position'] = (int)$matches[0][4];
-            $param['settings']['background'] = trim($matches[0][5],'/');
+            $param['settings']['background'] = trim($matches[0][5], '/');
             $param['settings']['external'] = (bool)$matches[0][6];
             $param['image_path'] = $matches[0][7];
         }
@@ -37,16 +39,15 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
         return !empty($param) ? $param : false;
     }
 
-    public static function run(\Image $res, $settings) {
+    public static function run(\Image $res, $settings)
+    {
         $src_w = $res->Meta()->width;
         $src_h = $res->Meta()->height;
 
-        if($settings['settings']['height'] == 0) {
+        if ($settings['settings']['height'] == 0) {
             $ratio = ($src_h / $src_w);
             $dst_h = round($settings['meta']['width'] * $ratio);
-        }
-
-        else if($settings['settings']['width'] == 0) {
+        } elseif ($settings['settings']['width'] == 0) {
             $ratio = ($src_w / $src_h);
             $dst_w = round($settings['meta']['height'] * $ratio);
         }
@@ -54,11 +55,10 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
         $src_r = ($src_w / $src_h);
         $dst_r = ($settings['meta']['width'] / $settings['meta']['height']);
 
-        if($src_r < $dst_r) {
+        if ($src_r < $dst_r) {
             $width = $settings['meta']['width'];
             $height = null;
-        }
-        else {
+        } else {
             $width = null;
             $height = $settings['meta']['height'];
         }
@@ -68,16 +68,14 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
         $dst_w = Image::width($resource);
         $dst_h = Image::height($resource);
 
-        if(!empty($width) && !empty($height)) {
+        if (!empty($width) && !empty($height)) {
             $dst_w = $width;
             $dst_h = $height;
-        }
-        else if(empty($height)) {
+        } elseif (empty($height)) {
             $ratio = ($dst_h / $dst_w);
             $dst_w = $width;
             $dst_h = round($dst_w * $ratio);
-        }
-        else if(empty($width)) {
+        } elseif (empty($width)) {
             $ratio = ($dst_w / $dst_h);
             $dst_h = $height;
             $dst_w = round($dst_h * $ratio);
@@ -93,7 +91,7 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
 
         imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $image_width, $image_height, $image_width, $image_height);
 
-        if(is_resource($resource)) {
+        if (is_resource($resource)) {
             imagedestroy($resource);
         }
 
@@ -102,20 +100,19 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
         return $res;
     }
 
-    protected static function __calculateDestSrcXY($width, $height, $src_w, $src_h, $dst_w, $dst_h, $position=self::TOP_LEFT){
+    protected static function __calculateDestSrcXY($width, $height, $src_w, $src_h, $dst_w, $dst_h, $position = self::TOP_LEFT)
+    {
 
         $dst_x = $dst_y = 0;
         $src_x = $src_y = 0;
 
-        if($width < $src_w){
+        if ($width < $src_w) {
             $mx = array(
                 0,
                 ceil(($src_w * 0.5) - ($width * 0.5)),
                 $src_x = $src_w - $width
             );
-        }
-
-        else{
+        } else {
             $mx = array(
                 0,
                 ceil(($width * 0.5) - ($src_w * 0.5)),
@@ -123,15 +120,13 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
             );
         }
 
-        if($height < $src_h){
+        if ($height < $src_h) {
             $my = array(
                 0,
                 ceil(($src_h * 0.5) - ($height * 0.5)),
                 $src_y = $src_h - $height
             );
-        }
-
-        else{
+        } else {
 
             $my = array(
                 0,
@@ -140,7 +135,7 @@ Class FilterResizeAndCrop extends JIT\ImageFilter {
             );
         }
 
-        switch($position){
+        switch ($position) {
 
             case 1:
                 break;

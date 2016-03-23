@@ -10,7 +10,8 @@ require_once __DIR__ . '/class.imagefilter.php';
 require_once __DIR__ . '/class.jitfiltermanager.php';
 require_once __DIR__ . '/class.image.php';
 
-class JIT extends Symphony {
+class JIT extends Symphony
+{
 
     /**
      * @var array
@@ -48,7 +49,7 @@ class JIT extends Symphony {
         if (empty(self::$available_filters)) {
             $filters = JitFilterManager::listAll();
 
-            foreach($filters as $filter) {
+            foreach ($filters as $filter) {
                 self::$available_filters[] = JitFilterManager::create($filter['handle']);
             }
         }
@@ -62,7 +63,7 @@ class JIT extends Symphony {
         $this->caching = ($this->settings['cache'] == 1 ? true : false);
 
         // is this thing cached?
-        if($image = $this->isImageAlreadyCached($_GET['param'])) {
+        if ($image = $this->isImageAlreadyCached($_GET['param'])) {
             return $this->displayImage($image);
         }
 
@@ -72,7 +73,7 @@ class JIT extends Symphony {
         // get the actual image
         $image = $this->fetchImagePath($param);
 
-        if($image) {
+        if ($image) {
             // prepare caching headers, potentially 304.
             //$this->sendImageHeaders($param);
 
@@ -82,7 +83,7 @@ class JIT extends Symphony {
             $image = $this->applyFilterToImage($image_resource, $param);
  
             // figure out whether to cache the image or not
-            if($this->caching) {
+            if ($this->caching) {
                 $this->cacheImage($image, $param);
             }
 
@@ -117,8 +118,8 @@ class JIT extends Symphony {
         $image_path = false;
 
         $filters = self::getAvailableFilters();
-        foreach($filters as $filter) {
-            if($params = $filter->parseParameters($parameter_string)) {
+        foreach ($filters as $filter) {
+            if ($params = $filter->parseParameters($parameter_string)) {
                 extract($params);
                 break;
             }
@@ -134,12 +135,11 @@ class JIT extends Symphony {
         // a hexcode, JIT will interpret it as the background colour instead of
         // the filepath.
         // @link https://github.com/symphonycms/jit_image_manipulation/issues/8
-        if(($settings['background'] !== 0 || empty($settings['background'])) && $settings['external'] === false) {
+        if (($settings['background'] !== 0 || empty($settings['background'])) && $settings['external'] === false) {
             // Also check the case of `bbbbbb/bbbbbb/file.png`, which should resolve
             // as background = bbbbbb, file = bbbbbb/file.png (if that's the correct path of
             // course)
-            if(
-                is_dir(WORKSPACE . '/'. $settings['background'])
+            if (is_dir(WORKSPACE . '/'. $settings['background'])
                 && (!is_file(WORKSPACE . '/' . $image_path) && is_file(WORKSPACE . '/' . $settings['background'] . '/' . $image_path))
             ) {
                 $image_path = $settings['background'] . '/' . $image_path;
@@ -164,7 +164,7 @@ class JIT extends Symphony {
     public function fetchImagePath(array &$parameters)
     {
         // Fetch external images
-        if($parameters['external'] === true) {
+        if ($parameters['external'] === true) {
             $image_path = "http://{$parameters['image']}";
 
             // Image is external, check to see that it is a trusted source
@@ -173,35 +173,31 @@ class JIT extends Symphony {
 
             $rules = array_map('trim', $rules);
 
-            if(count($rules) > 0) foreach($rules as $rule) {
-                $rule = str_replace(array('http://', 'https://'), NULL, $rule);
+            if (count($rules) > 0) {
+                foreach ($rules as $rule) {
+                    $rule = str_replace(array('http://', 'https://'), null, $rule);
 
-                // Wildcard
-                if($rule == '*'){
-                    $allowed = true;
-                    break;
-                }
-
-                // Wildcard after domain
-                else if(substr($rule, -1) == '*' && strncasecmp($parameters['image'], $rule, strlen($rule) - 1) == 0){
-                    $allowed = true;
-                    break;
-                }
-
-                // Match the start of the rule with file path
-                else if(strncasecmp($rule, $parameters['image'], strlen($rule)) == 0){
-                    $allowed = true;
-                    break;
-                }
-
-                // Match subdomain wildcards
-                else if(substr($rule, 0, 1) == '*' && preg_match("/(".substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2).")/", $param->file)){
-                    $allowed = true;
-                    break;
+                    // Wildcard
+                    if ($rule == '*') {
+                        $allowed = true;
+                        break;
+                    } // Wildcard after domain
+                    elseif (substr($rule, -1) == '*' && strncasecmp($parameters['image'], $rule, strlen($rule) - 1) == 0) {
+                        $allowed = true;
+                        break;
+                    } // Match the start of the rule with file path
+                    elseif (strncasecmp($rule, $parameters['image'], strlen($rule)) == 0) {
+                        $allowed = true;
+                        break;
+                    } // Match subdomain wildcards
+                    elseif (substr($rule, 0, 1) == '*' && preg_match("/(".substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2).")/", $param->file)) {
+                        $allowed = true;
+                        break;
+                    }
                 }
             }
 
-            if($allowed == false){
+            if ($allowed == false) {
                 \Page::renderStatusCode(Page::HTTP_STATUS_FORBIDDEN);
                 exit(sprintf('Error: Connecting to %s is not permitted.', $parameters['image']));
             }
@@ -215,17 +211,16 @@ class JIT extends Symphony {
         }
 
         // If $this->caching is enabled, check to see that the cached file is still valid.
-        if($this->caching === true) {
+        if ($this->caching === true) {
             $cache_file = sprintf('%s/%s_%s', CACHE, md5($_GET['param'] . intval($this->settings['quality'])), basename($image_path));
             // Set the cached image path, worst case scenario an image will be saved here
             // if no valid cache exists.
             $parameters['cached_image'] = $cache_file;
 
             // Cache has expired or doesn't exist
-            if(is_file($cache_file) && (filemtime($cache_file) < $parameters['last_modified'])){
+            if (is_file($cache_file) && (filemtime($cache_file) < $parameters['last_modified'])) {
                 unlink($cache_file);
-            }
-            else if(is_file($cache_file)) {
+            } elseif (is_file($cache_file)) {
                 touch($cache_file);
             }
         }
@@ -237,7 +232,7 @@ class JIT extends Symphony {
     {
         // if there is no `$last_modified` value, params should be NULL and headers
         // should not be set. Otherwise, set caching headers for the browser.
-        if($parameters['last_modified']) {
+        if ($parameters['last_modified']) {
             $last_modified_gmt = gmdate('D, d M Y H:i:s', $parameters['last_modified']) . ' GMT';
             $etag = md5($parameters['last_modified'] . $image_path);
             $cacheControl = 'public';
@@ -252,16 +247,15 @@ class JIT extends Symphony {
             header('Last-Modified: ' . $last_modified_gmt);
             header(sprintf('ETag: "%s"', $etag));
             header('Cache-Control: '. $cacheControl);
-        }
-        else {
-            $last_modified_gmt = NULL;
-            $etag = NULL;
+        } else {
+            $last_modified_gmt = null;
+            $etag = null;
         }
 
         // Check to see if the requested image needs to be generated or if a 304
         // can just be returned to the browser to use it's cached version.
-        if($this->caching === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))){
-            if($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', NULL, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag){
+        if ($this->caching === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))) {
+            if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', null, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag) {
                 \Page::renderStatusCode(\Page::HTTP_NOT_MODIFIED);
                 exit;
             }
@@ -272,11 +266,11 @@ class JIT extends Symphony {
     {
         // There is mode, or the image to JIT is external, so call `Image::load` or
         // `Image::loadExternal` to load the image into the Image class
-        try{
-            $method = 'load' . ($parameters['external'] === true ? 'External' : NULL);
+        try {
+            $method = 'load' . ($parameters['external'] === true ? 'External' : null);
             $image = call_user_func_array(array('Image', $method), array($image_path));
 
-            if(!$image instanceof \Image) {
+            if (!$image instanceof \Image) {
                 throw new JITGenerationError('Could not load image');
             }
         } catch (Exception $ex) {
@@ -310,8 +304,8 @@ class JIT extends Symphony {
         }
 
         $filters = self::getAvailableFilters();
-        foreach($filters as $filter) {
-            if($filter->mode === $parameters['mode']) {
+        foreach ($filters as $filter) {
+            if ($filter->mode === $parameters['mode']) {
                 $resource = $filter->run($image, $parameters);
                 break;
             }
@@ -325,8 +319,8 @@ class JIT extends Symphony {
         // If $this->caching is enabled, and a cache file doesn't already exist,
         // save the JIT image to CACHE using the Quality setting from Symphony's
         // Configuration.
-        if(!is_file($parameters['cached_image'])) {
-            if(!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
+        if (!is_file($parameters['cached_image'])) {
+            if (!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
                 throw new JITGenerationError('Error generating image, failed to create cache file.');
             }
         }
@@ -336,28 +330,34 @@ class JIT extends Symphony {
     {
         // Display the image in the browser using the Quality setting from Symphony's
         // Configuration. If this fails, trigger an error.
-        if(!$image->display(intval($this->settings['quality']))) {
+        if (!$image->display(intval($this->settings['quality']))) {
             throw new JITGenerationError('Error generating image');
         }
     }
 }
 
-class JITException extends SymphonyErrorPage {
+class JITException extends SymphonyErrorPage
+{
 
-    public function __construct($message, $heading = 'JIT Error', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_ERROR) {
+    public function __construct($message, $heading = 'JIT Error', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_ERROR)
+    {
         return parent::__construct($message, $heading, $template, $additional, $status);
     }
-
 }
 
-class JITImageNotFound extends JITException {
+class JITImageNotFound extends JITException
+{
 
-    public function __construct($message, $heading = 'JIT Image Not Found', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_NOT_FOUND) {
+    public function __construct($message, $heading = 'JIT Image Not Found', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_NOT_FOUND)
+    {
         return parent::__construct($message, $heading, $template, $additional, $status);
     }
-
 }
 
-class JITGenerationError extends JITException {}
+class JITGenerationError extends JITException
+{
+}
 
-class JITParseParametersException extends JITException {}
+class JITParseParametersException extends JITException
+{
+}

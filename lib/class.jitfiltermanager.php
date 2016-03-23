@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace JIT;
 
@@ -111,7 +111,7 @@ class JitFilterManager implements FileResource
         $structure = General::listStructure(WORKSPACE . '/jit-image-manipulation/filters', '/filter.[\\w-]+.php/', false, 'ASC', WORKSPACE . '/jit-image-manipulation/filters');
         if (is_array($structure['filelist']) && !empty($structure['filelist'])) {
             foreach ($structure['filelist'] as $f) {
-                if($about = self::getAboutForFilter($f)) {
+                if ($about = self::getAboutForFilter($f)) {
                     $result[$f] = $about;
                 }
             }
@@ -129,7 +129,7 @@ class JitFilterManager implements FileResource
 
                 if (is_array($tmp['filelist']) && !empty($tmp['filelist'])) {
                     foreach ($tmp['filelist'] as $f) {
-                        if($about = self::getAboutForFilter($f)) {
+                        if ($about = self::getAboutForFilter($f)) {
                             $result[$f] = $about;
                         }
                     }
@@ -174,7 +174,8 @@ class JitFilterManager implements FileResource
      * @param string $file
      * @return array|boolean
      */
-    private function getAboutForFilter($file) {
+    private function getAboutForFilter($file)
+    {
         $f = self::__getHandleFromFilename($file);
 
         if ($about = self::about($f)) {
@@ -210,5 +211,4 @@ class JitFilterManager implements FileResource
 
         return new $classname;
     }
-
 }

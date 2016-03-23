@@ -139,7 +139,7 @@ class HTAccess
     {
         try {
             $this->content = file_get_contents($this->path);
-        } catch(Exception $ex) {
+        } catch (Exception $ex) {
             $message = "Permission denied to '%s'";
             throw new Exception(sprintf($message, $this->path));
         }
@@ -154,7 +154,7 @@ class HTAccess
     {
         try {
             file_put_contents($this->path, $this->content);
-        } catch(Exception $ex) {
+        } catch (Exception $ex) {
             $message = sprintf("Permission denied to '%s'", $this->path);
             throw new Exception($message);
         }

@@ -1,10 +1,12 @@
 <?php
 
-Class FilterScale extends FilterResize {
+class FilterScale extends FilterResize
+{
 
     public $mode = 5;
 
-    public static function about() {
+    public static function about()
+    {
         return array(
             'name' => 'JIT Filter: Scale'
         );
@@ -14,7 +16,7 @@ Class FilterScale extends FilterResize {
     {
         $param = array();
 
-        if(preg_match_all('/^(5)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)){
+        if (preg_match_all('/^(5)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)) {
             $param['mode'] = (int)$matches[0][1];
             $param['settings']['percentage'] = (int)$matches[0][2];
             $param['settings']['external'] = (bool)$matches[0][3];
@@ -24,7 +26,8 @@ Class FilterScale extends FilterResize {
         return !empty($param) ? $param : false;
     }
 
-    public static function run(\Image $res, $settings) {
+    public static function run(\Image $res, $settings)
+    {
         $resource = $res->Resource();
 
         $percentage = floatval(max(1.0, floatval($settings['settings']['percentage'])) * 0.01);
@@ -33,5 +36,4 @@ Class FilterScale extends FilterResize {
 
         return parent::run($res, $settings);
     }
-
 }
