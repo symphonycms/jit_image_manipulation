@@ -129,10 +129,10 @@
         'Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.' =>
         'Jätä tyhjäksi poistaaksesi ulkopuolisen linkityksen käytöstä. Yksi sääntö per rivi. Lisää * säännön loppuun merkitsemään mitä tahansa merkkejä.',
 
-        'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.' =>
+        'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable and the directory, %s, is also writable.' =>
         'Luotettuja sivustoja tallennettaessa tapahtui virhe. Varmista, että tiedosto %s on olemassa ja kirjoitettavissa.',
 
-        'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.' =>
+        'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable and the directory, %s, is also writable.' =>
         'Reseptejä tallennettaessa tapahtui virhe. Varmista, että tiedosto %s on olemassa ja kirjoitettavissa.',
 
         'An error occurred while saving the JIT recipes.' =>

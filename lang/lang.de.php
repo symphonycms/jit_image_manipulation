@@ -30,10 +30,10 @@
         'An error occurred while saving the JIT recipes.' =>
         'Beim Speichern der Rezepte ist ein Fehleraufgetreten.',
 
-        'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable.' =>
+        'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable and the directory, %s, is also writable.' =>
         'Beim Speichern der Rezepte ist ein Fehler aufgetreten. Stellen Sie sicher, dass das Rezept %s existiert und schreibbar ist.',
 
-        'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable.' =>
+        'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable and the directory, %s, is also writable.' =>
         'Beim Speichern der vertrauenswürdigen Seiten ist eine Fehler aufgetreten. Stellen Sie sicher, dass die Datei mit den vertrauenswürdigen Seiten, %s, existiert und schreibbar ist.',
 
         'Background Color' =>
