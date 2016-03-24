@@ -31,7 +31,7 @@ class HTAccess
     public function __construct()
     {
         $this->path = DOCROOT . '/.htaccess';
-        $this->exists = file_exists($this->path);
+        $this->exists = file_exists($this->path) && is_readable($this->path);
         $this->is_writable = General::checkFile($this->path);
     }
 
