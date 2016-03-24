@@ -96,7 +96,16 @@ class extension_JIT_Image_Manipulation extends Extension
         if (version_compare($previousVersion, '1.15', '<')) {
             // Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
             if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory')) && file_exists(MANIFEST . '/jit-trusted-sites')) {
-                rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites');
+                if (!@rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites')) {
+                    $message = __(
+                        'An error occured while updating %s. Could not move the trusted file to %s',
+                        array(
+                            __('JIT Image Manipulation'),
+                            WORKSPACE . '/jit-image-manipulation/trusted-sites'
+                        )
+                    );
+                    throw new Exception($message);
+                }
             }
         }
 
