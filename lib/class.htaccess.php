@@ -19,6 +19,11 @@ class HTAccess
     private $exists;
 
     /**
+     * @var bool
+     */
+    private $is_writable;
+
+    /**
      * @var string
      */
     private $path;
@@ -27,6 +32,7 @@ class HTAccess
     {
         $this->path = DOCROOT . '/.htaccess';
         $this->exists = file_exists($this->path);
+        $this->is_writable = General::checkFile($this->path);
     }
 
     /**
@@ -35,6 +41,14 @@ class HTAccess
     public function exists()
     {
         return $this->exists;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_writable()
+    {
+        return $this->is_writable;
     }
 
     public function enableExtension()
