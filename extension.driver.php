@@ -62,6 +62,9 @@ class extension_JIT_Image_Manipulation extends Extension
         $htaccess = new HTAccess();
         try {
             if ($htaccess->exists()) {
+                if (!$htaccess->is_writable()) {
+                    throw new Exception(__('.htaccess exists but is not writable.'));
+                }
                 $htaccess->enableExtension();
             }
             // Create workspace directory
@@ -92,6 +95,10 @@ class extension_JIT_Image_Manipulation extends Extension
     {
         require_once 'lib/class.htaccess.php';
         $htaccess = new HTAccess();
+
+        if ($htaccess->exists() && !$htaccess->is_writable()) {
+            throw new Exception(__('.htaccess exists but is not writable.'));
+        }
 
         if (version_compare($previousVersion, '1.15', '<')) {
             // Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
