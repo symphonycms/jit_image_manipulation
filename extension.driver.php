@@ -37,6 +37,8 @@ class extension_JIT_Image_Manipulation extends Extension
             return;
         }
 
+        $previousLauncher = SYMPHONY_LAUNCHER;
+
         function jit_launcher($mode)
         {
             if (strtolower($mode) == 'jit') {
@@ -44,6 +46,8 @@ class extension_JIT_Image_Manipulation extends Extension
 
                 $renderer = JIT\JIT::instance();
                 $renderer->display();
+            } else if (is_callable($previousLauncher)) {
+                $previousLauncher($mode);
             } else {
                 symphony_launcher($mode);
             }
