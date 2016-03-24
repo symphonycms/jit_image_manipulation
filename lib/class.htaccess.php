@@ -121,6 +121,22 @@ class HTAccess
         $this->write();
     }
 
+    /**
+     * Update from < 2.0.0
+     *
+     * @throws Exception
+     */
+    public function transformRuleToSymphonyLauncher()
+    {
+        $this->read();
+        $this->content = str_replace(
+            'RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param={$token}',
+            'RewriteRule ^image\/(.+)$ index.php?mode=jit&param={$token} ',
+            $this->content
+        );
+        $this->write();
+    }
+
     private function removeImageRules()
     {
         $this->content = preg_replace(

@@ -89,6 +89,31 @@ class extension_JIT_Image_Manipulation extends Extension
         require_once 'lib/class.htaccess.php';
         $htaccess = new HTAccess();
 
+        if (version_compare($previousVersion, '1.15', '<')) {
+            // Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
+            if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory')) && file_exists(MANIFEST . '/jit-trusted-sites')) {
+                rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites');
+            }
+        }
+
+        if (version_compare($previousVersion, '1.17', '<')) {
+            // Add [B] flag to the .htaccess rule [#37]
+            try {
+                if ($htaccess->exists()) {
+                    $htaccess->addBFlagToRule();
+                }
+            } catch (Exception $ex) {
+                $message = __(
+                    'An error occured while updating %s. %s',
+                    array(
+                        __('JIT Image Manipulation'),
+                        $ex->getMessage()
+                    )
+                );
+                throw new Exception($message);
+            }
+        }
+
         if (version_compare($previousVersion, '1.21', '<')) {
             try {
                 // Simplify JIT htaccess rule [#75]
@@ -107,12 +132,10 @@ class extension_JIT_Image_Manipulation extends Extension
             }
         }
 
-        if (version_compare($previousVersion, '1.17', '<')) {
-            // Add [B] flag to the .htaccess rule [#37]
+        if (version_compare($previousVersion, '2.0.0', '<')) {
             try {
                 if ($htaccess->exists()) {
-                    $htaccess->addBFlagToRule(
-                    );
+                    $htaccess->transformRuleToSymphonyLauncher();
                 }
             } catch (Exception $ex) {
                 $message = __(
@@ -123,13 +146,6 @@ class extension_JIT_Image_Manipulation extends Extension
                     )
                 );
                 throw new Exception($message);
-            }
-        }
-
-        if (version_compare($previousVersion, '1.15', '<')) {
-            // Move /manifest/jit-trusted-sites into /workspace/jit-image-manipulation
-            if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory')) && file_exists(MANIFEST . '/jit-trusted-sites')) {
-                rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites');
             }
         }
     }
