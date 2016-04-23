@@ -128,8 +128,8 @@ class HTAccess
     {
         $this->read();
         $this->content = str_replace(
-            'extensions/jit_image_manipulation/lib/image.php?param={$token} [L,NC]',
-            'extensions/jit_image_manipulation/lib/image.php?param={$token} [B,L,NC]',
+            'extensions/jit_image_manipulation/lib/image.php?param=$1 [L,NC]',
+            'extensions/jit_image_manipulation/lib/image.php?param=$1 [B,L,NC]',
             $this->content
         );
         $this->write();
@@ -144,8 +144,8 @@ class HTAccess
     {
         $this->read();
         $this->content = str_replace(
-            'RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param={$token}',
-            'RewriteRule ^image\/(.+)$ index.php?mode=jit&param={$token} ',
+            'RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param=',
+            'RewriteRule ^image\/(.+)$ index.php?mode=jit&param=',
             $this->content
         );
         $this->write();
