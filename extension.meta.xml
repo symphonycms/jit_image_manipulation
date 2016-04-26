@@ -16,8 +16,13 @@
 		</author>
 	</authors>
 	<releases>
-		<release version="2.0.0" date="2016-03-21" min="2.6.0" max="2.x.x">
+		<release version="2.0.0" date="2016-04-26" min="2.6.0" max="2.x.x">
 			- JIT image process is it's own Symphony renderer now
+			- PSR2 Compliance (for the most part)
+			- Do not try to change .htaccess file if it does not exits
+			- Extracted the .htaccess procedure into its own class
+			- Lots of bug fixes and perf improvements
+			- Switch to semver (but should be backward compatible for Apache users)
 		</release>
 		<release version="1.45" date="2016-03-21" min="2.6.0" max="2.x.x">
 			- Add CORS header support (@tmslnz)
