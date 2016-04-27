@@ -488,7 +488,7 @@ class extension_JIT_Image_Manipulation extends Extension
         if (Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') {
             $input->setAttribute('checked', 'checked');
         }
-        $label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only.') . '<i><strong>' . __('Warning:') . '</strong>' . __(' this will break image previews in the backend') . '</i>');
+        $label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only.') . '<i><strong>' . __('Warning:') . '</strong> ' . __('this includes backend image previews using dynamic URLs. Consider making a named recipe for backend image previews.') . '</i>');
 
         $group->appendChild($label);
 
