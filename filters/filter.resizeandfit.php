@@ -35,9 +35,14 @@ class FilterResizeAndFit extends FilterResize
         if ($settings['settings']['height'] == 0) {
             $ratio = ($src_h / $src_w);
             $dst_h = round($settings['meta']['width'] * $ratio);
+            $dst_w = $settings['meta']['width'];
         } elseif ($settings['settings']['width'] == 0) {
             $ratio = ($src_w / $src_h);
             $dst_w = round($settings['meta']['height'] * $ratio);
+            $dst_h = $settings['meta']['height'];
+        } else {
+            $dst_h = $settings['meta']['height'];
+            $dst_w = $settings['meta']['width'];
         }
 
         $src_r = ($src_w / $src_h);
