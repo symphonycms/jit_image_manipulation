@@ -61,7 +61,7 @@ class HTAccess
 
         $rule = "
     ### IMAGE RULES
-    RewriteRule ^image\/(.+)$ index.php?mode=jit&param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
+    RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ index.php?mode=jit&param={$token} [B,L,NC]" . PHP_EOL . PHP_EOL;
 
         if (preg_match('/### IMAGE RULES/', $this->content)) {
             $this->content = preg_replace(
@@ -143,9 +143,16 @@ class HTAccess
     public function transformRuleToSymphonyLauncher()
     {
         $this->read();
+        // Old style urls
         $this->content = str_replace(
             'RewriteRule ^image\/(.+)$ extensions/jit_image_manipulation/lib/image.php?param=',
             'RewriteRule ^image\/(.+)$ index.php?mode=jit&param=',
+            $this->content
+        );
+        // New version
+        $this->content = str_replace(
+            'RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ extensions/jit_image_manipulation/lib/image.php?param=',
+            'RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ index.php?mode=jit&param=',
             $this->content
         );
         $this->write();

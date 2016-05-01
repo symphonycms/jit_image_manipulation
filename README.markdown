@@ -8,6 +8,13 @@ Information about [installing and updating extensions](http://getsymphony.com/le
 
 ## Updating
 
+### 2.0.0
+
+Since version `2.0.0`, the `.htaccess` rule now uses Symphony's custom launcher feature. The rule should look like
+
+	### IMAGE RULES
+	RewriteRule ^image\/(.+\.(jpg|gif|jpeg|png|bmp))$ index.php?mode=jit&param=$1 [B,L,NC]
+
 ### 1.17
 
 This release raises the minimum requirement to Apache 2.2+.
