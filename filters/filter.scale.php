@@ -30,9 +30,11 @@ class FilterScale extends FilterResize
     {
         $resource = $res->Resource();
 
-        $percentage = floatval(max(1.0, floatval($settings['settings']['percentage'])) * 0.01);
+        $percentage = floatval(min(1.0, floatval($settings['settings']['percentage']) * 0.01));
 
+        $settings['meta']['height'] = Image::height($resource);
         $settings['settings']['width'] = round(Image::height($resource) * $percentage);
+        $settings['meta']['width'] = $settings['settings']['width'];
 
         return parent::run($res, $settings);
     }
