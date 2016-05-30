@@ -46,12 +46,15 @@ The extension accepts four numeric settings and one text setting for the manipul
 4. reference position (for cropping only)
 5. background color (for cropping only)
 
-There are four possible modes:
+There are five possible modes:
 
 - `1` resize
 - `2` resize and crop (used in the example)
 - `3` crop
 - `4` resize to fit
+- `5` scale
+
+If you're using mode `5`, the only parameter needed is a integer percentage value, i.e. `1 == 0.01 == 1%`.
 
 If you're using mode `2` or `3` for image cropping you need to specify the reference position:
 
