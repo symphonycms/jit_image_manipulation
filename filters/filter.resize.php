@@ -33,8 +33,8 @@ class FilterResize extends JIT\ImageFilter
         $dst_w = Image::width($resource);
         $dst_h = Image::height($resource);
 
-        $width = $settings['settings']['width'];
-        $height = $settings['settings']['height'];
+        $width = $settings['meta']['width'];
+        $height = $settings['meta']['height'];
 
         if (!empty($width) && !empty($height)) {
             $dst_w = $width;
