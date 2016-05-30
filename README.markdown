@@ -48,7 +48,6 @@ The extension accepts four numeric settings and one text setting for the manipul
 
 There are four possible modes:
 
-- `0` none
 - `1` resize
 - `2` resize and crop (used in the example)
 - `3` crop
