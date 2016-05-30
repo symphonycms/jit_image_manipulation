@@ -9,10 +9,7 @@ abstract class ImageFilter implements ImageFilterInterface
     const CHANNEL_GREEN = 1;
     const CHANNEL_BLUE = 2;
     
-    public static function about()
-    {
-        
-    }
+    abstract public static function about();
 
     abstract public static function parseParameters($parameter_string);
 
