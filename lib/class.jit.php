@@ -295,7 +295,9 @@ class JIT extends Symphony
         $src_w = $image->Meta()->width;
         $src_h = $image->Meta()->height;
 
-        if ($this->settings['disable_upscaling'] == 'yes') {
+        $parameters['meta']['disable_upscaling'] = $this->settings['disable_upscaling'] == 'yes';
+
+        if ($parameters['meta']['disable_upscaling']) {
             $parameters['meta']['width'] = min($parameters['settings']['width'], $src_w);
             $parameters['meta']['height'] = min($parameters['settings']['height'], $src_h);
         } else {
