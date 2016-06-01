@@ -34,6 +34,10 @@ class FilterCrop extends JIT\ImageFilter
             $param['settings']['background'] = trim($matches[0][5], '/');
             $param['settings']['external'] = (bool)$matches[0][6];
             $param['image_path'] = $matches[0][7];
+
+            if ($param['settings']['width'] == 0 && $param['settings']['height'] == 0) {
+                return false;
+            }
         }
 
         return !empty($param) ? $param : false;

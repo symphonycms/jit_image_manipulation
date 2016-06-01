@@ -22,6 +22,10 @@ class FilterResizeAndFit extends FilterResize
             $param['settings']['height'] = (int)$matches[0][3];
             $param['settings']['external'] = (bool)$matches[0][4];
             $param['image_path'] = $matches[0][5];
+
+            if ($param['settings']['width'] == 0 && $param['settings']['height'] == 0) {
+                return false;
+            }
         }
 
         return !empty($param) ? $param : false;
