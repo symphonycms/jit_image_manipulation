@@ -67,7 +67,7 @@ class Image
         $response = @$gateway->exec();
 
         if ($response === false) {
-            throw new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
+            throw new JIT\JITException(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
         }
 
         // clean up
@@ -77,7 +77,7 @@ class Image
         $dest = tempnam(TMP, 'IMAGE');
 
         if (!file_put_contents($dest, $response)) {
-            throw new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
+            throw new JIT\JITException(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
         }
 
         return self::load($dest);
@@ -96,7 +96,7 @@ class Image
     public static function load($image)
     {
         if (!is_file($image) || !is_readable($image)) {
-            throw new Exception(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
+            throw new JIT\JITImageNotFound(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
         }
 
         $meta = self::getMetaInformation($image);
@@ -115,7 +115,7 @@ class Image
 
                 // Can't handle CMYK JPEG files
                 if ($meta->channels > 3 && $gdSupportsCMYK === false) {
-                    throw new Exception('Cannot load CMYK JPG images');
+                    throw new JIT\JITException('Cannot load CMYK JPG images');
 
                     // Can handle CMYK, or image has less than 3 channels.
                 } else {
@@ -129,12 +129,12 @@ class Image
                 break;
 
             default:
-                throw new Exception('Unsupported image type. Supported types: GIF, JPEG and PNG');
+                throw new JIT\JITException('Unsupported image type. Supported types: GIF, JPEG and PNG');
                 break;
         }
 
         if (!is_resource($resource)) {
-            throw new Exception(sprintf('Error creating image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
+            throw new JIT\JITGenerationError(sprintf('Error creating image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
         }
 
         $obj = new self($resource, $meta);
@@ -153,7 +153,7 @@ class Image
     public static function getMetaInformation($file)
     {
         if (!$array = getimagesize($file)) {
-            throw new Exception('Unable to retreive image size information for ' . $file);
+            throw new JIT\JITException('Unable to retreive image size information for ' . $file);
         }
 
         $meta = array();
@@ -410,7 +410,7 @@ class Image
     protected function __render($dest, $quality = Image::DEFAULT_QUALITY, $interlacing = Image::DEFAULT_INTERLACE, $output = null)
     {
         if (!is_resource($this->_resource)) {
-            throw new Exception('Invalid image resource supplied');
+            throw new JIT\JITException('Invalid image resource supplied');
         }
 
         // Turn interlacing on for JPEG or PNG only
