@@ -11,9 +11,9 @@ abstract class ImageFilter implements ImageFilterInterface
     
     abstract public static function about();
 
-    abstract public static function parseParameters($parameter_string);
+    abstract public function parseParameters($parameter_string);
 
-    abstract public static function run(\Image $resource, $settings);
+    abstract public function run(\Image $resource, $settings);
 
     public static function colourChannelHex2Dec($colour, $channel)
     {

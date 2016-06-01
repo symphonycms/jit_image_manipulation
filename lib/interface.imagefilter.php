@@ -7,7 +7,7 @@ interface ImageFilterInterface
 
     public static function about();
 
-    public static function parseParameters($parameter_string);
+    public function parseParameters($parameter_string);
 
-    public static function run(\Image $resource, $settings);
+    public function run(\Image $resource, $settings);
 }

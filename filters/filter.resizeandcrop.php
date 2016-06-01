@@ -22,7 +22,7 @@ class FilterResizeAndCrop extends JIT\ImageFilter
         );
     }
 
-    public static function parseParameters($parameter_string)
+    public function parseParameters($parameter_string)
     {
         $param = array();
 
@@ -39,7 +39,7 @@ class FilterResizeAndCrop extends JIT\ImageFilter
         return !empty($param) ? $param : false;
     }
 
-    public static function run(\Image $res, $settings)
+    public function run(\Image $res, $settings)
     {
         $src_w = $res->Meta()->width;
         $src_h = $res->Meta()->height;
