@@ -25,6 +25,18 @@ abstract class ImageFilter implements ImageFilterInterface
         return (strlen($colour) == 3 ? $colour{0}.$colour{0}.$colour{1}.$colour{1}.$colour{2}.$colour{2} : $colour);
     }
 
+    public static function findAspectRatioValues($width, $height, $src_w, $src_h)
+    {
+        if (empty($height)) {
+            $ratio = $src_h / $src_w;
+            return array($width, round($width * $ratio));
+        } else if (empty($width)) {
+            $ratio = $src_w / $src_h;
+            return array(round($height * $ratio), $height);
+        }
+        return array($width, $height);
+    }
+
     protected static function __fill(&$res, &$dst, $colour = null)
     {
 

@@ -30,24 +30,13 @@ class FilterResize extends JIT\ImageFilter
     public static function run(\Image $res, $settings)
     {
         $resource = $res->Resource();
-        $dst_w = Image::width($resource);
-        $dst_h = Image::height($resource);
+        $src_w = Image::width($resource);
+        $src_h = Image::height($resource);
 
         $width = $settings['meta']['width'];
         $height = $settings['meta']['height'];
 
-        if (!empty($width) && !empty($height)) {
-            $dst_w = $width;
-            $dst_h = $height;
-        } elseif (empty($height)) {
-            $ratio = ($dst_h / $dst_w);
-            $dst_w = $width;
-            $dst_h = round($dst_w * $ratio);
-        } elseif (empty($width)) {
-            $ratio = ($dst_w / $dst_h);
-            $dst_h = $height;
-            $dst_w = round($dst_h * $ratio);
-        }
+        list($dst_w, $dst_h) = static::findAspectRatioValues($width, $height, $src_w, $src_h);
 
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
         self::__fill($resource, $tmp, $settings['settings']['background']);
