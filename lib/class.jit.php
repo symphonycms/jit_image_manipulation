@@ -286,7 +286,7 @@ class JIT extends Symphony
 
         // Check to see if the requested image needs to be generated or if a 304
         // can just be returned to the browser to use it's cached version.
-        if ($this->caching === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))) {
+        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', null, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag) {
                 \Page::renderStatusCode(\Page::HTTP_NOT_MODIFIED);
                 header('X-jit-cache: HIT');
