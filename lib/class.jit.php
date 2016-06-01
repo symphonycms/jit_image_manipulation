@@ -73,7 +73,7 @@ class JIT extends Symphony
             return $this->displayImage($image);
         }
 
-        $param['cache'] = 'MISS';
+        $param['cache'] = !$this->caching ? 'DISABLED' : 'MISS';
 
         // get the actual image
         $image = $this->fetchImagePath($param);
@@ -101,12 +101,30 @@ class JIT extends Symphony
      * Given the parameters, check to see if this image is already in
      * the cache.
      *
-     * @param string $parameter_string
-     * @return boolean
+     * @param array $param
+     * @return boolean|array
      */
-    public function isImageAlreadyCached($parameter_string)
+    public function isImageAlreadyCached($param)
     {
+        if (!$this->caching) {
+            return false;
+        }
+        $file = $this->createCacheFilename($param['image']);
+        if (@file_exists($file)) {
+            return @\Image::load($file);
+        }
         return false;
+    }
+
+    /**
+     * Creates a cache key with the given $image_path
+     *
+     * @param string $image_path
+     * @return string
+     */
+    public function createCacheFilename($image_path)
+    {
+        return sprintf('%s/%s_%s', CACHE, md5($_GET['param'] . intval($this->settings['quality'])), basename($image_path));
     }
 
     /**
@@ -161,7 +179,8 @@ class JIT extends Symphony
         return array(
             'settings' => $settings,
             'mode' => $mode,
-            'image' => $image_path
+            'image' => $image_path,
+            'cache' => null,
         );
     }
 
@@ -223,7 +242,7 @@ class JIT extends Symphony
 
         // If $this->caching is enabled, check to see that the cached file is still valid.
         if ($this->caching === true) {
-            $cache_file = sprintf('%s/%s_%s', CACHE, md5($_GET['param'] . intval($this->settings['quality'])), basename($image_path));
+            $cache_file = $this->createCacheFilename($image_path);
             // Set the cached image path, worst case scenario an image will be saved here
             // if no valid cache exists.
             $parameters['cached_image'] = $cache_file;
@@ -335,7 +354,7 @@ class JIT extends Symphony
         // If $this->caching is enabled, and a cache file doesn't already exist,
         // save the JIT image to CACHE using the Quality setting from Symphony's
         // Configuration.
-        if (!is_file($parameters['cached_image'])) {
+        if (!file_exists($parameters['cached_image'])) {
             if (!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
                 throw new JITGenerationError('Error generating image, failed to create cache file.');
             }
