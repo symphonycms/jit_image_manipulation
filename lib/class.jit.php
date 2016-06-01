@@ -289,7 +289,6 @@ class JIT extends Symphony
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', null, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag) {
                 \Page::renderStatusCode(\Page::HTTP_NOT_MODIFIED);
-                header('X-jit-cache: HIT');
                 exit;
             }
         }
