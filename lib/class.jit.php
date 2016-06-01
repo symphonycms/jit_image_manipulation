@@ -133,8 +133,12 @@ class JIT extends Symphony
         }
 
         // Did the delegate resolve anything?
-        if (($mode && $image_path) === false) {
+        if (!$mode || !$image_path) {
             throw new JITParseParametersException('No JIT filter was found for this request.');
+        }
+        // Does the image tries to do parent folder escalation?
+        if (preg_match('/[\.]{2}\//', $image_path)) {
+            throw new JITParseParametersException('Invalid image path.');
         }
 
         // If the background has been set, ensure that it's not mistakenly
