@@ -62,20 +62,25 @@ class JIT extends Symphony
         $this->settings = Symphony::Configuration()->get('image');
         $this->caching = ($this->settings['cache'] == 1 ? true : false);
 
+        // process the parameters
+        $param = $this->parseParameters($_GET['param']);
+
         // is this thing cached?
-        if ($image = $this->isImageAlreadyCached($_GET['param'])) {
+        if ($image = $this->isImageAlreadyCached($param)) {
+            $param['cache'] = 'HIT';
+            // prepare caching headers
+            $this->sendImageHeaders($param);
             return $this->displayImage($image);
         }
 
-        // process the parameters
-        $param = $this->parseParameters($_GET['param']);
+        $param['cache'] = 'MISS';
 
         // get the actual image
         $image = $this->fetchImagePath($param);
 
         if ($image) {
-            // prepare caching headers, potentially 304.
-            //$this->sendImageHeaders($param);
+            // prepare caching headers
+            $this->sendImageHeaders($param);
 
             $image_resource = $this->fetchImage($image, $param);
 
@@ -232,6 +237,8 @@ class JIT extends Symphony
 
     public function sendImageHeaders($parameters)
     {
+        header('X-jit-mode: ' . $parameters['mode']);
+        header('X-jit-cache: ' . $parameters['cache']);
         // if there is no `$last_modified` value, params should be NULL and headers
         // should not be set. Otherwise, set caching headers for the browser.
         if ($parameters['last_modified']) {
@@ -259,6 +266,7 @@ class JIT extends Symphony
         if ($this->caching === true && (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH']))) {
             if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', null, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag) {
                 \Page::renderStatusCode(\Page::HTTP_NOT_MODIFIED);
+                header('X-jit-cache: HIT');
                 exit;
             }
         }
