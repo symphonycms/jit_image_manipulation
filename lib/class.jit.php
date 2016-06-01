@@ -120,8 +120,10 @@ class JIT extends Symphony
         $filters = self::getAvailableFilters();
         foreach ($filters as $filter) {
             if ($params = $filter->parseParameters($parameter_string)) {
-                extract($params);
-                break;
+                if ($params['mode'] === $filter->mode) {
+                    extract($params);
+                    break;
+                }
             }
         }
 
