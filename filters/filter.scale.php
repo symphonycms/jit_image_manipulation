@@ -22,7 +22,7 @@ class FilterScale extends FilterResize
             $param['settings']['external'] = (bool)$matches[0][3];
             $param['image_path'] = $matches[0][4];
 
-            if ($param['settings']['percentage'] == 0) {
+            if ($param['settings']['percentage'] === 0) {
                 return false;
             }
         }

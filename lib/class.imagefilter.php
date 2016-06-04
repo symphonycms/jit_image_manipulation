@@ -40,7 +40,7 @@ abstract class ImageFilter implements ImageFilterInterface
     protected static function __fill(&$res, &$dst, $colour = null)
     {
 
-        if (!$colour || strlen(trim($colour)) == 0) {
+        if (!$colour || strlen(trim($colour)) === 0) {
             $tr_idx = imagecolortransparent($res);
             if ($tr_idx >= 0) {
                 $tr_colour = imagecolorsforindex($res, $tr_idx);

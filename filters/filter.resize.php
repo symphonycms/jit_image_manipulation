@@ -23,7 +23,7 @@ class FilterResize extends JIT\ImageFilter
             $param['settings']['external'] = (bool)$matches[0][4];
             $param['image_path'] = $matches[0][5];
 
-            if ($param['settings']['width'] == 0 && $param['settings']['height'] == 0) {
+            if ($param['settings']['width'] === 0 && $param['settings']['height'] === 0) {
                 return false;
             }
         }

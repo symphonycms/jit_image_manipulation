@@ -216,7 +216,7 @@ class JIT extends Symphony
                         $allowed = true;
                         break;
                     } // Match the start of the rule with file path
-                    elseif (strncasecmp($rule, $parameters['image'], strlen($rule)) == 0) {
+                    elseif (strncasecmp($rule, $parameters['image'], strlen($rule)) === 0) {
                         $allowed = true;
                         break;
                     } // Match subdomain wildcards
