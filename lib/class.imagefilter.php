@@ -161,10 +161,10 @@ abstract class ImageFilter implements ImageFilterInterface
 
         }
 
-        $a = ($width >= $dst_w ? $mx[$src_x] : 0);
-        $b = ($height >= $dst_h ? $my[$src_y] : 0);
-        $c = ($width < $dst_w ? $mx[$src_x] : 0);
-        $d = ($height < $dst_h ? $my[$src_y] : 0);
+        $a = (int)($width >= $dst_w ? $mx[$src_x] : 0);
+        $b = (int)($height >= $dst_h ? $my[$src_y] : 0);
+        $c = (int)($width < $dst_w ? $mx[$src_x] : 0);
+        $d = (int)($height < $dst_h ? $my[$src_y] : 0);
 
         return array($a, $b, $c, $d);
     }
