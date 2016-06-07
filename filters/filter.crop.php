@@ -46,32 +46,20 @@ class FilterCrop extends JIT\ImageFilter
     public function run(\Image $res, $settings)
     {
         $resource = $res->Resource();
+        $src_w = Image::width($resource);
+        $src_h = Image::height($resource);
 
         $width = $settings['meta']['width'];
         $height = $settings['meta']['height'];
 
-        if (!empty($width) && !empty($height)) {
-            $dst_w = $width;
-            $dst_h = $height;
-        } elseif (empty($height)) {
-            $ratio = ($dst_h / $dst_w);
-            $dst_w = $width;
-            $dst_h = round($dst_w * $ratio);
-        } elseif (empty($width)) {
-            $ratio = ($dst_w / $dst_h);
-            $dst_h = $height;
-            $dst_w = round($dst_h * $ratio);
-        }
-
-        $image_width = Image::width($resource);
-        $image_height = Image::height($resource);
+        list($dst_w, $dst_h) = static::findAspectRatioValues($width, $height, $src_w, $src_h);
 
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
         static::__fill($resource, $tmp, $settings['settings']['background']);
 
-        list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($dst_w, $dst_h, $image_width, $image_height, $image_width, $image_height, $settings['settings']['position']);
+        list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($dst_w, $dst_h, $src_w, $src_h, $src_w, $src_h, $settings['settings']['position']);
 
-        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $image_width, $image_height, $image_width, $image_height);
+        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $src_w, $src_h, $src_w, $src_h);
 
         if (is_resource($resource)) {
             imagedestroy($resource);
