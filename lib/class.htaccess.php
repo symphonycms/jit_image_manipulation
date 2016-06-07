@@ -72,7 +72,7 @@ class HTAccess
         } else {
             $this->content = preg_replace(
                 '/RewriteRule .\* - \[S=14\]\s*/i',
-                'RewriteRule .* - [S=14]' . PHP_EOL . "{$rule}\t",
+                'RewriteRule .* - [S=14]' . PHP_EOL . "{$rule}",
                 $this->content
             );
         }
@@ -80,8 +80,8 @@ class HTAccess
         // Replace the token with the real value
         $this->content = str_replace($token, '$1', $this->content);
         $this->content = preg_replace(
-            '/(' . PHP_EOL . "(\t)?){3,}/",
-            PHP_EOL . PHP_EOL . "\t",
+            '/(' . PHP_EOL . PHP_EOL . "[ ]*)/",
+            PHP_EOL . PHP_EOL . '    ',
             $this->content
         );
 
@@ -98,8 +98,8 @@ class HTAccess
             $this->content
         );
         $this->content = preg_replace(
-            '/(' . PHP_EOL . "(\t)?){3,}/",
-            PHP_EOL . PHP_EOL . "\t",
+            '/([ ]+[' . PHP_EOL . ']+)/',
+            '',
             $this->content
         );
         $this->write();
