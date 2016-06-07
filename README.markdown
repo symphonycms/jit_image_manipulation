@@ -1,6 +1,14 @@
 # JIT Image Manipulation
 
-A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
+> A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
+
+## TL;DR
+
+- [Installation)(#installation)
+- [Updating](#updating)
+- [Usage](#usage)
+- [External sources & Trusted Sites](#external-sources--trusted-sites)
+- [Recipes](#recipes)
 
 ## Installation
 
