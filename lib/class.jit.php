@@ -140,6 +140,63 @@ class JIT extends Symphony
         $mode = false;
         $image_path = false;
 
+        // Check for matching recipes
+        if (file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) {
+            include(WORKSPACE . '/jit-image-manipulation/recipes.php');
+        }
+        // check to see if $recipes is even available before even checking if it is an array
+        if (!empty($recipes) && is_array($recipes)) {
+            foreach ($recipes as $recipe) {
+                // Is the mode regex? If so, bail early and let not JIT process it.
+                if ($recipe['mode'] === 'regex' && preg_match($recipe['url-parameter'], $parameter_string)) {
+                    // change URL to a "normal" JIT URL
+                    $parameter_string = preg_replace($recipe['url-parameter'], $recipe['jit-parameter'], $parameter_string);
+                    $is_regex = true;
+                    if (!empty($recipe['quality'])) {
+                        $this->settings['quality'] = $recipe['quality'];
+                    }
+                    break;
+                } // Nope, we're not regex, so make a regex and then check whether we this recipe matches
+                // the URL string. If not, continue to the next recipe.
+                elseif (!preg_match('/^' . $recipe['url-parameter'] . '\//i', $parameter_string, $matches)) {
+                    continue;
+                }
+
+                $new_paramstring = $recipe['mode'] . '/';
+                $new_paramstring .= $recipe['width'] . '/';
+                $new_paramstring .= $recipe['height'] . '/';
+
+                if (isset($recipe['position'])) {
+                    $new_paramstring .= $recipe['position'] . '/';
+                }
+
+                // If we're here, the recipe name matches, so we'll go on to fill out the params
+                // Is it an external image?
+                if (isset($recipe['external']) && (bool)$recipe['external']) {
+                    $new_paramstring .= '1/';
+                }
+
+                // Path to file
+                $new_paramstring .= substr($parameter_string, strlen($recipe['url-parameter']) + 1);
+
+                // Set output quality
+                if (!empty($recipe['quality'])) {
+                    $image_settings['quality'] = $recipe['quality'];
+                }
+
+                // Continue with the new string
+                $parameter_string = $new_paramstring;
+                $is_recipe = true;
+            }
+        }
+
+        // Check if only recipes are allowed.
+        // We only have to check if we are using a `regex` recipe
+        // because the other recipes already return `$param`.
+        if ($this->settings['disable_regular_rules'] === 'yes' && $is_regex !== true && $is_recipe !== true) {
+            throw new JITParseParametersException('Regular JIT rules are disabled and no matching recipe was found.');
+        }
+
         $filters = self::getAvailableFilters();
         foreach ($filters as $filter) {
             if ($params = $filter->parseParameters($parameter_string)) {
