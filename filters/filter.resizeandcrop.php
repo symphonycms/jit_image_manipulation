@@ -45,55 +45,40 @@ class FilterResizeAndCrop extends JIT\ImageFilter
 
     public function run(\Image $res, $settings)
     {
-        $src_w = $res->Meta()->width;
-        $src_h = $res->Meta()->height;
-
-        if ($settings['settings']['height'] == 0) {
-            $ratio = ($src_h / $src_w);
-            $dst_h = round($settings['meta']['width'] * $ratio);
-        } elseif ($settings['settings']['width'] == 0) {
-            $ratio = ($src_w / $src_h);
-            $dst_w = round($settings['meta']['height'] * $ratio);
-        }
-
-        $src_r = ($src_w / $src_h);
-        $dst_r = ($settings['meta']['width'] / $settings['meta']['height']);
-
-        if ($src_r < $dst_r) {
-            $width = $settings['meta']['width'];
-            $height = null;
-        } else {
-            $width = null;
-            $height = $settings['meta']['height'];
-        }
-
         $resource = $res->Resource();
+        $src_w = Image::width($resource);
+        $src_h = Image::height($resource);
 
-        $dst_w = Image::width($resource);
-        $dst_h = Image::height($resource);
+        $width = $settings['meta']['width'];
+        $height = $settings['meta']['height'];
 
-        if (!empty($width) && !empty($height)) {
-            $dst_w = $width;
-            $dst_h = $height;
-        } elseif (empty($height)) {
-            $ratio = ($dst_h / $dst_w);
-            $dst_w = $width;
-            $dst_h = round($dst_w * $ratio);
-        } elseif (empty($width)) {
-            $ratio = ($dst_w / $dst_h);
-            $dst_h = $height;
-            $dst_w = round($dst_h * $ratio);
+        // We must always preserve aspect ratio.
+        // Resize accordingly
+        if ($width == 0 || $height == 0) {
+            list($dst_w, $dst_h) = static::findAspectRatioValues($width, $height, $src_w, $src_h);
+            // Overrides parameters, since one is null
+            // no cropping will occur
+            $width = $dst_w;
+            $height = $dst_h;
+        } else {
+            $src_r = ($src_w / $src_h);
+            $dst_r = ($width / $height);
+
+            if ($src_r < $dst_r) {
+                list($dst_w, $dst_h) = static::findAspectRatioValues($width, null, $src_w, $src_h);
+            } else {
+                list($dst_w, $dst_h) = static::findAspectRatioValues(null, $height, $src_w, $src_h);
+            }
         }
 
-        $image_width = Image::width($resource);
-        $image_height = Image::height($resource);
-
-        $tmp = imagecreatetruecolor($dst_w, $dst_h);
+        $tmp = imagecreatetruecolor($width, $height);
         static::__fill($resource, $tmp, $settings['settings']['background']);
 
-        list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($dst_w, $dst_h, $src_w, $src_h, $width, $height, $settings['settings']['position']);
+        // Find crop according to resize (dst) size
+        list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($width, $height, $dst_w, $dst_h, $dst_w, $dst_h, $settings['settings']['position']);
 
-        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $image_width, $image_height, $image_width, $image_height);
+        // Copy image
+        imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $dst_w, $dst_h, $src_w, $src_h);
 
         if (is_resource($resource)) {
             imagedestroy($resource);
