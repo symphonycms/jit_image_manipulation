@@ -68,8 +68,8 @@ class FilterResizeAndCrop extends JIT\ImageFilter
         list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($width, $height, $dst_w, $dst_h, $dst_w, $dst_h, $settings['settings']['position']);
 
         // Project dst values onto src
-        $dst_x = (int)round($src_w / $dst_w) * $dst_x;
-        $dst_y = (int)round($src_h / $dst_h) * $dst_y;
+        $dst_x = (int)round($src_w / $dst_w * $dst_x);
+        $dst_y = (int)round($src_h / $dst_h * $dst_y);
 
         // Copy image
         imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $dst_w, $dst_h, $src_w, $src_h);
