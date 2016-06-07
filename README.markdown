@@ -30,6 +30,30 @@ Most of them are editable on Symphony's Preferences page.
 ),
 ```
 
+### cache
+
+Setting this to '1' will activate the file cache, meaning request will be save and served later
+
+### quality
+
+The quality factor for the jpeg and png encoders
+
+### disable_regular_rules
+
+Setting this to 'yes' will disable numeric modes and only allow [custom recipes](#recipes)
+
+### disable_upscaling
+
+Setting this to 'yes' will disable image upscaling, i.e. the source size will be used as a max.
+
+### disable_proxy_transform
+
+Setting this to 'yes' will add a HTTP header to the response telling proxies to do not perform any optimization/transformation on the response
+
+### allow_origin
+
+If not empty, this value will be sent as the Cross-Origin HTTP header
+
 ## Updating
 
 ### 2.0.0
