@@ -45,7 +45,7 @@ class FilterResize extends JIT\ImageFilter
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
         self::__fill($resource, $tmp, $settings['settings']['background']);
 
-        imagecopyresampled($tmp, $resource, 0, 0, 0, 0, $dst_w, $dst_h, Image::width($resource), Image::height($resource));
+        imagecopyresampled($tmp, $resource, 0, 0, 0, 0, $dst_w, $dst_h, $src_w, $src_h);
 
         if (is_resource($resource)) {
             imagedestroy($resource);
