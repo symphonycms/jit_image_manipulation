@@ -383,7 +383,7 @@ class JIT extends Symphony
 
     public function displayImage($image)
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' || $_SERVER['REQUEST_METHOD'] === 'HEAD') {
             return;
         }
         // Display the image in the browser using the Quality setting from Symphony's
