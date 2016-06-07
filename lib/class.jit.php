@@ -267,7 +267,7 @@ class JIT extends Symphony
         if ($parameters['last_modified']) {
             $last_modified_gmt = gmdate('D, d M Y H:i:s', $parameters['last_modified']) . ' GMT';
             $etag = md5($parameters['last_modified'] . $image_path);
-            $cacheControl = 'public';
+            $cacheControl = 'public; max-age=31536000';
 
             // Add no-transform in order to prevent ISPs to
             // serve image over http through a compressing proxy
