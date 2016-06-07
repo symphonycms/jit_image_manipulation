@@ -284,6 +284,24 @@ class JIT extends Symphony
             $etag = null;
         }
 
+       // Allow CORS
+       // respond to preflights
+       if ($parameters['image']['allow_origin'] !== null) {
+           if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+               // return only the headers and not the content
+               // only allow CORS if we're doing a GET - i.e. no sending for now.
+               if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) && $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET') {
+                   header('Access-Control-Allow-Origin: *');
+                   header('Access-Control-Allow-Headers: X-Requested-With');
+               }
+           } else {
+               header('Origin: ' . $parameters['image']['allow_origin']);
+               header('Access-Control-Allow-Origin: ' . $parameters['image']['allow_origin']);
+               header('Access-Control-Allow-Methods: GET');
+               header('Access-Control-Max-Age: 3000');
+           }
+       }
+
         // Check to see if the requested image needs to be generated or if a 304
         // can just be returned to the browser to use it's cached version.
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
@@ -362,6 +380,9 @@ class JIT extends Symphony
 
     public function displayImage($image)
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            return;
+        }
         // Display the image in the browser using the Quality setting from Symphony's
         // Configuration. If this fails, trigger an error.
         if (!$image->display(intval($this->settings['quality']))) {

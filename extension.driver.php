@@ -562,7 +562,7 @@ class extension_JIT_Image_Manipulation extends Extension
         }
 
         if (!isset($context['settings']['image']['allow_origin'])) {
-            $context['settings']['image']['allow_origin'] = '"null"';
+            $context['settings']['image']['allow_origin'] = null;
         }
 
         // save trusted sites
