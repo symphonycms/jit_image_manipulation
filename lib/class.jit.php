@@ -404,16 +404,29 @@ class JIT extends Symphony
         // Calculate the correct dimensions. If necessary, avoid upscaling the image.
         $src_w = $image->Meta()->width;
         $src_h = $image->Meta()->height;
+        $dst_w = $parameters['settings']['width'];
+        $dst_h = $parameters['settings']['height'];
 
         $parameters['meta']['disable_upscaling'] = $this->settings['disable_upscaling'] == 'yes';
 
         if ($parameters['meta']['disable_upscaling']) {
-            $parameters['meta']['width'] = min($parameters['settings']['width'], $src_w);
-            $parameters['meta']['height'] = min($parameters['settings']['height'], $src_h);
-        } else {
-            $parameters['meta']['width'] = $parameters['settings']['width'];
-            $parameters['meta']['height'] = $parameters['settings']['height'];
+            if ($src_w < $dst_w) {
+                if ($dst_h > 0) {
+                    $dst_h = $src_w * ($dst_h / $dst_w);
+                }
+                $dst_w = $src_w;
+            }
+
+            if ($src_h < $dst_h) {
+                if ($dst_w > 0) {
+                    $dst_w = $src_h * ($dst_w / $dst_h);
+                }
+                $dst_h = $src_h;
+            }
         }
+
+        $parameters['meta']['width'] = $dst_w;
+        $parameters['meta']['height'] = $dst_h;
 
         $filters = self::getAvailableFilters();
         foreach ($filters as $filter) {
