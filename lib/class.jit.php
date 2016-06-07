@@ -267,7 +267,7 @@ class JIT extends Symphony
         if (isset($parameters['last_modified']) && !empty($parameters['last_modified'])) {
             $last_modified_gmt = gmdate('D, d M Y H:i:s', $parameters['last_modified']) . ' GMT';
             $etag = md5($parameters['last_modified'] . $image_path);
-            $cacheControl = 'public; max-age=31536000';
+            $cacheControl = 'public';
 
             // Add no-transform in order to prevent ISPs to
             // serve image over http through a compressing proxy
@@ -275,6 +275,9 @@ class JIT extends Symphony
             if ($this->settings['disable_proxy_transform'] == 'yes') {
                 $cacheControl .= ', no-transform';
             }
+
+            // Add max-age directive at the end
+            $cacheControl .= '; max-age=31536000';
 
             header('Last-Modified: ' . $last_modified_gmt);
             header(sprintf('ETag: "%s"', $etag));
