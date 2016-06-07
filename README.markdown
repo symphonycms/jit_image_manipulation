@@ -6,6 +6,22 @@ A simple way to manipulate images "just in time" via the URL. Supports caching, 
 
 Information about [installing and updating extensions](http://getsymphony.com/learn/tasks/view/install-an-extension/) can be found in the [Symphony documentation](http://getsymphony.com/learn/).
 
+## Options
+
+This extensions offers a couple of useful configuration options.
+Most of them are editable on Symphony's Preferences page.
+
+```php
+'image' => array(
+    'cache' => '1',                     // 1/0 (hidden)
+    'quality' => '90',                  // 10-100 (hidden)
+    'disable_regular_rules' => 'no',    // yes/no (editable)
+    'disable_upscaling' => 'yes',       // yes/no (editable)
+    'disable_proxy_transform' => 'yes', // yes/no (editable)
+    'allow_origin' => '',               // string (editable)
+),
+```
+
 ## Updating
 
 ### 2.0.0
