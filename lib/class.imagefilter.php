@@ -8,7 +8,17 @@ abstract class ImageFilter implements ImageFilterInterface
     const CHANNEL_RED = 0;
     const CHANNEL_GREEN = 1;
     const CHANNEL_BLUE = 2;
-    
+
+    const TOP_LEFT = 1;
+    const TOP_MIDDLE = 2;
+    const TOP_RIGHT = 3;
+    const MIDDLE_LEFT = 4;
+    const CENTER = 5;
+    const MIDDLE_RIGHT = 6;
+    const BOTTOM_LEFT = 7;
+    const BOTTOM_MIDDLE = 8;
+    const BOTTOM_RIGHT = 9;
+
     abstract public static function about();
 
     abstract public function parseParameters($parameter_string);
@@ -120,41 +130,41 @@ abstract class ImageFilter implements ImageFilterInterface
 
         switch ($position) {
 
-            case 1:
+            case self::TOP_LEFT:
                 break;
 
-            case 2:
+            case self::TOP_MIDDLE:
                 $src_x = 1;
                 break;
 
-            case 3:
+            case self::TOP_RIGHT:
                 $src_x = 2;
                 break;
 
-            case 4:
+            case self::MIDDLE_LEFT:
                 $src_y = 1;
                 break;
 
-            case 5:
+            case self::CENTER:
                 $src_x = 1;
                 $src_y = 1;
                 break;
 
-            case 6:
+            case self::MIDDLE_RIGHT:
                 $src_x = 2;
                 $src_y = 1;
                 break;
 
-            case 7:
+            case self::BOTTOM_LEFT:
                 $src_y = 2;
                 break;
 
-            case 8:
+            case self::BOTTOM_MIDDLE:
                 $src_x = 1;
                 $src_y = 2;
                 break;
 
-            case 9:
+            case self::BOTTOM_RIGHT:
                 $src_x = 2;
                 $src_y = 2;
                 break;

@@ -5,16 +5,6 @@ class FilterResizeAndCrop extends JIT\ImageFilter
 
     public $mode = 2;
 
-    const TOP_LEFT = 1;
-    const TOP_MIDDLE = 2;
-    const TOP_RIGHT = 3;
-    const MIDDLE_LEFT = 4;
-    const CENTER = 5;
-    const MIDDLE_RIGHT = 6;
-    const BOTTOM_LEFT = 7;
-    const BOTTOM_MIDDLE = 8;
-    const BOTTOM_RIGHT = 9;
-
     public static function about()
     {
         return array(
