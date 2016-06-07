@@ -16,6 +16,12 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="2.0.1" date="TBA" min="2.6.0" max="2.x.x">
+			- Refactored all filters to eliminate duplicated code
+			- Fixed a couple of bugs (#120, #121)
+			- Fixed a regression in the .htaccess rule, where the file extension was added to the RewriteRule.
+			- Restored HTTP headers and cache
+		</release>
 		<release version="2.0.0" date="2016-04-26" min="2.6.0" max="2.x.x">
 			- JIT image process is it's own Symphony renderer now
 			- PSR2 Compliance (for the most part)
