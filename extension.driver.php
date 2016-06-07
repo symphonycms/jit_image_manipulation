@@ -299,7 +299,6 @@ class extension_JIT_Image_Manipulation extends Extension
     public function createRecipeDuplicatorTemplate($mode = '0', $position = '-1', $values = array(), $error = false)
     {
         $modes = array(
-            '0' => __('Direct display'),
             '1' => __('Resize'),
             '2' => __('Crop to Fill'),
             '3' => __('Resize Canvas'),
