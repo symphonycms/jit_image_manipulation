@@ -264,7 +264,7 @@ class JIT extends Symphony
         header('X-jit-cache: ' . $parameters['cache']);
         // if there is no `$last_modified` value, params should be NULL and headers
         // should not be set. Otherwise, set caching headers for the browser.
-        if ($parameters['last_modified']) {
+        if (isset($parameters['last_modified']) && !empty($parameters['last_modified'])) {
             $last_modified_gmt = gmdate('D, d M Y H:i:s', $parameters['last_modified']) . ' GMT';
             $etag = md5($parameters['last_modified'] . $image_path);
             $cacheControl = 'public; max-age=31536000';
@@ -286,7 +286,7 @@ class JIT extends Symphony
 
        // Allow CORS
        // respond to preflights
-       if ($parameters['image']['allow_origin'] !== null) {
+       if (isset($this->settings['allow_origin']) && $this->settings['allow_origin'] !== null) {
            if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
                // return only the headers and not the content
                // only allow CORS if we're doing a GET - i.e. no sending for now.
@@ -295,8 +295,8 @@ class JIT extends Symphony
                    header('Access-Control-Allow-Headers: X-Requested-With');
                }
            } else {
-               header('Origin: ' . $parameters['image']['allow_origin']);
-               header('Access-Control-Allow-Origin: ' . $parameters['image']['allow_origin']);
+               header('Origin: ' . $this->settings['allow_origin']);
+               header('Access-Control-Allow-Origin: ' . $this->settings['allow_origin']);
                header('Access-Control-Allow-Methods: GET');
                header('Access-Control-Max-Age: 3000');
            }
