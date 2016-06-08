@@ -173,13 +173,32 @@ class extension_JIT_Image_Manipulation extends Extension
             }
         }
 
-        if (version_compare($previousVersion, '2.0.0', '<')) {
+        if (version_compare($previousVersion, '2.0.1', '<')) {
             try {
                 // Re-simplify JIT htaccess rule
                 // see c7cd6183ffd15b9a8b7864df2eb29d3c1d96b5f9
                 if ($htaccess->exists()) {
                     $htaccess->simplifyJITAccessRule();
                 }
+            } catch (Exception $ex) {
+                $message = __(
+                    'An error occured while updating %s. %s',
+                    array(
+                        __('JIT Image Manipulation'),
+                        $ex->getMessage()
+                    )
+                );
+                throw new Exception($message);
+            }
+        }
+
+        if (version_compare($previousVersion, '2.0.2', '<')) {
+            try {
+                $maxage = Symphony::Configuration()->get('max-age', 'image');
+                if (!empty($maxage)) {
+                    Symphony::Configuration()->set('max_age', $maxage, 'image');
+                }
+                Symphony::Configuration()->remove('max-age', 'image');
             } catch (Exception $ex) {
                 $message = __(
                     'An error occured while updating %s. %s',

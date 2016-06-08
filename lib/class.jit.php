@@ -333,8 +333,12 @@ class JIT extends Symphony
                 $cacheControl .= ', no-transform';
             }
 
-            // Add max-age directive at the end
-            $cacheControl .= '; max-age=31536000';
+            // Use configured max-age or fallback on 3 days (See #88)
+            $maxage = isset($this->settings['max_age']) ? $this->settings['max_age'] : 86400;
+            if (!empty($maxage)) {
+                // Add max-age directive at the end
+                $cacheControl .= '; max-age=' . $maxage;
+            }
 
             header('Last-Modified: ' . $last_modified_gmt);
             header(sprintf('ETag: "%s"', $etag));

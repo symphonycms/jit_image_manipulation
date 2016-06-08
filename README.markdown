@@ -27,6 +27,7 @@ Most of them are editable on Symphony's Preferences page.
     'disable_upscaling' => 'yes',       // yes/no (editable)
     'disable_proxy_transform' => 'yes', // yes/no (editable)
     'allow_origin' => '',               // string (editable)
+    'max_age' => null,                  // integer (hidden)
 ),
 ```
 
@@ -53,6 +54,10 @@ Setting this to 'yes' will add a HTTP header to the response telling proxies to 
 ### allow_origin
 
 If not empty, this value will be sent as the Cross-Origin HTTP header
+
+### max_age
+
+The value, in seconds, for the max-age specifier in the Cache-Control HTTP Header
 
 ## Updating
 
