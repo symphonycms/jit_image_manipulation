@@ -370,6 +370,8 @@ class JIT extends Symphony
         // can just be returned to the browser to use it's cached version.
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
             if ($_SERVER['HTTP_IF_MODIFIED_SINCE'] == $last_modified_gmt || str_replace('"', null, stripslashes($_SERVER['HTTP_IF_NONE_MATCH'])) == $etag) {
+                // see https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.5
+                // other headers are ignored
                 \Page::renderStatusCode(\Page::HTTP_NOT_MODIFIED);
                 exit;
             }
