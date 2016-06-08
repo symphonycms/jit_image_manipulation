@@ -70,8 +70,12 @@ class extension_JIT_Image_Manipulation extends Extension
             // Create workspace directory
             General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
             // Now add Configuration values
-            Symphony::Configuration()->set('cache', '1', 'image');
-            Symphony::Configuration()->set('quality', '90', 'image');
+            if (Symphony::Configuration()->get('cache', 'image') === null) {
+                Symphony::Configuration()->set('cache', '1', 'image');
+            }
+            if (Symphony::Configuration()->get('quality', 'image') === null) {
+                Symphony::Configuration()->set('quality', '90', 'image');
+            }
 
             Symphony::Configuration()->write();
         } catch (Exception $ex) {
