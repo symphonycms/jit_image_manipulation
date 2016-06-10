@@ -336,7 +336,7 @@ class JIT extends Symphony
             }
 
             // Use configured max-age or fallback on 3 days (See #88)
-            $maxage = isset($this->settings['max_age']) ? $this->settings['max_age'] : 86400;
+            $maxage = isset($this->settings['max_age']) ? $this->settings['max_age'] : 60 * 60 * 24 * 3;
             if (!empty($maxage)) {
                 // Add max-age directive at the end
                 $cacheControl .= '; max-age=' . $maxage;

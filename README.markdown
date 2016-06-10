@@ -29,13 +29,13 @@ Most of them are editable on Symphony's Preferences page.
     'disable_upscaling' => 'yes',       // yes/no (editable)
     'disable_proxy_transform' => 'yes', // yes/no (editable)
     'allow_origin' => '',               // string (editable)
-    'max_age' => null,                  // integer (hidden)
+    'max_age' => 259200,                // integer (hidden)
 ),
 ```
 
 ### cache
 
-Setting this to '1' will activate the file cache, meaning request will be save and served later
+Setting this to '1' will activate the file cache, meaning request will be save to disk and served later
 
 ### quality
 
@@ -59,7 +59,7 @@ If not empty, this value will be sent as the Cross-Origin HTTP header
 
 ### max_age
 
-The value, in seconds, for the max-age specifier in the Cache-Control HTTP Header
+The value, in seconds, for the max-age specifier in the Cache-Control HTTP Header. Setting the value to 0 will disable the specifier. Default value is 3 days.
 
 ## Updating
 
