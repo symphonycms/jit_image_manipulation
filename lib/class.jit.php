@@ -101,16 +101,18 @@ class JIT extends Symphony
      * Given the parameters, check to see if this image is already in
      * the cache.
      *
-     * @param array $param
+     * @param array $parameters
      * @return boolean|array
      */
-    public function isImageAlreadyCached($param)
+    public function isImageAlreadyCached(array &$parameters)
     {
         if (!$this->caching) {
             return false;
         }
-        $file = $this->createCacheFilename($param['image']);
+        $file = $this->createCacheFilename($parameters['image']);
         if (@file_exists($file)) {
+            $parameters['last_modified'] = @filemtime(WORKSPACE . '/'. $parameters['image']);
+            $parameters['cached_image'] = $file;
             return @\Image::load($file);
         }
         return false;
@@ -293,13 +295,13 @@ class JIT extends Symphony
 
         // If the image is not external check to see when the image was last modified
         } else {
-            $image_path = WORKSPACE . "/" . $parameters['image'];
+            $image_path = WORKSPACE . '/' . $parameters['image'];
             $parameters['last_modified'] = is_file($image_path) ? filemtime($image_path) : null;
         }
 
         // If $this->caching is enabled, check to see that the cached file is still valid.
         if ($this->caching === true) {
-            $cache_file = $this->createCacheFilename($image_path);
+            $cache_file = $this->createCacheFilename($parameters['image']);
             // Set the cached image path, worst case scenario an image will be saved here
             // if no valid cache exists.
             $parameters['cached_image'] = $cache_file;
