@@ -492,7 +492,6 @@ class extension_JIT_Image_Manipulation extends Extension
         $duplicator->setAttribute('data-add', __('Add recipe'));
         $duplicator->setAttribute('data-remove', __('Remove recipe'));
 
-        $duplicator->appendChild(self::createRecipeDuplicatorTemplate('0'));
         $duplicator->appendChild(self::createRecipeDuplicatorTemplate('1'));
         $duplicator->appendChild(self::createRecipeDuplicatorTemplate('2'));
         $duplicator->appendChild(self::createRecipeDuplicatorTemplate('3'));

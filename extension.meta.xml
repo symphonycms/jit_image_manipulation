@@ -25,6 +25,7 @@
 			- Restored recipes
 			- Restored max-age (now renamed to max_age)
 			- Removed the Image::renderOutputHeaders() method
+			- Removed support for the undocumented "Direct display" (mode 0)
 		</release>
 		<release version="2.0.0" date="2016-04-26" min="2.6.0" max="2.x.x">
 			- JIT image process is it's own Symphony renderer now
