@@ -323,8 +323,11 @@ class JIT extends Symphony
 
     public function sendImageHeaders($parameters)
     {
-        header('X-jit-mode: ' . $parameters['mode']);
-        header('X-jit-cache: ' . $parameters['cache']);
+        // Send debug headers
+        if (static::isLoggedIn()) {
+            header('X-jit-mode: ' . $parameters['mode']);
+            header('X-jit-cache: ' . $parameters['cache']);
+        }
 
         $type = isset($parameters['type']) ? $parameters['type'] : 'jpg';
         $mimeType = image_type_to_mime_type($type);
