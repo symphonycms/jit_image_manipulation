@@ -63,6 +63,19 @@ The value, in seconds, for the max-age specifier in the Cache-Control HTTP Heade
 
 ## Updating
 
+### 2.1.0
+
+Version `2.0.0` broke a couple of things and lacked some features present in versions `1.x`.
+Hopefully, this version restores all features you enjoyed in `1.x` versions.
+End users and site administrators should not see and differences, but developers should read the [complete release notes](https://github.com/symphonycms/jit_image_manipulation/releases/tag/2.1.0) since there were some minor API changes.
+
+`2.0.0` also contained a regression bug, that would have reverted the Apache rewrite rule to one matching extensions.
+The updater should handle this just fine.
+For the record, the rule is now
+
+	### IMAGE RULES
+	RewriteRule ^image\/(.+)$ index.php?mode=jit&param=$1 [B,L,NC]
+
 ### 2.0.0
 
 Since version `2.0.0`, the `.htaccess` rule now uses Symphony's custom launcher feature. The rule should look like
