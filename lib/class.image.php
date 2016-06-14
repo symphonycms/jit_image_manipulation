@@ -4,7 +4,6 @@ class Image
 {
     private $_resource;
     private $_meta;
-    private $_image;
     static $_result;
 
     const DEFAULT_QUALITY = 80;
@@ -359,12 +358,7 @@ class Image
             $output = $this->Meta()->type; //DEFAULT_OUTPUT_TYPE;
         }
         self::renderOutputHeaders($output);
-
-        if (isset($this->_image) && is_resource($this->_image)) {
-            return $this->_image;
-        } else {
-            return self::__render(null, $quality, $interlacing, $output);
-        }
+        return self::__render(null, $quality, $interlacing, $output);
     }
 
     /**
@@ -387,8 +381,7 @@ class Image
         if (!$output) {
             $output = $this->Meta()->type; //DEFAULT_OUTPUT_TYPE;
         }
-        $this->_image = self::__render($dest, $quality, $interlacing, $output);
-        return $this->_image;
+        return self::__render($dest, $quality, $interlacing, $output);
     }
 
     /**
