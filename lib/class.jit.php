@@ -57,10 +57,10 @@ class JIT extends Symphony
         return self::$available_filters;
     }
 
-    public function display($page = null)
+    public function display()
     {
         $this->settings = Symphony::Configuration()->get('image');
-        $this->caching = ($this->settings['cache'] == 1 ? true : false);
+        $this->caching = (\General::intval($this->settings['cache']) === 1);
 
         // process the parameters
         $param = $this->parseParameters($_GET['param']);
@@ -68,6 +68,7 @@ class JIT extends Symphony
         // is this thing cached?
         if ($image = $this->isImageAlreadyCached($param)) {
             $param['cache'] = 'HIT';
+            $param['type'] = $image->Meta()->type;
             // prepare caching headers
             $this->sendImageHeaders($param);
             return $this->displayImage($image);
@@ -79,14 +80,16 @@ class JIT extends Symphony
         $image = $this->fetchImagePath($param);
 
         if ($image) {
-            // prepare caching headers
-            $this->sendImageHeaders($param);
-
+            // fetch image
             $image_resource = $this->fetchImage($image, $param);
 
             // apply the filter
             $image = $this->applyFilterToImage($image_resource, $param);
- 
+
+            // send all headers
+            $param['type'] = $image->Meta()->type;
+            $this->sendImageHeaders($param);
+
             // figure out whether to cache the image or not
             if ($this->caching) {
                 $this->cacheImage($image, $param);
@@ -95,6 +98,7 @@ class JIT extends Symphony
             // display the image
             return $this->displayImage($image);
         }
+        return false;
     }
 
     /**
@@ -321,6 +325,29 @@ class JIT extends Symphony
     {
         header('X-jit-mode: ' . $parameters['mode']);
         header('X-jit-cache: ' . $parameters['cache']);
+
+        $type = isset($parameters['type']) ? $parameters['type'] : 'jpg';
+        $mimeType = image_type_to_mime_type($type);
+
+        // Send proper content-type
+        header('Content-Type: ' . $mimeType);
+
+        // Send attachment headers, if needed
+        if (isset($parameters['destination']) && !empty($parameters['destination'])) {
+            $destination = \General::sanitize($parameters['destination']);
+            // Try to remove old extension
+            $ext = strrchr($destination, '.');
+            if ($ext !== false) {
+                $destination = substr($destination, 0, -strlen($ext));
+            }
+
+            header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+            header("Content-Disposition: inline; filename=$destination" . $mimeType);
+            header('Pragma: no-cache');
+            // exit: no more headers are needed
+            return;
+        }
+
         // if there is no `$last_modified` value, params should be NULL and headers
         // should not be set. Otherwise, set caching headers for the browser.
         if (isset($parameters['last_modified']) && !empty($parameters['last_modified'])) {
@@ -459,7 +486,7 @@ class JIT extends Symphony
         }
     }
 
-    public function displayImage($image)
+    public function displayImage(\Image $image)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS' || $_SERVER['REQUEST_METHOD'] === 'HEAD') {
             return;

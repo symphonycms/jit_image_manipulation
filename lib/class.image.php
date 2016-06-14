@@ -166,40 +166,6 @@ class Image
     }
 
     /**
-     * Given string representing the type return by `getMetaInformation`,
-     * this function will generate the correct Content-Type header using
-     * `image_type_to_mime_type` function.
-     *
-     * @see getMetaInformation()
-     * @link http://php.net/manual/en/function.image-type-to-mime-type.php
-     * @link http://www.php.net/manual/en/image.constants.php
-     * @param integer $type
-     *  One of the IMAGETYPE constants
-     * @param string $destination
-     *  The destination of the image. This defaults to null, if provided,
-     *  this function will prompt the user to download the image rather
-     *  than display it inline
-     */
-    public static function renderOutputHeaders($type, $destination = null)
-    {
-        header('Content-Type: ' . image_type_to_mime_type($type));
-
-        if (is_null($destination)) {
-            return;
-        }
-
-        // Try to remove old extension
-        $ext = strrchr($destination, '.');
-        if ($ext !== false) {
-            $destination = substr($destination, 0, -strlen($ext));
-        }
-
-        header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-        header("Content-Disposition: inline; filename=$destination" . image_type_to_extension($type));
-        header('Pragma: no-cache');
-    }
-
-    /**
      * Get the HTTP response code of a resource
      *
      * @param string $url
@@ -357,7 +323,6 @@ class Image
         if (!$output) {
             $output = $this->Meta()->type; //DEFAULT_OUTPUT_TYPE;
         }
-        self::renderOutputHeaders($output);
         return self::__render(null, $quality, $interlacing, $output);
     }
 
