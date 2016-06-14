@@ -9,8 +9,10 @@
 - [Options](#options)
 - [Updating](#updating)
 - [Usage](#usage)
-- [External sources & Trusted Sites](#external-sources--trusted-sites)
-- [Recipes](#recipes)
+    + [Basics](#basics)
+    + [External sources & Trusted Sites](#external-sources--trusted-sites)
+    + [Recipes](#recipes)
+    + [Force Download](#force-download)
 
 ## Installation
 
@@ -163,3 +165,12 @@ Recipes are named rules for the JIT settings which help improve security and are
 When JIT parses a URL like this, it will check the recipes file for a recipe with a handle of `thumbnail` and apply it's rules. You can completely disable dynamic JIT rules and choose to use recipes only which will prevent a malicious user from hammering your server with large or multiple JIT requests.
 
 Recipes can be copied between installations and changes will be reflected by every image using this recipe.
+
+### Force download
+
+If you ever need to force the download of your resized image, it can be down easily by creating a new rewrite rule.
+The default rule does not pass the user's query string into the real request, for security and sanity purposes.
+Anyhow, you can add the needed query string, i.e. `&save` into the request of a new rewrite rule.
+The following rule would create a new endpoint, `/image-download`, that will accept the same parameters as the normal `/image` endpoint.
+
+	RewriteRule ^image-download\/(.+)$ index.php?mode=jit&param=$1&save [B,L,NC]

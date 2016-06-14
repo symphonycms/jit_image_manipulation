@@ -64,6 +64,7 @@ class JIT extends Symphony
 
         // process the parameters
         $param = $this->parseParameters($_GET['param']);
+        $param['destination'] = isset($_GET['save']);
 
         // is this thing cached?
         if ($image = $this->isImageAlreadyCached($param)) {
@@ -329,23 +330,23 @@ class JIT extends Symphony
             header('X-jit-cache: ' . $parameters['cache']);
         }
 
-        $type = isset($parameters['type']) ? $parameters['type'] : 'jpg';
-        $mimeType = image_type_to_mime_type($type);
+        // PHP's image type
+        $type = isset($parameters['type']) ? $parameters['type'] : IMAGETYPE_JPEG;
 
         // Send proper content-type
-        header('Content-Type: ' . $mimeType);
+        header('Content-Type: ' . image_type_to_mime_type($type));
 
         // Send attachment headers, if needed
-        if (isset($parameters['destination']) && !empty($parameters['destination'])) {
-            $destination = \General::sanitize($parameters['destination']);
-            // Try to remove old extension
+        if (isset($parameters['destination']) && $parameters['destination'] === true) {
+            $destination = basename($parameters['image']);
+            // Try to remove old file extension
             $ext = strrchr($destination, '.');
             if ($ext !== false) {
                 $destination = substr($destination, 0, -strlen($ext));
             }
 
             header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-            header("Content-Disposition: inline; filename=$destination" . $mimeType);
+            header("Content-Disposition: attachment; filename=$destination" . image_type_to_extension($type) . ';');
             header('Pragma: no-cache');
             // exit: no more headers are needed
             return;
