@@ -173,4 +173,4 @@ Simply add `&save` to the substitution argument (the target) of a new rewrite ru
 	### Additional rewrite rule to create a new `image-download` endpoint:
 	RewriteRule ^image-download\/(.+)$ index.php?mode=jit&param=$1&save [B,L,NC]
 
-Note that merely adding `&save` to an `img` tag's `src` parameter will not result in a download as JIT does not use URL query parameters from the original request for reasons of security and sanity.
+Note that merely adding `&save` to an `img` tag's `src` parameter will not result in a download as for reasons of security and sanity our rewrite rule does not have Apache use URL query string parameters from the original request.
