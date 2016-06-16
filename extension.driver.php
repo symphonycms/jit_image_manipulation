@@ -543,7 +543,7 @@ class extension_JIT_Image_Manipulation extends Extension
         $label->setValue($input->generate() . ' ' . __('Disable upscaling of images beyond the original size'));
         $group->appendChild($label);
 
-        // checkbox to diable proxy transformation of images
+        // checkbox to disable proxy transformation of images
         $label = Widget::Label();
         $input = Widget::Input('settings[image][disable_proxy_transform]', 'yes', 'checkbox');
         if (Symphony::Configuration()->get('disable_proxy_transform', 'image') == 'yes') {
