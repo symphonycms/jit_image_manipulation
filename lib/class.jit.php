@@ -4,6 +4,7 @@ namespace JIT;
 
 use Symphony;
 use SymphonyErrorPage;
+use Page;
 
 require_once __DIR__ . '/interface.imagefilter.php';
 require_once __DIR__ . '/class.imagefilter.php';
@@ -258,7 +259,7 @@ class JIT extends Symphony
     public function fetchImagePath(array &$parameters)
     {
         // Fetch external images
-        if ($parameters['external'] === true) {
+        if ($parameters['settings']['external'] === true) {
             $image_path = "http://{$parameters['image']}";
 
             // Image is external, check to see that it is a trusted source
@@ -416,7 +417,7 @@ class JIT extends Symphony
         // There is mode, or the image to JIT is external, so call `Image::load` or
         // `Image::loadExternal` to load the image into the Image class
         try {
-            $method = 'load' . ($parameters['external'] === true ? 'External' : null);
+            $method = 'load' . ($parameters['settings']['external'] === true ? 'External' : null);
             $image = call_user_func_array(array('Image', $method), array($image_path));
 
             if (!$image instanceof \Image) {
