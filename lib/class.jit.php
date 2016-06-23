@@ -268,12 +268,11 @@ class JIT extends Symphony
             $image_path = "http://{$parameters['image']}";
 
             // Image is external, check to see that it is a trusted source
-            $rules = file(WORKSPACE . '/jit-image-manipulation/trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $rules = @file(WORKSPACE . '/jit-image-manipulation/trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             $allowed = false;
 
-            $rules = array_map('trim', $rules);
-
-            if (count($rules) > 0) {
+            if (is_array($rules) && count($rules) > 0) {
+                $rules = array_map('trim', $rules);
                 foreach ($rules as $rule) {
                     $rule = str_replace(array('http://', 'https://'), null, $rule);
 
