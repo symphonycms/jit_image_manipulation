@@ -5,6 +5,7 @@ namespace JIT;
 use Symphony;
 use SymphonyErrorPage;
 use Page;
+use General;
 
 require_once __DIR__ . '/interface.imagefilter.php';
 require_once __DIR__ . '/class.imagefilter.php';
@@ -217,11 +218,15 @@ class JIT extends Symphony
 
         // Did the delegate resolve anything?
         if (!$mode || !$image_path) {
-            throw new JITParseParametersException('No JIT filter was found for this request.');
+            throw new JITParseParametersException(
+                sprintf('No JIT filter was found for <code>%s</code>.', \General::sanitize($parameter_string))
+            );
         }
         // Does the image tries to do parent folder escalation?
         if (preg_match('/[\.]{2}\//', $image_path)) {
-            throw new JITParseParametersException('Invalid image path.');
+            throw new JITParseParametersException(
+                sprintf('Invalid image path <code>%s</code>.', \General::sanitize($image_path))
+            );
         }
 
         // If the background has been set, ensure that it's not mistakenly

@@ -95,7 +95,9 @@ class Image
     public static function load($image)
     {
         if (!is_file($image) || !is_readable($image)) {
-            throw new JIT\JITImageNotFound(sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
+            throw new JIT\JITImageNotFound(
+                sprintf('Error loading image <code>%s</code>. Check it exists and is readable.', \General::sanitize(str_replace(DOCROOT, '', $image)))
+            );
         }
 
         $meta = self::getMetaInformation($image);
