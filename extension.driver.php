@@ -592,13 +592,14 @@ class extension_JIT_Image_Manipulation extends Extension
         $trusted_saved = $this->saveTrusted(stripslashes($_POST['jit_image_manipulation']['trusted_external_sites']));
         // there were errors saving the trusted files
         if ($trusted_saved == self::__ERROR_TRUSTED__) {
-            $context['errors']['jit-trusted-sites'] = __('An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable and the directory, %s, is also writable.',
+            $context['errors']['jit-trusted-sites'] = __(
+                'An error occurred while saving the JIT trusted sites. Make sure the trusted sites file, %s, exists and is writable and the directory, %s, is also writable.',
                 array(
                     '<code>/workspace/jit-image-manipulation/trusted-sites</code>',
                     '<code>/workspace/jit-image-manipulation</code>',
                 )
             );
-        };
+        }
 
         // save recipes (if they exist)
         if (isset($_POST['jit_image_manipulation']['recipes'])) {
@@ -610,7 +611,8 @@ class extension_JIT_Image_Manipulation extends Extension
 
         // there were errors saving the recipes
         if ($recipes_saved == self::__ERROR_SAVING_RECIPES__) {
-            $context['errors']['jit-recipes'] = __('An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable and the directory, %s, is also writable.',
+            $context['errors']['jit-recipes'] = __(
+                'An error occurred while saving the JIT recipes. Make sure the recipes file, %s, exists and is writable and the directory, %s, is also writable.',
                 array(
                     '<code>/workspace/jit-image-manipulation/recipes.php</code>',
                     '<code>/workspace/jit-image-manipulation</code>',
