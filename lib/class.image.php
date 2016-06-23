@@ -4,7 +4,7 @@ class Image
 {
     private $_resource;
     private $_meta;
-    static $_result;
+    private static $_result;
 
     const DEFAULT_QUALITY = 80;
     const DEFAULT_INTERLACE = true;
