@@ -155,6 +155,10 @@ The URL then requires a sixth parameter, external, (where the fourth and fifth p
 	<img src="{$root}/image/1/80/80/1/{full/path/to/image}" />
 	                                ^ External parameter
 
+You can also include the protocol in the full path of the image. This can eliminate a redirection when requesting images from a domain that upgrade insecure requests.
+
+	<img src="{$root}/image/1/80/80/1/https://{full/path/to/image}" />
+
 ### Recipes
 
 Recipes are named rules in JIT settings which help improve security and convenience. They can be edited at the preferences page in the JIT section and are saved in `/workspace/jit-image-manipulation/recipes.php`. An image using a recipe called `thumbnail` might look like:
