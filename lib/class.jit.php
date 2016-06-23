@@ -167,7 +167,7 @@ class JIT extends Symphony
                     break;
                 } // Nope, we're not regex, so make a regex and then check whether we this recipe matches
                 // the URL string. If not, continue to the next recipe.
-                elseif (!preg_match('/^' . $recipe['url-parameter'] . '\//i', $parameter_string, $matches)) {
+                elseif (!preg_match('/^' . $recipe['url-parameter'] . '\//i', $parameter_string)) {
                     continue;
                 }
 
@@ -190,7 +190,7 @@ class JIT extends Symphony
 
                 // Set output quality
                 if (!empty($recipe['quality'])) {
-                    $image_settings['quality'] = $recipe['quality'];
+                    $settings['quality'] = $recipe['quality'];
                 }
 
                 // Continue with the new string
@@ -362,7 +362,7 @@ class JIT extends Symphony
         // should not be set. Otherwise, set caching headers for the browser.
         if (isset($parameters['last_modified']) && !empty($parameters['last_modified'])) {
             $last_modified_gmt = gmdate('D, d M Y H:i:s', $parameters['last_modified']) . ' GMT';
-            $etag = md5($parameters['last_modified'] . $image_path);
+            $etag = md5($parameters['last_modified'] . $parameters['image']);
             $cacheControl = 'public';
 
             // Add no-transform in order to prevent ISPs to
@@ -387,23 +387,23 @@ class JIT extends Symphony
             $etag = null;
         }
 
-       // Allow CORS
-       // respond to preflights
-       if (isset($this->settings['allow_origin']) && $this->settings['allow_origin'] !== null) {
-           if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-               // return only the headers and not the content
-               // only allow CORS if we're doing a GET - i.e. no sending for now.
-               if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) && $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET') {
-                   header('Access-Control-Allow-Origin: *');
-                   header('Access-Control-Allow-Headers: X-Requested-With');
-               }
-           } else {
-               header('Origin: ' . $this->settings['allow_origin']);
-               header('Access-Control-Allow-Origin: ' . $this->settings['allow_origin']);
-               header('Access-Control-Allow-Methods: GET');
-               header('Access-Control-Max-Age: 3000');
-           }
-       }
+        // Allow CORS
+        // respond to preflights
+        if (isset($this->settings['allow_origin']) && $this->settings['allow_origin'] !== null) {
+            if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+                // return only the headers and not the content
+                // only allow CORS if we're doing a GET - i.e. no sending for now.
+                if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) && $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET') {
+                    header('Access-Control-Allow-Origin: *');
+                    header('Access-Control-Allow-Headers: X-Requested-With');
+                }
+            } else {
+                header('Origin: ' . $this->settings['allow_origin']);
+                header('Access-Control-Allow-Origin: ' . $this->settings['allow_origin']);
+                header('Access-Control-Allow-Methods: GET');
+                header('Access-Control-Max-Age: 3000');
+            }
+        }
 
         // Check to see if the requested image needs to be generated or if a 304
         // can just be returned to the browser to use it's cached version.
