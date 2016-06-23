@@ -298,8 +298,9 @@ class JIT extends Symphony
             }
 
             if ($allowed == false) {
-                \Page::renderStatusCode(Page::HTTP_STATUS_FORBIDDEN);
-                exit(sprintf('Error: Connecting to %s is not permitted.', $parameters['image']));
+                throw new JITDomainNotAllowed(
+                    sprintf('Error: Connecting to %s is not permitted.', \General::sanitize($parameters['image']))
+                );
             }
 
             $parameters['last_modified'] = strtotime(\Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
@@ -511,7 +512,6 @@ class JIT extends Symphony
 
 class JITException extends SymphonyErrorPage
 {
-
     public function __construct($message, $heading = 'JIT Error', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_ERROR)
     {
         return parent::__construct($message, $heading, $template, $additional, $status);
@@ -520,8 +520,15 @@ class JITException extends SymphonyErrorPage
 
 class JITImageNotFound extends JITException
 {
-
     public function __construct($message, $heading = 'JIT Image Not Found', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_NOT_FOUND)
+    {
+        return parent::__construct($message, $heading, $template, $additional, $status);
+    }
+}
+
+class JITDomainNotAllowed extends JITException
+{
+    public function __construct($message, $heading = 'JIT Domain Not Allowed', $template = 'generic', array $additional = array(), $status = \Page::HTTP_STATUS_FORBIDDEN)
     {
         return parent::__construct($message, $heading, $template, $additional, $status);
     }
