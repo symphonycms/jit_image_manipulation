@@ -16,7 +16,7 @@ class FilterResize extends JIT\ImageFilter
     {
         $param = array();
 
-        if (preg_match_all('/^(1|4)\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('/^(' . $this->mode .')\/([0-9]+)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)) {
             $param['mode'] = (int)$matches[0][1];
             $param['settings']['width'] = (int)$matches[0][2];
             $param['settings']['height'] = (int)$matches[0][3];

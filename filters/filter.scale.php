@@ -16,7 +16,7 @@ class FilterScale extends FilterResize
     {
         $param = array();
 
-        if (preg_match_all('/^(5)\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('/^(' . $this->mode .')\/([0-9]+)\/(?:(0|1)\/)?(.+)$/i', $parameter_string, $matches, PREG_SET_ORDER)) {
             $param['mode'] = (int)$matches[0][1];
             $param['settings']['percentage'] = (int)$matches[0][2];
             $param['settings']['external'] = (bool)$matches[0][3];
