@@ -43,7 +43,7 @@ class FilterResize extends JIT\ImageFilter
         list($dst_w, $dst_h) = static::findAspectRatioValues($width, $height, $src_w, $src_h);
 
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
-        self::__fill($resource, $tmp, $settings['settings']['background']);
+        static::__fill($resource, $tmp, $settings['settings']['background']);
 
         imagecopyresampled($tmp, $resource, 0, 0, 0, 0, $dst_w, $dst_h, $src_w, $src_h);
 
