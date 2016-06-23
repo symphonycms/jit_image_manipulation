@@ -135,7 +135,9 @@ class Image
         }
 
         if (!is_resource($resource)) {
-            throw new JIT\JITGenerationError(sprintf('Error creating image <code>%s</code>. Check it exists and is readable.', str_replace(DOCROOT, '', $image)));
+            throw new JIT\JITGenerationError(
+                sprintf('Error creating image <code>%s</code>. Check it exists and is readable.', General::sanitize(str_replace(DOCROOT, '', $image)))
+            );
         }
 
         $obj = new self($resource, $meta);
