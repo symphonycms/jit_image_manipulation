@@ -289,7 +289,7 @@ class JIT extends Symphony
                         $allowed = true;
                         break;
                     } // Match subdomain wildcards
-                    elseif (substr($rule, 0, 1) == '*' && preg_match("/(".substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2).")/", $param->file)) {
+                    elseif (substr($rule, 0, 1) == '*' && preg_match('/(' . preg_quote(substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2), '/') . ')/', $parameters['image'])) {
                         $allowed = true;
                         break;
                     }
