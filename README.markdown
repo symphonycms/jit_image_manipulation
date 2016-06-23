@@ -20,8 +20,8 @@ Information about [installing and updating extensions](http://getsymphony.com/le
 
 ## Options
 
-This extensions offers a couple of useful configuration options.
-Most of them are editable on Symphony's Preferences page.
+Most options are editable at Symphony's Preferences page.
+A complete listing of the possible config settings:
 
 ```php
 'image' => array(
@@ -69,11 +69,10 @@ The value, in seconds, for the max-age specifier in the Cache-Control HTTP Heade
 
 Version `2.0.0` broke a couple of things and lacked some features present in versions `1.x`.
 Hopefully, this version restores all features you enjoyed in `1.x` versions.
-End users and site administrators should not see and differences, but developers should read the [complete release notes](https://github.com/symphonycms/jit_image_manipulation/releases/tag/2.1.0) since there were some minor API changes.
+End users and site administrators should not see any differences, but developers should read the [complete release notes](https://github.com/symphonycms/jit_image_manipulation/releases/tag/2.1.0) since there were some minor API changes.
 
-`2.0.0` also contained a regression bug, that would have reverted the Apache rewrite rule to one matching extensions.
-The updater should handle this just fine.
-For the record, the rule is now
+`2.0.0` also contained a regression bug that reverted the Apache rewrite rule to one matching extensions.
+The updater should handle this. The Apache rewrite rule is now:
 
 	### IMAGE RULES
 	RewriteRule ^image\/(.+)$ index.php?mode=jit&param=$1 [B,L,NC]
@@ -149,7 +148,7 @@ The extra fifth parameter makes the URL look like this:
 
 ### External sources & Trusted Sites
 
-In order pull images from external sources, you must set up a white-list of trusted sites. To do this, go to "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything use a single asterisk (`*`).
+In order pull images from external sources, you must set up a whitelist of trusted sites. To do this, go to "System > Preferences" and add rules to the "JIT Image Manipulation" rules textarea. To match anything, use a single asterisk (`*`).
 
 The URL then requires a sixth parameter, external, (where the fourth and fifth parameter may be optional), which is simply `1` or `0`. By default, this parameter is `0`, which means the image is located on the same domain as JIT. Setting it to `1` will allow JIT to process external images provided they are on the Trusted Sites list.
 
@@ -158,19 +157,20 @@ The URL then requires a sixth parameter, external, (where the fourth and fifth p
 
 ### Recipes
 
-Recipes are named rules for the JIT settings which help improve security and are more convenient. They can be edited on the preferences page in the JIT section and are saved in  `/workspace/jit-image-manipulation/recipes.php`. A recipe URL might look like:
+Recipes are named rules in JIT settings which help improve security and convenience. They can be edited at the preferences page in the JIT section and are saved in `/workspace/jit-image-manipulation/recipes.php`. An image using a recipe called `thumbnail` might look like:
 
 	<img src="{$root}/image/thumbnail{image/@path}/{image/filename}" />
 
-When JIT parses a URL like this, it will check the recipes file for a recipe with a handle of `thumbnail` and apply it's rules. You can completely disable dynamic JIT rules and choose to use recipes only which will prevent a malicious user from hammering your server with large or multiple JIT requests.
+You can completely disable dynamic JIT rules and choose to use recipes only, which will prevent a malicious user from hammering your server with large or frequent JIT requests. Be aware disabling dynamic rules also applies to any backend image previews you may have set up. Consider making a named recipe for backend image previews.
 
 Recipes can be copied between installations and changes will be reflected by every image using this recipe.
 
 ### Force download
 
-If you ever need to force the download of your resized image, it can be down easily by creating a new rewrite rule.
-The default rule does not pass the user's query string into the real request, for security and sanity purposes.
-Anyhow, you can add the needed query string, i.e. `&save` into the request of a new rewrite rule.
-The following rule would create a new endpoint, `/image-download`, that will accept the same parameters as the normal `/image` endpoint.
+It is possible to force download of your resized image by creating a new webserver rewrite rule.
+Simply add `&save` to the substitution argument (the target) of a new rewrite rule. For Apache:
 
+	### Additional rewrite rule to create a new `image-download` endpoint:
 	RewriteRule ^image-download\/(.+)$ index.php?mode=jit&param=$1&save [B,L,NC]
+
+Note that merely adding `&save` to an `img` tag's `src` parameter will not result in a download as for reasons of security and sanity our rewrite rule does not have Apache use URL query string parameters from the original request.
