@@ -500,6 +500,9 @@ class JIT extends Symphony
             if (!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
                 throw new JITGenerationError('Error generating image, failed to create cache file.');
             }
+            // Try to set proper rights on the file
+            $perm = Symphony::Configuration()->get('write_mode', 'file');
+            @chmod($parameters['cached_image'], intval($perm, 8));
         }
     }
 
