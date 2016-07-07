@@ -76,6 +76,9 @@ class extension_JIT_Image_Manipulation extends Extension
             if (Symphony::Configuration()->get('quality', 'image') === null) {
                 Symphony::Configuration()->set('quality', '90', 'image');
             }
+            if (Symphony::Configuration()->get('memory_exhaustion_factor', 'image') === null) {
+                Symphony::Configuration()->set('memory_exhaustion_factor', null, 'image');
+            }
 
             Symphony::Configuration()->write();
         } catch (Exception $ex) {

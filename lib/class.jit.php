@@ -484,6 +484,8 @@ class JIT extends Symphony
             }
         }
 
+        $this->validateMemoryNeeded($image, $dst_w, $dst_h);
+
         $parameters['meta']['width'] = $dst_w;
         $parameters['meta']['height'] = $dst_h;
 
@@ -496,6 +498,46 @@ class JIT extends Symphony
         }
 
         return $resource;
+    }
+
+    public function validateMemoryNeeded(\Image $image, $dst_w, $dst_h)
+    {
+        $mem = array();
+        if ($this->hasEnoughMemory($image, $dst_w, $dst_h, $mem) === false) {
+            throw new JITGenerationError(sprintf(
+                'Estimated memory needed not available. %d / %d',
+                $mem['need'],
+                $mem['free']
+            ));
+        }
+    }
+
+    public function hasEnoughMemory(\Image $image, $dst_w, $dst_h, &$meminfos = array())
+    {
+        $factor = (float)$this->settings['memory_exhaustion_factor'];
+        if (!$factor) {
+            return null;
+        }
+        $memlim = @ini_get('memory_limit');
+        if ($memlim !== false) {
+            $memlim = General::convertHumanFileSizeToBytes($memlim);
+            if ($memlim > 0) {
+                $memfre = $memlim - memory_get_usage();
+                if ($memfre >= 0) {
+                    $meminfos['free'] = $memfre;
+                    $meminfos['need'] = $this->getMemoryNeeded($image, $dst_w, $dst_h, $factor);
+                    return $memfre >= $meminfos['need'];
+                }
+            }
+        }
+        return null;
+    }
+
+    public function getMemoryNeeded(\Image $image, $dst_w, $dst_h, $factor = 1.8)
+    {
+        $meta = $image->Meta();
+        $destination = $dst_w * $dst_h * ((int)$meta->channels + 1);
+        return (int)(($destination + 1) * $factor);
     }
 
     public function cacheImage(\Image $image, $parameters)

@@ -32,6 +32,7 @@ A complete listing of the possible config settings:
     'disable_proxy_transform' => 'yes', // yes/no (editable)
     'allow_origin' => '',               // string (editable)
     'max_age' => 259200,                // integer (hidden)
+    'memory_exhaustion_factor' => ''    // string/float/int (hidden)
 ),
 ```
 
@@ -62,6 +63,14 @@ If not empty, this value will be sent as the Cross-Origin HTTP header
 ### max_age
 
 The value, in seconds, for the max-age specifier in the Cache-Control HTTP Header. Setting the value to 0 will disable the specifier. Default value is 3 days.
+
+### memory_exhaustion_factor
+
+The value (as a multiplicand) used to estimate the needed memory to execute the requested JIT transformation. This is useful when trying to prevent memory exhaustion and preserve resources for other requests.
+Setting this value too high would overestimate the needed memory while setting it to low may not prevent memory exhaustion at all.
+Recommended settings would be between 1.7 and 2.1.
+Setting the value to 0, '' or null will disable the feature.
+Default value is null (disabled).
 
 ## Updating
 
