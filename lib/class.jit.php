@@ -95,7 +95,12 @@ class JIT extends Symphony
 
             // figure out whether to cache the image or not
             if ($this->caching) {
-                $this->cacheImage($image, $param);
+                try {
+                    $this->cacheImage($image, $param);
+                }
+                catch (\Exception $ex) {
+                    static::Log()->pushExceptionToLog($ex, true);
+                }
             }
 
             // display the image
