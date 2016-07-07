@@ -503,7 +503,7 @@ class JIT extends Symphony
         // If $this->caching is enabled, and a cache file doesn't already exist,
         // save the JIT image to CACHE using the Quality setting from Symphony's
         // Configuration.
-        if (!file_exists($parameters['cached_image'])) {
+        if ($this->caching && !file_exists($parameters['cached_image'])) {
             if (!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
                 throw new JITGenerationError('Error generating image, failed to create cache file.');
             }
