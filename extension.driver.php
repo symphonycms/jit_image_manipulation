@@ -69,16 +69,11 @@ class extension_JIT_Image_Manipulation extends Extension
             }
             // Create workspace directory
             General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory'));
-            // Now add Configuration values
-            if (Symphony::Configuration()->get('cache', 'image') === null) {
-                Symphony::Configuration()->set('cache', '1', 'image');
-            }
-            if (Symphony::Configuration()->get('quality', 'image') === null) {
-                Symphony::Configuration()->set('quality', '90', 'image');
-            }
-            if (Symphony::Configuration()->get('memory_exhaustion_factor', 'image') === null) {
-                Symphony::Configuration()->set('memory_exhaustion_factor', null, 'image');
-            }
+
+            // Now add configuration values, if they do not exist
+            $this->setDefaultConfigurationValue('cache', '1');
+            $this->setDefaultConfigurationValue('quality', '90');
+            $this->setDefaultConfigurationValue('memory_exhaustion_factor', null);
 
             Symphony::Configuration()->write();
         } catch (Exception $ex) {
@@ -90,6 +85,13 @@ class extension_JIT_Image_Manipulation extends Extension
                 )
             );
             throw new Exception($message);
+        }
+    }
+
+    public function setDefaultConfigurationValue($key, $value)
+    {
+        if (Symphony::Configuration()->get($key, 'image') === null) {
+            Symphony::Configuration()->set($key, $value, 'image');
         }
     }
 
