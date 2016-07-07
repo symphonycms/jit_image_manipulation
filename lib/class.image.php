@@ -156,7 +156,7 @@ class Image
     public static function getMetaInformation($file)
     {
         if (!$array = getimagesize($file)) {
-            throw new JIT\JITException('Unable to retreive image size information for ' . $file);
+            throw new JIT\JITException('Unable to retrieve image size information for ' . $file);
         }
 
         $meta = array();
