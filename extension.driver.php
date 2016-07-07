@@ -522,18 +522,6 @@ class extension_JIT_Image_Manipulation extends Extension
         $div->appendChild($duplicator);
         $group->appendChild($div);
 
-        // checkbox to disable regular rules
-        $label = Widget::Label();
-        $input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
-        if (Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-        $help = new XMLElement('i', '<strong>' . __('Warning:') . '</strong> ' . __('this includes backend image previews using dynamic URLs. Consider making a named recipe for backend image previews.'));
-        $label->setAttribute('class', 'inline-help');
-        $label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only') . '<br />' . $help->generate());
-
-        $group->appendChild($label);
-
         // checkbox to disable up-scaling
         $label = Widget::Label();
         $input = Widget::Input('settings[image][disable_upscaling]', 'yes', 'checkbox');
@@ -551,6 +539,19 @@ class extension_JIT_Image_Manipulation extends Extension
         }
         $label->setValue($input->generate() . ' ' . __('Prevent ISP proxy transformation'));
         $group->appendChild($label);
+
+        // checkbox to disable regular rules
+        $label = Widget::Label();
+        $input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
+        if (Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') {
+            $input->setAttribute('checked', 'checked');
+        }
+        $label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only'));
+        $help = new XMLElement('p', '<strong>' . __('Warning:') . '</strong> ' . __('this includes backend image previews using dynamic URLs. Consider making a named recipe for backend image previews.'));
+        $help->setAttribute('class', 'help');
+
+        $group->appendChild($label);
+        $group->appendChild($help);
 
         // text input to allow external request origins
         $label = Widget::Label(__('Add Cross-Origin Header'));
