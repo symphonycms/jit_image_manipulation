@@ -376,7 +376,7 @@ class Image
         }
 
         // Turn interlacing on for JPEG or PNG only
-        if ($interlacing && ($output == IMAGETYPE_JPEG || $output == IMAGETYPE_PNG)) {
+        if ($interlacing && ($output === IMAGETYPE_JPEG || $output === IMAGETYPE_PNG)) {
             imageinterlace($this->_resource);
         }
 
