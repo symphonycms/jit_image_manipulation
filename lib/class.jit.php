@@ -440,6 +440,8 @@ class JIT extends Symphony
             if (!$image instanceof \Image) {
                 throw new JITGenerationError('Could not load image');
             }
+        } catch (JITGenerationError $ex) {
+            throw $ex;
         } catch (Exception $ex) {
             throw new JITGenerationError($ex->getMessage());
         }
