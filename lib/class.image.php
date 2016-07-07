@@ -390,11 +390,11 @@ class Image
                 break;
 
             case IMAGETYPE_JPEG:
-            default:
+            case null:
                 return imagejpeg($this->_resource, $dest, $quality);
                 break;
         }
 
-        return false;
+        throw new JIT\JITException('Invalid image resource output supplied: '. $output);
     }
 }
