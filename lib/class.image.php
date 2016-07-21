@@ -64,8 +64,9 @@ class Image
         $gateway->setopt(CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
         // get the raw body response, ignore errors
         $response = @$gateway->exec();
+        $info = $gateway->getInfoLast();
 
-        if ($response === false) {
+        if ($response === false || (int)$info['http_code'] !== 200) {
             throw new JIT\JITException(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
         }
 
