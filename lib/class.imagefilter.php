@@ -47,9 +47,8 @@ abstract class ImageFilter implements ImageFilterInterface
         return array($width, $height);
     }
 
-    protected static function __fill(&$res, &$dst, $colour = null)
+    public static function fill(&$res, &$dst, $colour = null)
     {
-
         if (!$colour || strlen(trim($colour)) === 0) {
             $tr_idx = imagecolortransparent($res);
             if ($tr_idx >= 0) {
@@ -80,22 +79,8 @@ abstract class ImageFilter implements ImageFilterInterface
         }
     }
 
-    protected static function __copy($src, &$dst, $resize = true)
+    public static function calculateDestSrcXY($width, $height, $src_w, $src_h, $dst_w, $dst_h, $position = self::TOP_LEFT)
     {
-        $w = imagesx($src);
-        $h = imagesy($src);
-
-        if ($resize) {
-            $dst = imagecreatetruecolor($w, $h);
-        }
-        imagecopy($dst, $src, 0, 0, 0, 0, $w, $h);
-
-        return $dst;
-    }
-
-    protected static function __calculateDestSrcXY($width, $height, $src_w, $src_h, $dst_w, $dst_h, $position = self::TOP_LEFT)
-    {
-
         $dst_x = $dst_y = 0;
         $src_x = $src_y = 0;
 

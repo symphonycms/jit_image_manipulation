@@ -62,10 +62,10 @@ class FilterResizeAndCrop extends JIT\ImageFilter
         }
 
         $tmp = imagecreatetruecolor($width, $height);
-        static::__fill($resource, $tmp, $settings['settings']['background']);
+        static::fill($resource, $tmp, $settings['settings']['background']);
 
         // Find crop according to resize (dst) size
-        list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($width, $height, $dst_w, $dst_h, $dst_w, $dst_h, $settings['settings']['position']);
+        list($src_x, $src_y, $dst_x, $dst_y) = static::calculateDestSrcXY($width, $height, $dst_w, $dst_h, $dst_w, $dst_h, $settings['settings']['position']);
 
         // Project dst values onto src
         $dst_x = (int)round($src_w / $dst_w * $dst_x);

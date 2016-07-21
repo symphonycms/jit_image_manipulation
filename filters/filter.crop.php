@@ -45,9 +45,9 @@ class FilterCrop extends JIT\ImageFilter
         list($dst_w, $dst_h) = static::findAspectRatioValues($width, $height, $src_w, $src_h);
 
         $tmp = imagecreatetruecolor($dst_w, $dst_h);
-        static::__fill($resource, $tmp, $settings['settings']['background']);
+        static::fill($resource, $tmp, $settings['settings']['background']);
 
-        list($src_x, $src_y, $dst_x, $dst_y) = static::__calculateDestSrcXY($dst_w, $dst_h, $src_w, $src_h, $src_w, $src_h, $settings['settings']['position']);
+        list($src_x, $src_y, $dst_x, $dst_y) = static::calculateDestSrcXY($dst_w, $dst_h, $src_w, $src_h, $src_w, $src_h, $settings['settings']['position']);
 
         imagecopyresampled($tmp, $resource, $src_x, $src_y, $dst_x, $dst_y, $src_w, $src_h, $src_w, $src_h);
 
