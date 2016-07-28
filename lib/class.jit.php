@@ -397,12 +397,16 @@ class JIT extends Symphony
         return $image_path;
     }
 
-    public function sendImageHeaders($parameters)
+    public function sendImageHeaders(array $parameters)
     {
         // Send debug headers
         if (static::isLoggedIn()) {
             header('X-jit-mode: ' . $parameters['mode']);
             header('X-jit-cache: ' . $parameters['cache']);
+            if ($this->caching) {
+                header('X-jit-cache-file: ' . basename($parameters['cached_image']));
+                header('X-jit-cache-invalidated: ' . (isset($parameters['cached_invalidated']) ? '1' : '0'));
+            }
         }
 
         // PHP's image type
