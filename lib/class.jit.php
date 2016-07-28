@@ -260,6 +260,44 @@ class JIT extends Symphony
     }
 
     /**
+     * Given the raw image url, normally coming from the request, this function
+     * will ensure that the correct protocol is applied, defaulting to http.
+     *
+     * @param string $image
+     *  The image url
+     * @return string
+     *  The normalized url
+     */
+    public function normalizeExternalImageUrl($image)
+    {
+        $image_url = null;
+        if (preg_match('/^https?:\/\/?/i', $image)) {
+            // User agent will reduce multiple slashes (//) after the protocol.
+            // This replacement will take this fact into account
+            $image_url = preg_replace('/^(https?:)\/([^\/])(.+)$/i', '$1//$2$3', $image);
+        }
+        else {
+            $image_url = "http://$image";
+        }
+        return $image_url;
+    }
+
+    /**
+     * Given the raw image path, normally coming from the request, this function
+     * will ensure that the relative path is a complete absolute path, relative
+     * to the `WORKSPACE` path.
+     *
+     * @param string $image
+     *  The image relative path
+     * @return string
+     *  The normalized path
+     */
+    public function normalizeLocalImagePath($image)
+    {
+        return WORKSPACE . '/' . $image;
+    }
+
+    /**
      * Given the parsed parameters, this function will go and grab
      * the desired image, whether it be local, or external.
      *
@@ -270,14 +308,7 @@ class JIT extends Symphony
     {
         // Fetch external images
         if ($parameters['settings']['external'] === true) {
-            if (preg_match('/^https?:\/\/?/i', $parameters['image'])) {
-                // User agent will reduce multiple slashes (//) after the protocol.
-                // This replacement will take this fact into account
-                $image_path = preg_replace('/^(https?:)\/([^\/])(.+)$/i', '$1//$2$3', $parameters['image']);
-            }
-            else {
-                $image_path = "http://{$parameters['image']}";
-            }
+            $image_path = $this->normalizeExternalImageUrl($parameters['image']);
 
             // Image is external, check to see that it is a trusted source
             $rules = @file(WORKSPACE . '/jit-image-manipulation/trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
