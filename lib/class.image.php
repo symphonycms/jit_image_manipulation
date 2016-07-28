@@ -87,7 +87,8 @@ class Image
      * Given a path to an image, `$image`, this function will verify it's
      * existence, and generate a resource for use with PHP's image functions
      * based off the file's type (.gif, .jpg, .png).
-     * Images must be RGB, CMYK jpg's are not supported due to GD limitations.
+     * If you are running a GD version less than 2.0.22
+     * images must be RGB, CMYK jpg's are not supported due to GD limitations.
      *
      * @param string $image
      *  The path to the file
