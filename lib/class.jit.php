@@ -68,66 +68,110 @@ class JIT extends Symphony
         $param = $this->parseParameters($_GET['param']);
         $param['destination'] = isset($_GET['save']);
 
+        // get the actual image path
+        $param['image_path'] = $this->fetchImagePath($param);
+
         // is this thing cached?
-        if ($image = $this->isImageAlreadyCached($param)) {
+        if ($image = $this->fetchValidImageCache($param)) {
             $param['cache'] = 'HIT';
-            $param['type'] = $image->Meta()->type;
             // prepare caching headers
             $this->sendImageHeaders($param);
-            return $this->displayImage($image);
+            // send image
+            $this->displayImage($image);
+            // end
+            return;
         }
 
         $param['cache'] = !$this->caching ? 'DISABLED' : 'MISS';
 
-        // get the actual image
-        $image = $this->fetchImagePath($param);
-
-        if ($image) {
+        if ($param['image_path']) {
             // fetch image
-            $image_resource = $this->fetchImage($image, $param);
+            $image_resource = $this->fetchImage($param);
 
             // apply the filter
             $image = $this->applyFilterToImage($image_resource, $param);
 
-            // send all headers
-            $param['type'] = $image->Meta()->type;
-            $this->sendImageHeaders($param);
-
-            // figure out whether to cache the image or not
-            if ($this->caching) {
-                try {
-                    $this->cacheImage($image, $param);
-                }
-                catch (\Exception $ex) {
-                    static::Log()->pushExceptionToLog($ex, true);
-                }
+            // Cache images, if activated, and log any errors
+            try {
+                $this->cacheImage($image, $param);
+            } catch (\Exception $ex) {
+                static::Log()->pushExceptionToLog($ex, true);
             }
 
+            // send all headers
+            $this->sendImageHeaders($param);
+
             // display the image
-            return $this->displayImage($image);
+            $this->displayImage($image);
         }
-        return false;
     }
 
     /**
-     * Given the parameters, check to see if this image is already in
-     * the cache.
+     * Given the parameters, tries to load the wanted image from cache.
+     * Returns null when not found or if the cache is not valid anymore.
+     * Returns false when cache is disabled
      *
      * @param array $parameters
-     * @return boolean|array
+     * @return JIT\Image
      */
-    public function isImageAlreadyCached(array &$parameters)
+    public function fetchValidImageCache(array &$parameters)
     {
         if (!$this->caching) {
             return false;
         }
+        // Create cache file path
         $file = $this->createCacheFilename($parameters['image']);
-        if (@file_exists($file)) {
-            $parameters['last_modified'] = @filemtime(WORKSPACE . '/'. $parameters['image']);
-            $parameters['cached_image'] = $file;
-            return @\Image::load($file);
+
+        // Do we have a cache file ?
+        if (@file_exists($file) && @is_file($file)) {
+            // Validate that the cache is more recent than the original
+            $cache_mtime = @filemtime($file);
+            $original_mtime = 0;
+            if ($parameters['settings']['external'] === true) {
+                try {
+                    $image_url = $this->normalizeExternalImageUrl($parameters['image']);
+                    $infos = \Image::fetchHttpCachingInfos($image_url);
+                    $original_mtime = strtotime($infos['last_modified']);
+                } catch (Exception $ex) {
+                    $original_mtime = 0;
+                }
+            } else {
+                $image_path = $this->normalizeLocalImagePath($parameters['image']);
+                if (@file_exists($image_path) && @is_file($image_path)) {
+                    $original_mtime = @filemtime($image_path);
+                }
+            }
+
+            // Original file's mtime is not determined or is more recent than cache
+            if ($original_mtime === 0 || $original_mtime > $cache_mtime) {
+                // Delete cache
+                General::deleteFile($file);
+                // Export the invalidation state
+                $parameters['cached_invalidated'] = true;
+                // Cache is invalid
+                return null;
+            }
+
+            // Load the cache file
+            $image = @\Image::load($file);
+
+            if ($image) {
+
+                // Export the last modified time
+                $parameters['last_modified'] = $cache_mtime;
+
+                // Export the cache file path
+                $parameters['cached_image'] = $file;
+
+                // Export the $image's type
+                $parameters['type'] = $image->Meta()->type;
+
+                // This fixes transparency issues
+                \JIT\ImageFilter::fill($image->Resource(), $image->Resource());
+                return $image;
+            }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -345,27 +389,9 @@ class JIT extends Symphony
                 );
             }
 
-            $parameters['last_modified'] = strtotime(\Image::getHttpHeaderFieldValue($image_path, 'Last-Modified'));
-
-        // If the image is not external check to see when the image was last modified
+        // If the image is not external
         } else {
-            $image_path = WORKSPACE . '/' . $parameters['image'];
-            $parameters['last_modified'] = is_file($image_path) ? filemtime($image_path) : null;
-        }
-
-        // If $this->caching is enabled, check to see that the cached file is still valid.
-        if ($this->caching === true) {
-            $cache_file = $this->createCacheFilename($parameters['image']);
-            // Set the cached image path, worst case scenario an image will be saved here
-            // if no valid cache exists.
-            $parameters['cached_image'] = $cache_file;
-
-            // Cache has expired or doesn't exist
-            if (is_file($cache_file) && (filemtime($cache_file) < $parameters['last_modified'])) {
-                unlink($cache_file);
-            } elseif (is_file($cache_file)) {
-                touch($cache_file);
-            }
+            $image_path = $this->normalizeLocalImagePath($parameters['image']);
         }
 
         return $image_path;
@@ -460,17 +486,24 @@ class JIT extends Symphony
         }
     }
 
-    public function fetchImage($image_path, $parameters)
+    public function fetchImage(array &$parameters)
     {
         // There is mode, or the image to JIT is external, so call `Image::load` or
         // `Image::loadExternal` to load the image into the Image class
         try {
-            $method = 'load' . ($parameters['settings']['external'] === true ? 'External' : null);
-            $image = call_user_func_array(array('Image', $method), array($image_path));
+            $method = 'load' . ($parameters['settings']['external'] === true ? 'External' : '');
+            $image = call_user_func_array(array('Image', $method), array($parameters['image_path']));
 
             if (!$image instanceof \Image) {
                 throw new JITGenerationError('Could not load image');
             }
+
+            // Export the last modified time
+            $parameters['last_modified'] = $image->ModifiedTime();
+
+            // Export the $image's type
+            $parameters['type'] = $image->Meta()->type;
+
         } catch (JITGenerationError $ex) {
             throw $ex;
         } catch (Exception $ex) {
@@ -571,18 +604,27 @@ class JIT extends Symphony
         return (int)(($destination + 1) * $factor);
     }
 
-    public function cacheImage(\Image $image, $parameters)
+    public function cacheImage(\Image $image, array &$parameters)
     {
         // If $this->caching is enabled, and a cache file doesn't already exist,
         // save the JIT image to CACHE using the Quality setting from Symphony's
         // Configuration.
-        if ($this->caching && !file_exists($parameters['cached_image'])) {
-            if (!$image->save($parameters['cached_image'], intval($this->settings['quality']))) {
-                throw new JITGenerationError('Error generating image, failed to create cache file.');
+        if ($this->caching) {
+            $file = $this->createCacheFilename($parameters['image']);
+            if (!empty($file) && !@file_exists($file)) {
+                if (!$image->save($file, intval($this->settings['quality']))) {
+                    throw new JITGenerationError('Error generating image, failed to create cache file.');
+                }
+
+                // Overwrite the last_modified time with our cached image mtime
+                $parameters['last_modified'] = @filemtime($file);
+                // Export the cache file path
+                $parameters['cached_image'] = $file;
+
+                // Try to set proper rights on the file
+                $perm = Symphony::Configuration()->get('write_mode', 'file');
+                @chmod($file, intval($perm, 8));
             }
-            // Try to set proper rights on the file
-            $perm = Symphony::Configuration()->get('write_mode', 'file');
-            @chmod($parameters['cached_image'], intval($perm, 8));
         }
     }
 
