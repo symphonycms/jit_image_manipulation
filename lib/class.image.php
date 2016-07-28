@@ -4,15 +4,17 @@ class Image
 {
     private $_resource;
     private $_meta;
+    private $_truepath;
 
     const DEFAULT_QUALITY = 80;
     const DEFAULT_INTERLACE = true;
     const CURL_MAXREDIRS = 6;
 
-    protected function __construct($resource, stdClass $meta)
+    protected function __construct($resource, stdClass $meta, $truepath)
     {
         $this->_resource = $resource;
         $this->_meta = $meta;
+        $this->_truepath = $truepath;
     }
 
     public function __destruct()
@@ -35,6 +37,19 @@ class Image
     public function Meta()
     {
         return $this->_meta;
+    }
+
+    public function TruePath()
+    {
+        return $this->_truepath;
+    }
+
+    public function ModifiedTime()
+    {
+        if ($this->_truepath == null) {
+            return 0;
+        }
+        return @filemtime($this->_truepath);
     }
 
     /**
@@ -183,9 +198,7 @@ class Image
             );
         }
 
-        $obj = new self($resource, $meta);
-
-        return $obj;
+        return new self($resource, $meta, $image);
     }
 
     /**
