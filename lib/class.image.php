@@ -5,6 +5,7 @@ class Image
     private $_resource;
     private $_meta;
     private $_truepath;
+    private $_temppath;
 
     const DEFAULT_QUALITY = 80;
     const DEFAULT_INTERLACE = true;
@@ -20,7 +21,10 @@ class Image
     public function __destruct()
     {
         if (is_resource($this->_resource)) {
-            imagedestroy($this->_resource);
+            @imagedestroy($this->_resource);
+        }
+        if (@is_file($this->_temppath)) {
+            General::deleteFile($this->_temppath);
         }
     }
 
@@ -130,13 +134,20 @@ class Image
         $gateway->flush();
 
         // Symphony 2.4 enhances the TMP constant so it can be relied upon
-        $dest = tempnam(TMP, 'IMAGE');
+        $temppath = tempnam(TMP, 'IMAGE');
 
-        if (!file_put_contents($dest, $response)) {
+        if (!@file_put_contents($temppath, $response)) {
+            General::deleteFile($temppath);
             throw new JIT\JITException(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
         }
 
-        return self::load($dest);
+        // Load the image as a local resource
+        $image = static::load($temppath);
+
+        // This will insure that the temp file gets deleted later on
+        $image->_temppath = $temppath;
+
+        return $image;
     }
 
     /**
