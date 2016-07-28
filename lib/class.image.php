@@ -4,7 +4,6 @@ class Image
 {
     private $_resource;
     private $_meta;
-    private static $_result;
 
     const DEFAULT_QUALITY = 80;
     const DEFAULT_INTERLACE = true;
@@ -36,6 +35,48 @@ class Image
     public function Meta()
     {
         return $this->_meta;
+    }
+
+    /**
+     * Sends a HEAD request and returns headers dealing with caching
+     * and invalidating this url
+     *
+     * @param string $url
+     * @return array
+     *  Contains the cache related http headers
+     */
+    public static function fetchHttpCachingInfos($url)
+    {
+        // create the Gateway object
+        $gateway = new Gateway();
+        // set our url
+        $gateway->init($url);
+        // set some options
+        $gateway->setopt(CURLOPT_URL, $url);
+        $gateway->setopt(CURLOPT_RETURNTRANSFER, true);
+        $gateway->setopt(CURLOPT_HEADER, true);
+        $gateway->setopt(CURLOPT_NOBODY, true);
+        $gateway->setopt(CURLOPT_FOLLOWLOCATION, true);
+        $gateway->setopt(CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
+        // get the raw head response, ignore errors
+        $head = @$gateway->exec();
+        $info = $gateway->getInfoLast();
+        // Clean up
+        $gateway->flush();
+
+        if ($head === false || (int)$info['http_code'] !== 200) {
+            throw new JIT\JITException(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
+        }
+
+        $headers = self::parseHttpHeaderFields($head);
+
+        return array(
+            'last_modified' => isset($headers['Last-Modified']) ? $headers['Last-Modified'] : null,
+            'expires' => isset($headers['Expires']) ? $headers['Expires'] : null,
+            'date' => isset($headers['Date']) ? $headers['Date'] : null,
+            'etag' => isset($headers['ETag']) ? $headers['ETag'] : null,
+            'cache_control' => isset($headers['Cache-Control']) ? $headers['Cache-Control'] : null,
+        );
     }
 
     /**
@@ -169,95 +210,6 @@ class Image
         $meta['channels'] = isset($array['channels']) ? $array['channels'] : false;
 
         return (object)$meta;
-    }
-
-    /**
-     * Get the HTTP response code of a resource
-     *
-     * @param string $url
-     * @return integer - HTTP response code
-     */
-    public static function getHttpResponseCode($url)
-    {
-        $head = self:: getHttpHead($url);
-        return $head['info']['http_code'];
-    }
-
-    /**
-     * Get the value of a named HTTP response header field
-     *
-     * @param string $url
-     * @param string $field - name of the header field
-     * @return string - value of the header field
-     */
-    public static function getHttpHeaderFieldValue($url, $field)
-    {
-        $headers = self::getHttpHeaders($url);
-
-        if (isset($headers[$field])) {
-            return $headers[$field];
-        }
-
-        return '';
-    }
-
-    /**
-     * Get all HTTP response headers as an array
-     *
-     * @param string $url
-     * @return array - response headers
-     */
-    public static function getHttpHeaders($url)
-    {
-        $head = self:: getHttpHead($url);
-        return $head['headers'];
-    }
-
-    /**
-     * Get all HTTP response headers and info as an array of arrays.
-     *
-     * @since 1.17
-     *
-     * @param string $url
-     * @return array
-     *  Contains the headers and the infos
-     */
-    public static function getHttpHead($url)
-    {
-        // Check if we have a cached result
-        if (isset(self::$_result[$url])) {
-            return self::$_result[$url];
-        }
-
-        // create the Gateway object
-        $gateway = new Gateway();
-        // set our url
-        $gateway->init($url);
-        // set some options
-        $gateway->setopt(CURLOPT_URL, $url);
-        $gateway->setopt(CURLOPT_RETURNTRANSFER, true);
-        $gateway->setopt(CURLOPT_HEADER, true);
-        $gateway->setopt(CURLOPT_NOBODY, true);
-        $gateway->setopt(CURLOPT_FOLLOWLOCATION, true);
-        $gateway->setopt(CURLOPT_MAXREDIRS, Image::CURL_MAXREDIRS);
-        // get the raw head response, ignore errors
-        $head = @$gateway->exec();
-        // Get all info
-        $result = array(
-            'headers' => array(),
-            'info' => $gateway->getInfoLast()
-        );
-        // Clean up
-        $gateway->flush();
-
-        if ($head !== false) {
-            $result['headers'] = self::parseHttpHeaderFields($head);
-        }
-
-        // Save for subsequent requests
-        self::$_result[$url] = $result;
-
-        return $result;
     }
 
     /**
