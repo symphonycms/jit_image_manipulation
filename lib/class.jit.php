@@ -126,21 +126,7 @@ class JIT extends Symphony
         if (@file_exists($file) && @is_file($file)) {
             // Validate that the cache is more recent than the original
             $cache_mtime = @filemtime($file);
-            $original_mtime = 0;
-            if ($parameters['settings']['external'] === true) {
-                try {
-                    $image_url = $this->normalizeExternalImageUrl($parameters['image']);
-                    $infos = \Image::fetchHttpCachingInfos($image_url);
-                    $original_mtime = strtotime($infos['last_modified']);
-                } catch (Exception $ex) {
-                    $original_mtime = 0;
-                }
-            } else {
-                $image_path = $this->normalizeLocalImagePath($parameters['image']);
-                if (@file_exists($image_path) && @is_file($image_path)) {
-                    $original_mtime = @filemtime($image_path);
-                }
-            }
+            $original_mtime = $this->fetchLastModifiedTime($parameters);
 
             // Original file's mtime is not determined or is more recent than cache
             if ($original_mtime === 0 || $original_mtime > $cache_mtime) {
@@ -172,6 +158,35 @@ class JIT extends Symphony
             }
         }
         return null;
+    }
+
+    /**
+     * Given the parameters, tries to fetch the last modified time
+     * of the image. If the image is local, filemtime is used.
+     * If the image is external, a HEAD request is made on the remote server
+     * and the Last-Modified header is parsed
+     *
+     * @param array $parameters
+     * @return JIT\Image
+     */
+    public function fetchLastModifiedTime(array $parameters)
+    {
+        $original_mtime = 0;
+        if ($parameters['settings']['external'] === true) {
+            try {
+                $image_url = $this->normalizeExternalImageUrl($parameters['image']);
+                $infos = \Image::fetchHttpCachingInfos($image_url);
+                $original_mtime = strtotime($infos['last_modified']);
+            } catch (Exception $ex) {
+                $original_mtime = 0;
+            }
+        } else {
+            $image_path = $this->normalizeLocalImagePath($parameters['image']);
+            if (@file_exists($image_path) && @is_file($image_path)) {
+                $original_mtime = @filemtime($image_path);
+            }
+        }
+        return $original_mtime;
     }
 
     /**
