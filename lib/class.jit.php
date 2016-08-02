@@ -31,8 +31,8 @@ class JIT extends Symphony
     public static $available_filters = array();
 
     /**
-     * This function returns an instance of the Frontend
-     * class. It is the only way to create a new Frontend, as
+     * This function returns an instance of the JIT
+     * class. It is the only way to create a new JIT, as
      * it implements the Singleton interface
      *
      * @return JIT
