@@ -33,6 +33,7 @@ A complete listing of the possible config settings:
     'allow_origin' => '',               // string (editable)
     'max_age' => 259200,                // integer (hidden)
     'memory_exhaustion_factor' => ''    // string/float/int (hidden)
+    'cache_invalidation_odds' => ''     // string/float (hidden)
 ),
 ```
 
@@ -70,6 +71,17 @@ The value (as a multiplicand) used to estimate the needed memory to execute the 
 Setting this value too high would overestimate the needed memory while setting it to low may not prevent memory exhaustion at all.
 Recommended settings would be between 1.7 and 2.1.
 Setting the value to 0, '' or null will disable the feature.
+Default value is null (disabled).
+
+### cache_invalidation_odds
+
+Setting this value will make the cache invalidation checks more or less frequent.
+If you care more about performance than serving a validated cache file, you can control the odds of doing a cache invalidation check.
+We will generate a random number between 0 and 1 and compare it against your odds value.
+By setting it to 0.1, the cache should only be validated 10% of the time.
+In contrast, setting it to 0.9 would make the check happen really frequently.
+Setting the value to 1, '' or null will disable the feature and always force the check.
+Setting the value to 0 will prevent any cache validation.
 Default value is null (disabled).
 
 ## Updating

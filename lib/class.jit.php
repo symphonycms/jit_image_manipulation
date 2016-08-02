@@ -124,25 +124,32 @@ class JIT extends Symphony
 
         // Do we have a cache file ?
         if (@file_exists($file) && @is_file($file)) {
-            // Validate that the cache is more recent than the original
             $cache_mtime = @filemtime($file);
-            $original_mtime = $this->fetchLastModifiedTime($parameters);
+            // Validate that the cache is more recent than the original
+            if ($this->shouldDoCacheInvalidation()) {
+                $original_mtime = $this->fetchLastModifiedTime($parameters);
 
-            // Original file's mtime is not determined or is more recent than cache
-            if ($original_mtime === 0 || $original_mtime > $cache_mtime) {
-                // Delete cache
-                General::deleteFile($file);
+                // Original file's mtime is not determined or is more recent than cache
+                if ($original_mtime === 0 || $original_mtime > $cache_mtime) {
+                    // Delete cache
+                    General::deleteFile($file);
+                    // Export the invalidation state
+                    $parameters['cached_invalidated'] = 'invalidated';
+                    // Cache is invalid
+                    return null;
+                } else {
+                    // Export the invalidation state
+                    $parameters['cached_invalidated'] = 'validated';
+                }
+            } else {
                 // Export the invalidation state
-                $parameters['cached_invalidated'] = true;
-                // Cache is invalid
-                return null;
+                $parameters['cached_invalidated'] = 'ignored';
             }
 
             // Load the cache file
             $image = @\Image::load($file);
 
             if ($image) {
-
                 // Export the last modified time
                 $parameters['last_modified'] = $cache_mtime;
 
@@ -157,7 +164,28 @@ class JIT extends Symphony
                 return $image;
             }
         }
+        // No valid cache found
         return null;
+    }
+
+    /**
+     * This method returns true when this request should check if the
+     * cache is still valid. By default, this method always returns true.
+     * If the `cache_invalidation_odds` is properly set, it returns true
+     * if the odds are greater than a random number.
+     *
+     * @return boolean
+     *  true if cache validation should occur, false otherwise
+     */
+    public function shouldDoCacheInvalidation()
+    {
+        $odds = Symphony::Configuration()->get('cache_invalidation_odds', 'image');
+        if (!is_numeric($odds)) {
+            return true;
+        }
+        $odds = min((float)$odds, 1.0);
+        $random = (float)mt_rand() / (float)mt_getrandmax();
+        return $odds >= $random;
     }
 
     /**
@@ -421,7 +449,9 @@ class JIT extends Symphony
             header('X-jit-cache: ' . $parameters['cache']);
             if ($this->caching) {
                 header('X-jit-cache-file: ' . basename($parameters['cached_image']));
-                header('X-jit-cache-invalidated: ' . (isset($parameters['cached_invalidated']) ? '1' : '0'));
+                if (isset($parameters['cached_invalidated'])) {
+                    header('X-jit-cache-validation: ' . $parameters['cached_invalidated']);
+                }
             }
         }
 
