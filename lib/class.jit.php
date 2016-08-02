@@ -368,6 +368,7 @@ class JIT extends Symphony
         // Fetch external images
         if ($parameters['settings']['external'] === true) {
             $image_path = $this->normalizeExternalImageUrl($parameters['image']);
+            $protocolLess = str_replace(array('http://', 'https://'), null, $image_path);
 
             // Image is external, check to see that it is a trusted source
             $rules = @file(WORKSPACE . '/jit-image-manipulation/trusted-sites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -383,15 +384,15 @@ class JIT extends Symphony
                         $allowed = true;
                         break;
                     } // Wildcard after domain
-                    elseif (substr($rule, -1) == '*' && strncasecmp($parameters['image'], $rule, strlen($rule) - 1) == 0) {
+                    elseif (substr($rule, -1) == '*' && strncasecmp($protocolLess, $rule, strlen($rule) - 1) == 0) {
                         $allowed = true;
                         break;
                     } // Match the start of the rule with file path
-                    elseif (strncasecmp($rule, $parameters['image'], strlen($rule)) === 0) {
+                    elseif (strncasecmp($rule, $protocolLess, strlen($rule)) === 0) {
                         $allowed = true;
                         break;
                     } // Match subdomain wildcards
-                    elseif (substr($rule, 0, 1) == '*' && preg_match('/(' . preg_quote(substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2), '/') . ')/', $parameters['image'])) {
+                    elseif (substr($rule, 0, 1) == '*' && preg_match('/(' . preg_quote(substr((substr($rule, -1) == '*' ? rtrim($rule, "/*") : $rule), 2), '/') . ')/', $protocolLess)) {
                         $allowed = true;
                         break;
                     }
@@ -400,7 +401,7 @@ class JIT extends Symphony
 
             if ($allowed == false) {
                 throw new JITDomainNotAllowed(
-                    sprintf('Error: Connecting to %s is not permitted.', \General::sanitize($parameters['image']))
+                    sprintf('Error: Connecting to %s is not permitted.', \General::sanitize($image_path))
                 );
             }
 
