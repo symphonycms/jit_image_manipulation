@@ -495,7 +495,7 @@ class JIT extends Symphony
             $maxage = isset($this->settings['max_age']) ? \General::intval($this->settings['max_age']) : 60 * 60 * 24 * 3;
             if (!empty($maxage)) {
                 // Add max-age directive at the end
-                $cacheControl .= '; max-age=' . $maxage;
+                $cacheControl .= ', max-age=' . $maxage;
             }
 
             header('Last-Modified: ' . $last_modified_gmt);
