@@ -16,6 +16,9 @@
 		</author>
 	</authors>
 	<releases>
+		<release version="1.46" date="2016-10-26" min="2.6.0" max="2.x.x">
+			- Fixed a XSS vector (thanks @dommar04)
+		</release>
 		<release version="1.45" date="2016-03-21" min="2.6.0" max="2.x.x">
 			- Add CORS header support (@tmslnz)
 			- Added 'max-age' hidden configuration
