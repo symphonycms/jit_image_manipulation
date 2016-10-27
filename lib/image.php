@@ -186,7 +186,7 @@
 					$param->background,
 					$param->file,
 					(bool)$param->external,
-					$_GET['param']
+					General::sanitize($_GET['param'])
 				), E_NOTICE, true
 			);
 		}
@@ -325,8 +325,9 @@
 		) {
 			// Guess not, return 404.
 			Page::renderStatusCode(Page::HTTP_STATUS_NOT_FOUND);
-			trigger_error(sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file)), E_USER_ERROR);
-			echo sprintf('Image <code>%s</code> could not be found.', str_replace(DOCROOT, '', $original_file));
+			$safeOriginalFile = General::sanitize(str_replace(DOCROOT, '', $original_file));
+			trigger_error(sprintf('Image <code>%s</code> could not be found.', $safeOriginalFile, E_USER_ERROR));
+			echo sprintf('Image <code>%s</code> could not be found.', $safeOriginalFile);
 			exit;
 		}
 		$meta = Image::getMetaInformation($image_path);
