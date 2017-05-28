@@ -1,5 +1,8 @@
 <?php
 
+use JIT\JITException;
+use JIT\JITImageNotFound;
+
 class Image
 {
     private $_resource;
@@ -99,14 +102,12 @@ class Image
     }
 
     /**
-     * This function will attempt to load an image from a remote URL using
-     * CURL. If CURL is not available, `file_get_contents` will attempt to resolve
-     * the given `$uri`. The remote image will be saved into PHP's temporary directory
-     * as determined by `sys_get_temp_dir`. Once the remote image has been
-     * saved to the temp directory, it's path will be passed to `Image::load`
-     * to return an instance of this `Image` class. If the file cannot be found
-     * an Exception is thrown.
+     * This function will attempt to load an image from a remote URL using Symphony's
+     * `Gateway` class. The remote image will be saved temporarily before being
+     * passed to `Image::load` to return an instance of this `Image` class.
      *
+     * @throws JITImageNotFound
+     * @throws JITException If the image can't be written.
      * @param string $uri
      *  The URL of the external image to load.
      * @return Image
@@ -127,7 +128,7 @@ class Image
         $info = $gateway->getInfoLast();
 
         if ($response === false || (int)$info['http_code'] !== 200) {
-            throw new JIT\JITException(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
+            throw new JIT\JITImageNotFound(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
         }
 
         // clean up
@@ -138,11 +139,11 @@ class Image
 
         if (!@file_put_contents($temppath, $response)) {
             General::deleteFile($temppath);
-            throw new JIT\JITException(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
+            throw new JIT\JITException('Error writing image to temporary location.');
         }
 
         // Load the image as a local resource
-        $image = static::load($temppath);
+        $image = static::load($temppath, true);
 
         // This will insure that the temp file gets deleted later on
         $image->_temppath = $temppath;
@@ -154,14 +155,20 @@ class Image
      * Given a path to an image, `$image`, this function will verify it's
      * existence, and generate a resource for use with PHP's image functions
      * based off the file's type (.gif, .jpg, .png).
-     * If you are running a GD version less than 2.0.22
-     * images must be RGB, CMYK jpg's are not supported due to GD limitations.
+     * If you are running a GD version less than 2.0.22 images must be RGB,
+     * CMYK jpg's are not supported due to GD limitations.
      *
+     * @throws JITImageNotFound
+     * @throws JITException if image can't be processed, or is unsupported.
+     * @throws JITGenerationError
      * @param string $image
      *  The path to the file
+     * @param boolean $skipExistenceCheck (optional)
+     *  If set to `true`, this method will not verify the file exists before
+     *  starting to load it.
      * @return Image
      */
-    public static function load($image)
+    public static function load($image, $skipExistenceCheck = false)
     {
         if (!is_file($image) || !is_readable($image)) {
             throw new JIT\JITImageNotFound(
@@ -179,18 +186,20 @@ class Image
 
             // JPEG
             case IMAGETYPE_JPEG:
-                // GD 2.0.22 supports basic CMYK to RGB conversion.
+                // Check to see if we can handle CMYK jpeg's, available in GD 2.0.22+
                 // RE: https://github.com/symphonycms/jit_image_manipulation/issues/47
-                $gdSupportsCMYK = version_compare(GD_VERSION, '2.0.22', '>=');
-
-                // Can't handle CMYK JPEG files
-                if ($meta->channels > 3 && $gdSupportsCMYK === false) {
+                if ($meta->channels > 3 && version_compare(GD_VERSION, '2.0.22', '>=') === false) {
                     throw new JIT\JITException('Cannot load CMYK JPG images');
 
                     // Can handle CMYK, or image has less than 3 channels.
                 } else {
                     $resource = imagecreatefromjpeg($image);
                 }
+                break;
+
+            // WebP
+            case IMAGETYPE_WEBP:
+                $resource = imagecreatefromwebp($image);
                 break;
 
             // PNG
@@ -226,14 +235,14 @@ class Image
             throw new JIT\JITException('Unable to retrieve image size information for ' . $file);
         }
 
-        $meta = array();
+        $meta = new StdClass;
+        $meta->width = $array[0];
+        $meta->height = $array[1];
+        $meta->type = $array[2];
+        $meta->channels = isset($array['channels']) ? $array['channels'] : false;
+        $meta->mime = $array['mime'];
 
-        $meta['width'] = $array[0];
-        $meta['height'] = $array[1];
-        $meta['type'] = $array[2];
-        $meta['channels'] = isset($array['channels']) ? $array['channels'] : false;
-
-        return (object)$meta;
+        return $meta;
     }
 
     /**
@@ -361,16 +370,16 @@ class Image
         switch ($output) {
             case IMAGETYPE_GIF:
                 return imagegif($this->_resource, $dest);
-                break;
 
             case IMAGETYPE_PNG:
                 return imagepng($this->_resource, $dest, round(9 * ($quality * 0.01)));
-                break;
+
+            case IMAGETYPE_WEBP:
+                return imagewebp($this->resource, $dest, $quality);
 
             case IMAGETYPE_JPEG:
             case null:
                 return imagejpeg($this->_resource, $dest, $quality);
-                break;
         }
 
         throw new JIT\JITException('Invalid image resource output supplied: '. $output);

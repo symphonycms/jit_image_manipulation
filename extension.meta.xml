@@ -28,6 +28,7 @@
 			- Removed support for the undocumented "Direct display" (mode 0)
 			- Added support for forced download via the `?save` query string
 			- Added support to pass protocol for external images
+			- Support WebP (PHP 5.6.25+)
 		</release>
 		<release version="2.0.0" date="2016-04-26" min="2.6.0" max="2.x.x">
 			- JIT image process is it's own Symphony renderer now
