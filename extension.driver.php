@@ -78,7 +78,7 @@ class extension_JIT_Image_Manipulation extends Extension
             Symphony::Configuration()->write();
         } catch (Exception $ex) {
             $message = __(
-                'An error occured while installing %s. %s',
+                'An error occurred while installing %s. %s',
                 array(
                     __('JIT Image Manipulation'),
                     $ex->getMessage()
@@ -114,7 +114,7 @@ class extension_JIT_Image_Manipulation extends Extension
             if (General::realiseDirectory(WORKSPACE . '/jit-image-manipulation', Symphony::Configuration()->get('write_mode', 'directory')) && file_exists(MANIFEST . '/jit-trusted-sites')) {
                 if (!@rename(MANIFEST . '/jit-trusted-sites', WORKSPACE . '/jit-image-manipulation/trusted-sites')) {
                     $message = __(
-                        'An error occured while updating %s. Could not move the trusted file to %s',
+                        'An error occurred while updating %s. Could not move the trusted file to %s',
                         array(
                             __('JIT Image Manipulation'),
                             WORKSPACE . '/jit-image-manipulation/trusted-sites'
@@ -133,7 +133,7 @@ class extension_JIT_Image_Manipulation extends Extension
                 }
             } catch (Exception $ex) {
                 $message = __(
-                    'An error occured while updating %s. %s',
+                    'An error occurred while updating %s. %s',
                     array(
                         __('JIT Image Manipulation'),
                         $ex->getMessage()
@@ -151,7 +151,7 @@ class extension_JIT_Image_Manipulation extends Extension
                 }
             } catch (Exception $ex) {
                 $message = __(
-                    'An error occured while updating %s. %s',
+                    'An error occurred while updating %s. %s',
                     array(
                         __('JIT Image Manipulation'),
                         $ex->getMessage()
@@ -168,7 +168,7 @@ class extension_JIT_Image_Manipulation extends Extension
                 }
             } catch (Exception $ex) {
                 $message = __(
-                    'An error occured while updating %s. %s',
+                    'An error occurred while updating %s. %s',
                     array(
                         __('JIT Image Manipulation'),
                         $ex->getMessage()
@@ -178,27 +178,14 @@ class extension_JIT_Image_Manipulation extends Extension
             }
         }
 
-        if (version_compare($previousVersion, '2.0.1', '<')) {
+        if (version_compare($previousVersion, '2.1.0', '<')) {
             try {
                 // Re-simplify JIT htaccess rule
                 // see c7cd6183ffd15b9a8b7864df2eb29d3c1d96b5f9
                 if ($htaccess->exists()) {
                     $htaccess->simplifyJITAccessRule();
                 }
-            } catch (Exception $ex) {
-                $message = __(
-                    'An error occured while updating %s. %s',
-                    array(
-                        __('JIT Image Manipulation'),
-                        $ex->getMessage()
-                    )
-                );
-                throw new Exception($message);
-            }
-        }
 
-        if (version_compare($previousVersion, '2.0.2', '<')) {
-            try {
                 $maxage = Symphony::Configuration()->get('max-age', 'image');
                 if (!empty($maxage)) {
                     Symphony::Configuration()->set('max_age', $maxage, 'image');
@@ -206,7 +193,7 @@ class extension_JIT_Image_Manipulation extends Extension
                 Symphony::Configuration()->remove('max-age', 'image');
             } catch (Exception $ex) {
                 $message = __(
-                    'An error occured while updating %s. %s',
+                    'An error occurred while updating %s. %s',
                     array(
                         __('JIT Image Manipulation'),
                         $ex->getMessage()
@@ -233,7 +220,7 @@ class extension_JIT_Image_Manipulation extends Extension
             }
         } catch (Exception $ex) {
             $message = __(
-                'An error occured while disabling %s. %s',
+                'An error occurred while disabling %s. %s',
                 array(
                     __('JIT Image Manipulation'),
                     $ex->getMessage()
@@ -309,6 +296,7 @@ class extension_JIT_Image_Manipulation extends Extension
         }
 
         $string .= PHP_EOL ."\t);" . PHP_EOL;
+        $string .= PHP_EOL ."\treturn \$recipes;" . PHP_EOL;
 
         // notify for duplicate recipes handles
         if (!empty($this->recipes_errors)) {

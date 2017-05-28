@@ -4,7 +4,6 @@ namespace JIT;
 
 use Symphony;
 use SymphonyErrorPage;
-use Page;
 use General;
 
 require_once __DIR__ . '/interface.imagefilter.php';
@@ -237,16 +236,18 @@ class JIT extends Symphony
      */
     public function parseParameters($parameter_string)
     {
+        $recipes = array();
         $settings = array();
         $mode = false;
         $image_path = false;
 
-        // Check for matching recipes
+        // Check if we have any recipes
         if (file_exists(WORKSPACE . '/jit-image-manipulation/recipes.php')) {
+            // Included file also defines $recipes...
             include(WORKSPACE . '/jit-image-manipulation/recipes.php');
         }
-        // check to see if $recipes is even available before even checking if it is an array
-        if (!empty($recipes) && is_array($recipes)) {
+        // check to see if we have any recipes
+        if (!empty($recipes)) {
             foreach ($recipes as $recipe) {
                 // Is the mode regex? If so, bail early and let not JIT process it.
                 if ($recipe['mode'] === 'regex' && preg_match($recipe['url-parameter'], $parameter_string)) {
