@@ -257,14 +257,14 @@
 			$label = (!empty($values['name'])) ? $values['name'] : __('New Recipe');
 			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $modes[$mode] . '</span>'));
 			$li->appendChild($header);
-			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
+			$li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", General::sanitize($mode), 'hidden'));
 
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'two columns');
 
 			// Name
 			$label = Widget::Label(__('Name'), null, 'column');
-			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", $values['name']));
+			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", General::sanitize($values['name'])));
 			if(is_array($error) && isset($error['missing'])) {
 				$group->appendChild(Widget::Error($label, $error['missing']));
 			}
@@ -275,7 +275,7 @@
 			// Handle
 			$label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/path/to/my-image.jpg</i>';
 			$label = Widget::Label(__($label_text), null, 'column');
-			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
+			$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", General::sanitize($values['url-parameter'])));
 			if(is_array($error) && isset($error['invalid'])) {
 				$group->appendChild(Widget::Error($label, $error['invalid']));
 			}
@@ -290,10 +290,10 @@
 				$group = new XMLElement('div');
 				$group->setAttribute('class', 'two columns');
 				$label = Widget::Label(__('Width'), null, 'column');
-				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][width]", $values['width']));
+				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][width]", General::sanitize($values['width'])));
 				$group->appendChild($label);
 				$label = Widget::Label(__('Height'), null, 'column');
-				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][height]", $values['height']));
+				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][height]", General::sanitize($values['height'])));
 				$group->appendChild($label);
 				$li->appendChild($group);
 			}
@@ -307,7 +307,7 @@
 				$group->appendChild($label);
 				$label = Widget::Label(__('Background Color'), null, 'column');
 				$label->appendChild(new XMLElement('i', __('Optional')));
-				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][background]", $values['background']));
+				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][background]", General::sanitize($values['background'])));
 				$group->appendChild($label);
 				$li->appendChild($group);
 			}
@@ -315,7 +315,7 @@
 			// regex mode
 			if ($mode === 'regex') {
 				$label = Widget::Label(__('JIT Parameter'));
-				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][jit-parameter]", $values['jit-parameter']));
+				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][jit-parameter]", General::sanitize($values['jit-parameter'])));
 				$li->appendChild($label);
 			}
 
@@ -325,7 +325,7 @@
 			if ($mode !== '0') {
 				$label = Widget::Label(__('Image quality'), null, 'column');
 				$label->appendChild(new XMLElement('i', __('Optional')));
-				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
+				$label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", General::sanitize($values['quality'])));
 				$group->appendChild($label);
 			}
 			if ($mode !== 'regex') {
@@ -415,7 +415,9 @@
 			// checkbox to disable regular rules
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_regular_rules]', 'yes', 'checkbox');
-			if(Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') $input->setAttribute('checked', 'checked');
+			if (Symphony::Configuration()->get('disable_regular_rules', 'image') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
 			$label->setValue($input->generate() . ' ' . __('Disable dynamic URLs and use named recipes only'));
 
 			$group->appendChild($label);
@@ -423,26 +425,30 @@
 			// checkbox to disable up-scaling
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_upscaling]', 'yes', 'checkbox');
-			if (Symphony::Configuration()->get('disable_upscaling', 'image') == 'yes') $input->setAttribute('checked', 'checked');
+			if (Symphony::Configuration()->get('disable_upscaling', 'image') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
 			$label->setValue($input->generate() . ' ' . __('Disable upscaling of images beyond the original size'));
 			$group->appendChild($label);
 			
 			// checkbox to diable proxy transformation of images
 			$label = Widget::Label();
 			$input = Widget::Input('settings[image][disable_proxy_transform]', 'yes', 'checkbox');
-			if (Symphony::Configuration()->get('disable_proxy_transform', 'image') == 'yes') $input->setAttribute('checked', 'checked');
+			if (Symphony::Configuration()->get('disable_proxy_transform', 'image') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
 			$label->setValue($input->generate() . ' ' . __('Prevent ISP proxy transformation'));
 			$group->appendChild($label);
 
 			// text input to allow external request origins
 			$label = Widget::Label(__('Add Cross-Origin Header'));
-			$input = Widget::Input('settings[image][allow_origin]', Symphony::Configuration()->get('allow_origin', 'image'));
+			$input = Widget::Input('settings[image][allow_origin]', General::sanitize(Symphony::Configuration()->get('allow_origin', 'image')));
 			$label->appendChild($input);
 			$group->appendChild($label);
 
 			// textarea for trusted sites
 			$label = Widget::Label(__('Trusted Sites'));
-			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, $this->trusted()));
+			$label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, General::sanitize($this->trusted())));
 
 			$group->appendChild($label);
 			$group->appendChild(new XMLElement('p', __('Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.'), array('class' => 'help')));
