@@ -361,14 +361,14 @@ class extension_JIT_Image_Manipulation extends Extension
         $label = (!empty($values['name'])) ? $values['name'] : __('New Recipe');
         $header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $modes[$mode] . '</span>'));
         $li->appendChild($header);
-        $li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", $mode, 'hidden'));
+        $li->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][mode]", General::sanitize($mode), 'hidden'));
 
         $group = new XMLElement('div');
         $group->setAttribute('class', 'two columns');
 
         // Name
         $label = Widget::Label(__('Name'), null, 'column');
-        $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", $values['name']));
+        $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][name]", General::sanitize($values['name'])));
         if (is_array($error) && isset($error['missing'])) {
             $group->appendChild(Widget::Error($label, $error['missing']));
         } else {
@@ -378,7 +378,7 @@ class extension_JIT_Image_Manipulation extends Extension
         // Handle
         $label_text = $mode === 'regex' ? __('Regular Expression') : __('Handle') . '<i>e.g. /image/{handle}/path/to/my-image.jpg</i>';
         $label = Widget::Label(__($label_text), null, 'column');
-        $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", $values['url-parameter']));
+        $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][url-parameter]", General::sanitize($values['url-parameter'])));
         if (is_array($error) && isset($error['invalid'])) {
             $group->appendChild(Widget::Error($label, $error['invalid']));
         } else {
@@ -392,10 +392,10 @@ class extension_JIT_Image_Manipulation extends Extension
             $group = new XMLElement('div');
             $group->setAttribute('class', 'two columns');
             $label = Widget::Label(__('Width'), null, 'column');
-            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][width]", $values['width']));
+            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][width]", General::sanitize($values['width'])));
             $group->appendChild($label);
             $label = Widget::Label(__('Height'), null, 'column');
-            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][height]", $values['height']));
+            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][height]", General::sanitize($values['height'])));
             $group->appendChild($label);
             $li->appendChild($group);
         }
@@ -409,7 +409,7 @@ class extension_JIT_Image_Manipulation extends Extension
             $group->appendChild($label);
             $label = Widget::Label(__('Background Color'), null, 'column');
             $label->appendChild(new XMLElement('i', __('Optional')));
-            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][background]", $values['background']));
+            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][background]", General::sanitize($values['background'])));
             $group->appendChild($label);
             $li->appendChild($group);
         }
@@ -417,7 +417,7 @@ class extension_JIT_Image_Manipulation extends Extension
         // regex mode
         if ($mode === 'regex') {
             $label = Widget::Label(__('JIT Parameter'));
-            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][jit-parameter]", $values['jit-parameter']));
+            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][jit-parameter]", General::sanitize($values['jit-parameter'])));
             $li->appendChild($label);
         }
 
@@ -427,7 +427,7 @@ class extension_JIT_Image_Manipulation extends Extension
         if ($mode !== '0') {
             $label = Widget::Label(__('Image quality'), null, 'column');
             $label->appendChild(new XMLElement('i', __('Optional')));
-            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", $values['quality']));
+            $label->appendChild(Widget::Input("jit_image_manipulation[recipes][{$position}][quality]", General::sanitize($values['quality'])));
             $group->appendChild($label);
         }
         if ($mode !== 'regex') {
@@ -548,13 +548,13 @@ class extension_JIT_Image_Manipulation extends Extension
 
         // text input to allow external request origins
         $label = Widget::Label(__('Add Cross-Origin Header'));
-        $input = Widget::Input('settings[image][allow_origin]', Symphony::Configuration()->get('allow_origin', 'image'));
+        $input = Widget::Input('settings[image][allow_origin]', General::sanitize(Symphony::Configuration()->get('allow_origin', 'image')));
         $label->appendChild($input);
         $group->appendChild($label);
 
         // textarea for trusted sites
         $label = Widget::Label(__('Trusted Sites'));
-        $label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, $this->trusted()));
+        $label->appendChild(Widget::Textarea('jit_image_manipulation[trusted_external_sites]', 5, 50, General::sanitize($this->trusted())));
 
         $group->appendChild($label);
         $group->appendChild(new XMLElement('p', __('Leave empty to disable external linking. Single rule per line. Add * at end for wild card matching.'), array('class' => 'help')));
