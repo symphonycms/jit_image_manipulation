@@ -2,6 +2,12 @@
 
 A simple way to manipulate images "just in time" via the URL. Supports caching, image quality settings and loading of offsite images.
 
+-----
+
+**NOTE: Version 2.x is not working properly, please use the 1.x branch until further notice!**
+
+-----
+
 ## Installation
 
 Information about [installing and updating extensions](http://getsymphony.com/learn/tasks/view/install-an-extension/) can be found in the [Symphony documentation](http://getsymphony.com/learn/).
