@@ -4,7 +4,7 @@ A simple way to manipulate images "just in time" via the URL. Supports caching, 
 
 -----
 
-**NOTE: Version 2.x is not working properly, please use the 1.x branch until further notice!**
+**NOTE: Version 2.x is not working properly, please use the [1.x branch](https://github.com/symphonycms/jit_image_manipulation/tree/1.x) until further notice!**
 
 -----
 
