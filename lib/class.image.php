@@ -57,7 +57,7 @@
 			// get the raw body response, ignore errors
 			$response = @$gateway->exec();
 
-			if($response === false){
+			if(!$response){
 				throw new Exception(sprintf('Error reading external image <code>%s</code>. Please check the URI.', $uri));
 			}
 
@@ -67,7 +67,7 @@
 			// Symphony 2.4 enhances the TMP constant so it can be relied upon
 			$dest = tempnam(TMP, 'IMAGE');
 
-			if(!file_put_contents($dest, $response)) {
+			if(file_put_contents($dest, $response) === false) {
 				throw new Exception(sprintf('Error writing to temporary file <code>%s</code>.', $dest));
 			}
 
