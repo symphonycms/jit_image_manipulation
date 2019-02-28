@@ -348,7 +348,7 @@
 	}
 	catch(Exception $e){
 		Page::renderStatusCode(Page::HTTP_STATUS_BAD_REQUEST);
-		trigger_error($e->getMessage(), E_USER_ERROR);
+		trigger_error($e->getMessage(), E_USER_NOTICE);
 		echo $e->getMessage();
 		exit;
 	}
