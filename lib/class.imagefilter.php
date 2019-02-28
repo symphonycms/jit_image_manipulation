@@ -18,7 +18,8 @@
 
 			if(!$colour || strlen(trim($colour)) == 0){
 				$tr_idx = imagecolortransparent($res);
-				if($tr_idx >= 0){
+				$palletsize = imagecolorstotal($res);
+				if($tr_idx >= 0 && $tr_idx < $palletsize){
 					$tr_colour = imagecolorsforindex($res, $tr_idx);
 					$tr_idx = imagecolorallocate($dst, $tr_colour['red'], $tr_colour['green'], $tr_colour['blue']);
 					imagefill($dst, 0, 0, $tr_idx);
